@@ -4,16 +4,16 @@ This repository contains my Ansible code (collections, roles, playbooks, invento
 
 TODO:
     
-    - Document directories
-      - `collections/`
-      - `inventories/`
-      - `plays/`
-    - Document project setup
-      - `virtualenv .venv && . .venv/bin/activate`
-      - `pip install -r requirements.txt`
-    - Document using `nox` to run playbook sessions
-      - `nox -s <session_name>`
-      - Document adding new sessions to `noxfile.py`
+    - [ ] Document directories
+      - [ ] `collections/`
+      - [ ] `inventories/`
+      - [ ] `plays/`
+    - [ ] Document project setup
+      - [ ] `virtualenv .venv && . .venv/bin/activate`
+      - [ ] `pip install -r requirements.txt`
+    - [ ] Document using `nox` to run playbook sessions
+      - [ ] `nox -s <session_name>`
+      - [ ] Document adding new sessions to `noxfile.py`
 
 ## Setup
 
