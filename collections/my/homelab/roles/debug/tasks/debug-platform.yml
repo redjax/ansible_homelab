@@ -1,0 +1,96 @@
+---
+- name: "Debug uptime"
+  ansible.builtin.debug:
+    var: ansible_uptime_seconds
+
+- name: "Debug system"
+  ansible.builtin.debug:
+    var: ansible_system
+
+- name: "Debug system vendor"
+  ansible.builtin.debug:
+    var: ansible_system_vendor
+
+- name: "Debug CPU architecture"
+  ansible.builtin.debug:
+    var: ansible_architecture
+
+- name: "Debug virtualization"
+  ansible.builtin.debug:
+    var: ansible_virtualize
+  vars:
+    ansible_virtualize:
+      virtualization_role: "{{ ansible_virtualization_role }}"
+      virtualization_type: "{{ ansible_virtualization_type }}"
+
+- name: "Debug BIOS date"
+  ansible.builtin.debug:
+    var: ansible_bios
+  vars:
+    ansible_bios:
+      bios_date: "{{  ansible_bios_date }}"
+      bios_version: "{{ ansible_bios_version }}"
+
+- name: "Debug command line"
+  ansible.builtin.debug:
+    var: ansible_cmdline
+
+- name: "Debug machine datetime"
+  ansible.builtin.debug:
+    var: ansible_date_time
+
+- name: "Host is chroot?"
+  ansible.builtin.debug:
+    var: ansible_is_chroot
+
+- name: "Debug free memory (MB)"
+  ansible.builtin.debug:
+    var: ansible_memfree_mb
+
+- name: "Debug memory (MB)"
+  ansible.builtin.debug:
+    var: ansible_memory_mb
+
+- name: "Debug total memory"
+  ansible.builtin.debug:
+    var: ansible_memtotal_mb
+
+- name: "Debug mounts"
+  ansible.builtin.debug:
+    var: ansible_mounts
+
+- name: "Debug processor"
+  ansible.builtin.debug:
+    var: ansible_processor
+
+- name: "Debug processor cores"
+  ansible.builtin.debug:
+    var: ansible_processor_cores
+
+- name: "Debug processor count"
+  ansible.builtin.debug:
+    var: ansible_processor_count
+
+- name: "Debug processor nproc"
+  ansible.builtin.debug:
+    var: ansible_processor_nproc
+
+- name: "Debug processor vCPUs"
+  ansible.builtin.debug:
+    var: ansible_processor_vcpus
+
+- name: "Debug product name"
+  ansible.builtin.debug:
+    var: ansible_product_name
+
+- name: "Debug product serial"
+  ansible.builtin.debug:
+    var: ansible_product_serial
+
+- name: "Debug product uuid"
+  ansible.builtin.debug:
+    var: ansible_product_uuid
+
+- name: "Debug product version"
+  ansible.builtin.debug:
+    var: ansible_product_version

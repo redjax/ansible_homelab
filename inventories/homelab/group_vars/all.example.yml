@@ -1,0 +1,42 @@
+###########
+# Ansible #
+###########
+ansible_python_interpreter: "/usr/bin/python3"
+
+## User for connection. I use a service account, "ansible_svc"
+ansible_ssh_user: "ansible_svc"
+## Path to SSH key (note: you must copy this to the host with ssh-copy-id before using Ansible)
+ansible_ssh_private_key_file: "/home/$USER/.ssh/cybernex_ansible_id_rsa"
+
+## For path substitution, i.e. "/home/{{ remote_host_user }}"
+remote_host_user: "$USER"
+
+## Pyenv
+pyenv_python_ver: "3.11.4"
+
+#############
+# Tailscale #
+#############
+
+## Generate new keys at: https://login.tailscale.com/admin/settings/keys
+tailscale_preauth_key: ""
+
+#######
+# Git #
+#######
+git_default_branch_name: "main"
+git_user_name: "$GIT_USER"
+git_user_email: "$GIT_EMAIL"
+
+##########
+# System #
+##########
+
+dns_ns: "192.168.1.xxx"
+
+##########
+# Python #
+##########
+
+pypi_token: "$PYPI_API_TOKEN"
+test_pypi_token: "$PYPI_TEST_API_TOKEN"

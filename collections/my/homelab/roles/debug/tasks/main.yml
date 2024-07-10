@@ -1,0 +1,13 @@
+---
+# tasks file for roles/debug
+- name: "Debug remote environment"
+  ansible.builtin.package_facts:
+    manager: auto
+
+- name: "Include role tasks."
+  ansible.builtin.include_tasks: "{{ item }}"
+  loop:
+    - debug-ansible-facts.yml
+    - debug-cpu.yml
+    - debug-devices.yml
+    - debug-platform.yml

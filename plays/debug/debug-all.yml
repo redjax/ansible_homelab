@@ -1,0 +1,8 @@
+---
+- name: "Ansible debug remote host"
+  hosts: all
+
+  tasks:
+    - name: "Call homelab collection's debug role"
+      ansible.builtin.import_role:
+        name: my.homelab.debug

@@ -1,0 +1,5 @@
+---
+- name: "Print CPU architecture"
+  ansible.builtin.debug:
+    ## Use ansible_architecture builtin
+    msg: "CPU Architecture: {{ ansible_architecture }}"

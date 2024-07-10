@@ -1,0 +1,9 @@
+---
+- name: "Debug print the local environment/platform"
+  hosts: all
+
+  tasks:
+
+    - name: Print all available facts
+      ansible.builtin.debug:
+        var: ansible_facts

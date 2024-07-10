@@ -1,0 +1,14 @@
+---
+- name: "Debug print the local environment/platform"
+  hosts: localhost
+  connection: local
+
+  tasks:
+
+    - name: "Debug device links"
+      ansible.builtin.debug:
+        var: ansible_device_links
+
+    - name: "Debug devices"
+      ansible.builtin.debug:
+        var: ansible_devices
