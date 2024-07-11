@@ -1,6 +1,6 @@
 # Homelab
 
-This repository contains my Ansible code (collections, roles, playbooks, inventories, etc) for setting up/maintaining my homelab. The project is driven by [[`nox`](https://nox.thea.codes/)](https://nox.thea.codes/)-based session automation.
+This repository contains my Ansible code (collections, roles, playbooks, inventories, etc) for setting up/maintaining my homelab. The project is driven by [`nox`](https://nox.thea.codes/)-based session automation.
 
 ## Setup
 
