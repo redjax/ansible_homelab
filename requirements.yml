@@ -2,9 +2,18 @@
 collections:
   - name: community.general
     source: https://galaxy.ansible.com
+    ## https://galaxy.ansible.com/ui/repo/published/community/general/
+    version: 9.1.0
+
+  - name: ansible.posix
+    source: https://galaxy.ansible.com
+    ## https://galaxy.ansible.com/ui/repo/published/ansible/posix/
+    version: 1.5.4
 
   # - name: cielito.proxmox
   #   source: https://galaxy.ansible.com
+  # ## https://galaxy.ansible.com/ui/repo/published/cielito/proxmox/
+  # version: 2.1.0
 
   - name: my.homelab
     type: dir

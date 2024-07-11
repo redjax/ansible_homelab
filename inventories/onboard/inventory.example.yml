@@ -1,0 +1,29 @@
+---
+all:
+  hosts:
+    ## Example host
+    #  host1:
+    #    ansible_host: "192.168.1.xxx"
+    host1:
+      ansible_host: "192.168.1.60"
+    host2:
+      ansible_host: "192.168.1.61"
+    host3:
+      ansible_host: "192.168.1.62"
+  ## Vars set here will apply to all hosts, throughout the playbook.
+  # vars:
+  #   example_var1: "value1"
+
+onboard:
+  hosts:
+    host1:
+    host2:
+    host3:
+  ## Vars set here will apply only when --limit onboard is used
+  vars:
+    ## Set remote user for all hosts when --limit onboard is used
+    ansible_user: "ubuntu"
+    ## Set paths on local machine to SSH keyfiles to authorize for
+    #  the ansible_svc user.
+    ansible_ssh_private_key_file: "/home/$USER/.ssh/pi-id_rsa"
+    ansible_ssh_public_key_file: "/home/$USER/.ssh/pi-id_rsa.pub"

@@ -1,0 +1,16 @@
+---
+- name: "Check if reboot is required"
+  register: rh_reboot_required
+  ansible.builtin.command: needs-restarting -r
+  ignore_errors: true
+  failed_when: false
+  changed_when: rh_reboot_required.rc != 0
+
+- name: "Reboot server for updates"
+  ansible.builtin.reboot:
+    msg: "Reboot initiated by Ansible. Reason: kernel updates"
+    reboot_timeout: 300
+    pre_reboot_delay: 0
+    post_reboot_delay: 30
+  become: true
+  when: (rh_reboot_required.rc != 0) and (ansible_facts['os_family'] == "RedHat")

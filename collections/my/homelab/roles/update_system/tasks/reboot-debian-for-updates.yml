@@ -1,0 +1,16 @@
+---
+- name: "Check if reboot is required"
+  register: reboot_required
+  ansible.builtin.stat:
+    path: /var/run/reboot-required
+  become: true
+  when: ansible_facts['os_family'] == "Debian"
+
+- name: "Reboot server"
+  ansible.builtin.reboot:
+    msg: "Reboot initiated by Ansible. Reason: kernel updates"
+    reboot_timeout: 300
+    pre_reboot_delay: 0
+    post_reboot_delay: 30
+  become: true
+  when: reboot_required.stat.exists and ansible_facts['os_family'] == "Debian"

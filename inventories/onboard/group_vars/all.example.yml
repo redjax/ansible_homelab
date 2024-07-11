@@ -1,0 +1,7 @@
+###########
+# Ansible #
+###########
+ansible_python_interpreter: "/usr/bin/python3"
+
+ansible_svc_user: "ansible_svc"
+ansible_ssh_service_public_key_file: "/home/$USER/.ssh/ansible_id_rsa.pub"

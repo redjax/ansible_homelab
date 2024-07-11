@@ -1,0 +1,8 @@
+---
+# tasks file for onboard
+- name: "Setup ansible_svc user account & SSH"
+  ansible.builtin.package_facts:
+    manager: auto
+
+- name: "Include role tasks."
+  ansible.builtin.include_tasks: create-ansible-svc-user.yml
