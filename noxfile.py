@@ -207,7 +207,7 @@ def install_collections(session: nox.Session):
         
         raise exc
     
-@nox.session(python=DEFAULT_PYTHON, name="playbook-debug-all", tags=["playbook"])
+@nox.session(python=DEFAULT_PYTHON, name="playbook-debug-all", tags=["debug"])
 def ansible_playbook_debug_all(session: nox.Session):
     session.install("ansible-core")
     
@@ -217,6 +217,20 @@ def ansible_playbook_debug_all(session: nox.Session):
         session.run("ansible-playbook", "-i", "inventories/homelab/inventory.yml", "plays/debug/debug-all.yml")
     except Exception as exc:
         msg = Exception(f"({type(exc)}) Unhandled exception running playbook. Details: {exc}")
+        log.error(msg)
+        
+        raise exc
+    
+@nox.session(python=DEFAULT_PYTHON, name="update-systems", tags=["maint"])
+def ansible_playbook_update_systems(session: nox.Session):
+    session.install("ansible-core")
+    
+    log.info("Running maint/update-system.yml playbook on homelab inventory, limit 'autoReboot'.")
+    
+    try:
+        session.run("ansible-playbook", "-i", "inventories/homelab/inventory.yml", "--limit", "autoReboot", "plays/maint/update-system.yml")
+    except Exception as exc:
+        msg = Exception(f"({type(exc)}) Unhandled exception running system update playbook. Details: {exc}")
         log.error(msg)
         
         raise exc

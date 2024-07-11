@@ -202,3 +202,4 @@ site/
 **/group_vars/all.yml
 
 !**/*.example.yml
+.ansible

@@ -1,0 +1,13 @@
+---
+- name: "Update dnf repo and cache"
+  ansible.builtin.dnf:
+    update_cache: true
+    update_only: true
+  become: true
+
+- name: "Upgrade all packages"
+  ansible.builtin.dnf:
+    name: "*"
+    state: latest
+    autoremove: true
+  become: true
