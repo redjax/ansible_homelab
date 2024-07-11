@@ -73,12 +73,12 @@ nox.options.error_on_external_run = False
 nox.options.error_on_missing_interpreters = False
 # nox.options.report = True
 
-nox.sessions = ["lint"]
+nox.options.sessions = ["lint", "build-my-collections", "install-collection-requirements"]
 
 COLLECTIONS_PATH: Path = Path("./collections")
 ANSIBLE_COLLECTIONS_PATH: Path = Path(f"{COLLECTIONS_PATH}/ansible_collections")
 MY_COLLECTIONS_PATH: Path = Path(f"{COLLECTIONS_PATH}/my")
-COLLECTION_BUILD_OUTPUT_PATH: Path = Path(f"{COLLECTIONS_PATH}/build")
+COLLECTION_BUILD_OUTPUT_PATH: Path = Path("./build")
 
 ## Set paths to lint with the lint session
 LINT_PATHS: list[str] = []

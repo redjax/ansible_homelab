@@ -1,0 +1,3 @@
+---
+# vars file for onboard
+ansible_svc_user: "ansible_svc"

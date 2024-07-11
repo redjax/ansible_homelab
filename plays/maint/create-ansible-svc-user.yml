@@ -1,0 +1,8 @@
+---
+- name: "Run ansible_svc user setup"
+  hosts: all
+
+  tasks:
+    - name: "Call homelab collection's onboard role"
+      ansible.builtin.import_role:
+        name: my.homelab.onboard
