@@ -2,6 +2,16 @@
 
 This repository contains my Ansible code (collections, roles, playbooks, inventories, etc) for setting up/maintaining my homelab. The project is driven by [`nox`](https://nox.thea.codes/)-based session automation.
 
+## Requirements
+
+- Python
+  - `nox` and Ansible both depend on Python.
+  - (Optional) Use [pyenv](https://github.com/pyenv/pyenv) to install Python.
+    - 📚 [My documentation on pyenv](https://redkb.readthedocs.io/en/latest/programming/python/pyenv.html)
+- `virtualenv` Python package
+  - Install with pip: `pip install --user virtualenv`
+  - Install with [`pipx`](https://github.com/pypa/pipx): `pipx install virtualenv`
+
 ## Setup
 
 - Create virtual environment with `virtualenv .venv`
@@ -11,7 +21,7 @@ This repository contains my Ansible code (collections, roles, playbooks, invento
 - Install requirements
   - `pip install -r requirements.yml`
 - Install Ansible requirements
-  - (with [`nox`](https://nox.thea.codes/)): Simply run [`nox`](https://nox.thea.codes/) from the command line to run the build/install commands.
+  - (with [`nox`](https://nox.thea.codes/)): Simply run [`nox`](https://nox.thea.codes/) from the command line with no arguments to run the build/install commands.
   - (with `ansible-galaxy`): `ansible-galaxy collection install -r requirements.yml`
 
 ### SSH setup
@@ -168,6 +178,8 @@ CUSTOM_COLLECTIONS: t.List[CustomAnsibleCollection] = [
 ```
 
 ### Sessions
+
+**TODO**:
 
 - [ ] Document existing sessions & usage
 - [ ] Document adding new sessions
