@@ -1,0 +1,24 @@
+{
+	"folders": [
+		{
+			"path": "..",
+			"name": "Git Root"
+		},
+		{
+			"path": "../collections",
+			"name": "Ansible Collections"
+		},
+		{
+			"path": "../inventories/",
+			"name": "Ansible Inventories"
+		},
+		{
+			"path": "../plays",
+			"name": "Ansible Plays"
+		},
+		{
+			"path": "../roles",
+			"name": "Ansible Roles"
+		}
+	]
+}
