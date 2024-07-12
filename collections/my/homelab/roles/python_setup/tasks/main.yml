@@ -1,0 +1,12 @@
+---
+# tasks file for python_setup
+- name: "Gather the package facts"
+  ansible.builtin.package_facts:
+    manager: auto
+
+- name: "Include pyenv install tasks"
+  ansible.builtin.include_tasks: install-pyenv.yml
+  when: ("pyenv" not in ansible_facts.packages)
+
+- name: "Include virtualenv install tasks"
+  ansible.builtin.include_tasks: install-virtualenv.yml

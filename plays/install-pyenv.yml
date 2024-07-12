@@ -1,0 +1,8 @@
+---
+- name: "Install pyenv & configure Python environment"
+  hosts: all
+
+  tasks:
+    - name: "Call homelab collection's pyenv setup role"
+      ansible.builtin.import_role:
+        name: my.homelab.pyenv_setup

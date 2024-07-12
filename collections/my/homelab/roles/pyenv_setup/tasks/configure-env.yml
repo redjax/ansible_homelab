@@ -1,0 +1,8 @@
+---
+## Ensure pyenv config block exists in .bashrc
+- name: "[Debian] [Pyenv Setup] Check if Pyenv config exists in /home/{{ remote_host_user }}/.bashrc"
+  blockinfile:
+    path: "/home/{{ remote_host_user }}/.bashrc"
+    block: "{{ lookup('ansible.builtin.template', 'bashrc_append.j2') }}"
+  when: ansible_facts['os_family'] == "Debian"
+  become: true
