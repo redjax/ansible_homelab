@@ -9,7 +9,7 @@ ansible_ssh_user: "ansible_svc"
 ansible_svc_user: "ansible_svc"
 
 ## Path to SSH key (note: you must copy this to the host with ssh-copy-id before using Ansible)
-ansible_ssh_public_key_file: "/home/$USER/.ssh/id_rsa.pub"
+ansible_ssh_public_key_file: "/home/$USER/.ssh/cybernex_id_rsa.pub"
 
 ## Directory where SSH keys will be output. Defaults to the directory
 #  a playbook was called from, i.e. plays/onboard/ssh_keys
@@ -52,7 +52,7 @@ git_user_email: ""
 # System #
 ##########
 
-dns_ns: "1.1.1.1"
+dns_ns: "xxx.xxx.xxx.xxx"
 
 ##########
 # Python #
