@@ -1,0 +1,16 @@
+---
+- name: "Install pipx in pyenv environment"
+  ansible.builtin.shell: |
+    /home/{{ remote_host_user }}/.pyenv/shims/pip install pipx
+  args:
+    executable: /bin/bash
+  become_user: "{{ remote_host_user }}"
+  become: true
+
+- name: "Run pipx ensurepath in environment"
+  ansible.builtin.shell: |
+    /home/{{ remote_host_user }}/.pyenv/shims/pipx ensurepath
+  args:
+    executable: /bin/bash
+  become_user: "{{ remote_host_user }}"
+  become: true

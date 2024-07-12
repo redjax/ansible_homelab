@@ -1,0 +1,61 @@
+---
+- name: Install Pyenv.
+  ansible.builtin.git:
+    repo: https://github.com/pyenv/pyenv.git
+    dest: "{{ pyenv_path }}"
+    version: "{{ pyenv_git_ref }}"
+
+- name: Install Pyenv plugins.
+  ansible.builtin.git:
+    repo: "{{ item.repo }}"
+    dest: "{{ pyenv_path }}/plugins/{{ item.name }}"
+    version: "{{ item.version | default('master') }}"
+  loop: "{{ pyenv_plugins }}"
+
+- name: Ensure Pyenv config directory exists.
+  ansible.builtin.file:
+    path: "{{ pyenv_config_path }}"
+    state: directory
+    mode: 0755
+
+- name: Install Pyenv config.
+  ansible.builtin.template:
+    src: pyenvrc.j2
+    dest: "{{ pyenv_config_path }}/.pyenvrc"
+    owner: "{{ pyenv_owner }}"
+    mode: 0644
+
+- name: Load Pyenv config to {{ shell_init_paths }}.
+  ansible.builtin.lineinfile:
+    dest: "{{ item }}"
+    regexp: "source {{ pyenv_config_path }}\/^[.]pyenvrc$"
+    line: "source {{ pyenv_config_path }}/.pyenvrc"
+    state: present
+    create: true
+    mode: 0644
+  loop: "{{ shell_init_paths }}"
+
+- name: Update Pyenv and its plugins.
+  ansible.builtin.shell: |
+    . {{ pyenv_config_path }}/.pyenvrc
+    pyenv update
+  register: output
+  changed_when: "output.rc == 0"
+  when: pyenv_update
+
+- name: Install Python interpreters with Pyenv.
+  ansible.builtin.shell: |
+    . {{ pyenv_config_path }}/.pyenvrc
+    pyenv install {{ item }}
+  args:
+    creates: "{{ pyenv_path }}/versions/{{ item }}/bin/python"
+  loop: "{{ pyenv_python_versions }}"
+
+- name: Set default Pyenv's Python version.
+  ansible.builtin.shell: |
+    . {{ pyenv_config_path }}/.pyenvrc
+    pyenv global {{ pyenv_default_python }}
+    pyenv rehash
+  args:
+    creates: "{{ pyenv_path }}/version"
+  when: pyenv_default_python is defined

@@ -1,0 +1,26 @@
+---
+# pyenv installation
+pyenv_global: false
+pyenv_git_ref: master
+pyenv_owner: "{{ ansible_user_id }}"
+pyenv_group: pyenv
+pyenv_path: "{{ '/opt/pyenv' if pyenv_global else ansible_user_dir + '/.pyenv' }}"
+
+# pyenv configuration
+pyenv_config_path: "{{ '/etc/pyenv' if pyenv_global else ansible_user_dir }}"
+pyenv_init_options: "{{ '--no-rehash' if pyenv_global }}"
+shell_init_paths: "{{ shell_init.global if pyenv_global else shell_init.local }}"
+
+pyenv_autocompletion: true
+pyenv_default_python: 3.11.2
+pyenv_python_versions:
+  - 3.11.2
+
+# pyenv plugins
+pyenv_plugins:
+  - name: pyenv-virtualenv
+    repo: https://github.com/pyenv/pyenv-virtualenv.git
+  - name: pyenv-update
+    repo: https://github.com/pyenv/pyenv-update.git
+pyenv_virtualenvs: {}
+pyenv_update: false

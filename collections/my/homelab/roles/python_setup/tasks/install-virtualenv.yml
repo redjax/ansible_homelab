@@ -1,0 +1,8 @@
+---
+- name: "Install virtualenv in pyenv environment"
+  ansible.builtin.shell: |
+    /home/{{ remote_host_user }}/.pyenv/shims/pip install virtualenv
+  args:
+    executable: /bin/bash
+  become_user: "{{ remote_host_user }}"
+  become: true

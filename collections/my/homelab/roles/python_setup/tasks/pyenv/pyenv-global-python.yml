@@ -1,0 +1,15 @@
+---
+- name: "[All OS Types] [Pyenv Setup] Update Pyenv versions"
+  become: true
+  become_user: "{{ remote_host_user }}"
+  command: "/home/{{ remote_host_user }}/.pyenv/bin/pyenv update"
+
+- name: "[All OS Types] [Pyenv Setup] Install environment, Python version: {{ pyenv_install_versions_str }} (SLOW operation)"
+  become: true
+  become_user: "{{ remote_host_user }}"
+  command: "/home/{{ remote_host_user }}/.pyenv/bin/pyenv install {{ pyenv_install_versions_str }} --skip-existing"
+
+- name: "[All OS Types] [Pyenv Setup] Set global Python to pyenv version {{ pyenv_python_ver }}"
+  become: true
+  become_user: "{{ remote_host_user }}"
+  command: "/home/{{ remote_host_user }}/.pyenv/bin/pyenv global {{ pyenv_global_versions_str }}"

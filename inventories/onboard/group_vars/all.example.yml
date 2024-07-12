@@ -4,4 +4,10 @@
 ansible_python_interpreter: "/usr/bin/python3"
 
 ansible_svc_user: "ansible_svc"
-ansible_ssh_service_public_key_file: "/home/$USER/.ssh/ansible_id_rsa.pub"
+ansible_ssh_public_key_file: "/home/$USER/.ssh/id_rsa.pub"
+
+## Directory where SSH keys will be output. Defaults to the directory
+#  a playbook was called from, i.e. plays/onboard/ssh_keys
+ansible_ssh_key_dir: "{{ ansible_env.PWD }}/ansible_ssh"
+
+ansible_ssh_service_public_key_file: "{{ ansible_ssh_key_dir }}/{{ ansible_svc_user }}.pub"

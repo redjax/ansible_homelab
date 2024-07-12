@@ -1,0 +1,6 @@
+---
+- name: Ensure Pyenv dependencies are installed.
+  become: true
+  ansible.builtin.yum:
+    name: "{{ pyenv_packages }}"
+    state: present

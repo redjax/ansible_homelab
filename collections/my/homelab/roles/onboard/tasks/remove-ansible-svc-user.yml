@@ -1,0 +1,45 @@
+---
+- name: "Remove {{ ansible_svc_user }} account"
+  ansible.builtin.user:
+    name: "{{ ansible_svc_user }}"
+    state: absent
+    remove: true
+  become: true
+  when: remove_user | default(false)
+
+- name: "Remove sudoers file for {{ ansible_svc_user }}"
+  ansible.builtin.file:
+    path: "/etc/sudoers.d/{{ ansible_svc_user }}"
+    state: absent
+  become: true
+  when: remove_user | default(false)
+
+- name: "Remove authorized_keys file for {{ ansible_svc_user }}"
+  ansible.builtin.file:
+    path: "/home/{{ ansible_svc_user }}/.ssh/authorized_keys"
+    state: absent
+  become: true
+  when: remove_user | default(false)
+
+- name: "Remove local SSH keys for {{ ansible_svc_user }}"
+  ansible.builtin.file:
+    path: "{{ ansible_ssh_key_dir }}"
+    state: absent
+    mode: "0700"
+  delegate_to: localhost
+  run_once: true
+  when: remove_user | default(false)
+
+- name: "{{ Remove .ssh directory for ansible_svc_user }}"
+  ansible.builtin.file:
+    path: "/home/{{ ansible_svc_user }}/.ssh"
+    state: absent
+  become: true
+  when: remove_user | default(false)
+
+- name: "Remove home directory for {{ ansible_svc_user }}"
+  ansible.builtin.file:
+    path: "/home/{{ ansible_svc_user }}"
+    state: absent
+  become: true
+  when: remove_user | default(false)

@@ -3,6 +3,12 @@
 - name: "Setup ansible_svc user account & SSH"
   ansible.builtin.package_facts:
     manager: auto
+  when: not remove_user | default(false)
 
-- name: "Include role tasks."
+- name: "Include create-ansible-svc-user.yml role tasks."
   ansible.builtin.include_tasks: create-ansible-svc-user.yml
+  when: not remove_user | default(false)
+
+- name: "Include remove-ansible-svc-user.yml"
+  ansible.builtin.include_tasks: remove-ansible-svc-user.yml
+  when: remove_user | default(false)

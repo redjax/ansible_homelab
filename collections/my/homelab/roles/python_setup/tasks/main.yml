@@ -1,0 +1,45 @@
+---
+# tasks file for python_setup
+- name: "Gather the package facts"
+  ansible.builtin.package_facts:
+    manager: auto
+
+- name: "[DEBUG] Pyenv install check"
+  ansible.builtin.debug:
+    msg: "Found pyenv in packages: {{ 'pyenv' in ansible_facts.packages }}"
+
+- name: "[All OS Types] [Pyenv Setup] Check if dir exists: /home/{{ remote_host_user }}/.pyenv"
+  stat:
+    path: "/home/{{ remote_host_user }}/.pyenv"
+  become: true
+  register: pyenv_dir
+
+- name: "[DEBUG] .pyenv directory exist check"
+  ansible.builtin.debug:
+    msg: "Pyenv directory '/home/{{ remote_host_user }}/.pyenv' exists: {{ pyenv_dir }}"
+
+- name: "[All OS Types] [Pyenv Setup] Check if dir exists: /home/{{ remote_host_user }}/.pyenv/{{ pyenv_python_ver }}"
+  stat:
+    path: "/home/{{ remote_host_user }}/.pyenv/versions/{{ pyenv_python_ver }}"
+  become: true
+  register: pyenv_ver_exists
+
+- name: "[DEBUG] Pyenv python path exist check"
+  ansible.builtin.debug:
+    msg: "Pyenv Python path '{/home/{{ remote_host_user }}/.pyenv/{{ pyenv_python_ver }}}' exists: {{ pyenv_ver_exists }}"
+
+- include_tasks: pyenv/install-dependencies.yml
+  when: (ansible_facts['os_family'] == "Debian") and ("pyenv" not in ansible_facts.packages)
+
+- include_tasks: pyenv/install-pyenv.yml
+  when: ("pyenv" not in ansible_facts.packages) and (not pyenv_dir.stat.exists)
+
+- include_tasks: pyenv/configure-env.yml
+
+- include_tasks: pyenv/pyenv-global-python.yml
+
+- name: "Include virtualenv install tasks"
+  ansible.builtin.include_tasks: install-virtualenv.yml
+
+- name: "Include pipx install tasks"
+  ansible.builtin.include_tasks: install-pipx-apps.yml
