@@ -1,0 +1,31 @@
+---
+## Initial check for existence of get-pyenv.sh script
+- name: "Check for existence of /home/{{ remote_host_user }}/get-pyenv.sh"
+  ansible.builtin.stat:
+    path: "/home/{{ remote_host_user }}/get-pyenv.sh"
+  register: get_pyenv_script
+
+- name: "[All OS Types] [Pyenv Setup] Get Pyenv convenience install script"
+  get_url:
+    url: https://pyenv.run
+    dest: "/home/{{ remote_host_user }}/get-pyenv.sh"
+    mode: "0755"
+  become: true
+  become_user: "{{ remote_host_user }}"
+  when: not get_pyenv_script.stat.exists
+
+## Re-check for existence of get-pyenv.sh script
+- name: "Check for existence of /home/{{ remote_host_user }}/get-pyenv.sh"
+  ansible.builtin.stat:
+    path: "/home/{{ remote_host_user }}/get-pyenv.sh"
+  register: get_pyenv_script
+
+- name: "[DEBUG] get-pyenv.sh exist check"
+  ansible.builtin.debug:
+    msg: "/home/{{ remote_host_user }}/get-pyenv.sh exists: {{ get_pyenv_script }}"
+
+- name: "[All OS Types] [Pyenv Setup] Install Pyenv"
+  shell: "sh /home/{{ remote_host_user }}/get-pyenv.sh"
+  become_user: "{{ remote_host_user }}"
+  become: true
+  when: get_pyenv_script.stat.exists

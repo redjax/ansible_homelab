@@ -36,4 +36,3 @@
 - include_tasks: configure-env.yml
 
 - include_tasks: pyenv-global-python.yml
-  # when: not pyenv_ver_exists.stat.exists

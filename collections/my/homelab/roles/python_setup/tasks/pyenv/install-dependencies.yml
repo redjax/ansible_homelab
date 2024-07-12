@@ -1,0 +1,8 @@
+---
+- name: "[Debian] [Pyenv Setup] Install Pyenv dependencies"
+  apt:
+    name: "{{ pyenv_depends }}"
+    update_cache: yes
+    force_apt_get: yes
+  become: true
+  when: ansible_facts['os_family'] == "Debian"
