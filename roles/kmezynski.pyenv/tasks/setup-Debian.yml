@@ -1,0 +1,8 @@
+---
+- name: Ensure Pyenv dependencies are installed.
+  become: true
+  ansible.builtin.apt:
+    update_cache: true
+    name: "{{ pyenv_packages }}"
+    state: present
+    install_recommends: false

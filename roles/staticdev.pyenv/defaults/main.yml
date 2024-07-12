@@ -1,0 +1,64 @@
+---
+# defaults file for pyenv
+pyenv_version: "HEAD"
+pyenv_virtualenv_version: "HEAD"
+pyenv_update_version: "HEAD"
+pyenv_env: "user"
+pyenv_path: "{% if pyenv_env == 'user' %}{{ ansible_env.HOME }}/pyenv{% else %}/usr/local/pyenv{% endif %}"
+pyenvrc_path: "{{ pyenv_path }}"
+pyenv_owner: "{{ ansible_facts.user_id }}"
+pyenv_owner_group: "{{ pyenv_owner }}"
+pyenv_shellrc_file: "{% if pyenv_env == 'user' %}~/.bashrc{% else %}/etc/profile.d/pyenv.sh{% endif %}"
+pyenv_update_git_install: true
+pyenv_enable_autocompletion: false
+pyenv_enable_virtualenvs: true
+pyenv_python_versions:
+  - 3.12.1
+pyenv_global:
+  - 3.12.1
+pyenv_virtualenvs:
+  []
+  # - { venv_name: "latest", py_version: "3.12.1" }
+# For a system install, the shims dir will not be writable by users, disable rehashing
+pyenv_init_options: "{% if pyenv_env != 'user' %}--no-rehash{% endif %}"
+
+pyenv_update: false
+
+# additional options for the build process, e.g "--enable-shared"
+pyenv_install_extra_opts: ""
+pyenv_python_configure_opts: ""
+pyenv_uninstall_python_w_wrong_configure_opts: false
+
+pyenv_debian_packages:
+  - build-essential
+  - curl
+  - git
+  - llvm
+  - libbz2-dev
+  - libffi-dev
+  - liblzma-dev
+  - libncurses5-dev
+  - libncursesw5-dev
+  - libreadline-dev
+  - libsqlite3-dev
+  - libssl-dev
+  - python3-openssl
+  - tk-dev
+  - wget
+  - xz-utils
+  - zlib1g-dev
+pyenv_redhat_packages:
+  - make
+  - git
+  - gcc
+  - "{{ ((ansible_facts.distribution_major_version | default(0) | int) < 8) | ternary('libselinux-python', 'python3-libselinux') }}"
+  - zlib-devel
+  - openssl-devel
+  - bzip2-devel
+  - readline-devel
+  - libffi-devel
+  - sqlite-devel
+  - gdbm-devel
+pyenv_osx_packages:
+  - readline
+  - xz

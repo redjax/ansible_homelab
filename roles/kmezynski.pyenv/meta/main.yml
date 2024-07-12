@@ -1,0 +1,31 @@
+---
+dependencies: []
+
+galaxy_info:
+  role_name: pyenv
+  author: kmezynski
+  description: Installs and configures Pyenv with given plugins and Python versions.
+  license: license (BSD, MIT)
+  min_ansible_version: 2.4
+  standalone: true
+
+  platforms:
+    - name: Debian
+      versions:
+        - buster
+        - bullseye
+    - name: Ubuntu
+      versions:
+        - xenial
+        - bionic
+        - focal
+        - jammy
+    - name: Fedora
+      versions:
+        - all
+
+  galaxy_tags:
+    - python
+    - pyenv
+    - setup
+    - development

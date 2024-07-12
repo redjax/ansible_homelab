@@ -227,16 +227,36 @@ def install_collections(session: nox.Session):
     
     session.install("ansible-core")
     
-    log.info("Installing collections, roles from requirements.yml")
+    log.info("Installing collections from requirements.yml")
     
     try:
-        session.run("ansible-galaxy", "collection", "install", "-r", "requirements.yml", "--force")
+        session.run("ansible-galaxy", "collection", "install", "-r", "requirements.yml")
     except Exception as exc:
         msg = Exception(f"({type(exc)}) Unhandled exception installing Ansible Galaxy requirements from requirements.yml. Details: {exc}")
         log.error(msg)
         
         raise exc
     
+    log.info("Installing roles from requirements.yml")
+    
+    try:
+        session.run("ansible-galaxy", "role", "install", "-r", "requirements.yml")
+    except Exception as exc:
+        msg = Exception(f"({type(exc)}) Unhandled exception installing Ansible Galaxy requirements from requirements.yml. Details: {exc}")
+        log.error(msg)
+        
+        raise exc
+    
+    if Path("requirements.private.yml").exists():
+        log.info("Ensuring local collections are installed from requirements.private.yml with --force")
+        try:
+            session.run("ansible-galaxy", "collection", "install", "-r", "requirements.private.yml", "--force")
+        except Exception as exc:
+            msg = Exception(f"Unhandled exception installing packages from 'requirements.private.yml'. Details: {exc}")
+            log.error(msg)
+            
+            raise exc
+
 @nox.session(python=DEFAULT_PYTHON, name="playbook-debug-all", tags=["debug"])
 def ansible_playbook_debug_all(session: nox.Session):
     session.install("ansible-core")

@@ -3,6 +3,97 @@
 - name: "Setup ansible_svc user account & SSH"
   ansible.builtin.package_facts:
     manager: auto
+  when: not remove_user | default(false)
 
-- name: "Include role tasks."
+- name: "Include create-ansible-svc-user.yml role tasks."
   ansible.builtin.include_tasks: create-ansible-svc-user.yml
+  when: not remove_user | default(false)
+
+- name: "Include remove-ansible-svc-user.yml"
+  ansible.builtin.include_tasks: remove-ansible-svc-user.yml
+  when: remove_user | default(false)
+# - name: Ensure user exists
+#   ansible.builtin.user:
+#     name: "{{ ansible_svc_user }}"
+#     state: present
+#     shell: /bin/bash
+#   become: true
+#   when: not remove_user | default(false)
+
+# - name: Create local SSH key output directory
+#   ansible.builtin.file:
+#     path: "{{ ansible_ssh_key_dir }}"
+#     state: directory
+#     mode: "0700"
+#   delegate_to: localhost
+#   run_once: true
+#   when: not remove_user | default(false)
+
+# - name: Generate SSH key pair
+#   ansible.builtin.openssh_keypair:
+#     path: "{{ ansible_ssh_key_dir }}/{{ ansible_svc_user }}"
+#     type: rsa
+#     size: 2048
+#   delegate_to: localhost
+#   run_once: true
+#   when: not remove_user | default(false)
+
+# - name: Ensure SSH directory exists
+#   file:
+#     path: "/home/{{ ansible_svc_user }}/.ssh"
+#     state: directory
+#     mode: "0700"
+#     owner: "{{ ansible_svc_user }}"
+#     group: "{{ ansible_svc_user }}"
+#   become: true
+#   when: not remove_user | default(false)
+
+# - name: Copy public key to remote authorized_keys
+#   ansible.builtin.copy:
+#     src: "{{ ansible_ssh_key_dir }}/{{ ansible_svc_user }}.pub"
+#     dest: "/home/{{ ansible_svc_user }}/.ssh/authorized_keys"
+#     mode: "0600"
+#     owner: "{{ ansible_svc_user }}"
+#     group: "{{ ansible_svc_user }}"
+#   become: true
+#   when: not remove_user | default(false)
+
+# - name: Add user to sudoers
+#   ansible.builtin.template:
+#     src: sudoers.j2
+#     dest: "/etc/sudoers.d/{{ ansible_svc_user }}"
+#     mode: "0440"
+#   become: true
+#   when: not remove_user | default(false)
+
+## Tasks for removing user and related files
+# - name: Remove ansible_svc_user account
+#   ansible.builtin.user:
+#     name: "{{ ansible_svc_user }}"
+#     state: absent
+#     remove: yes
+#   when: remove_user | default(false)
+
+# - name: Remove sudoers file for ansible_svc_user
+#   ansible.builtin.file:
+#     path: "/etc/sudoers.d/{{ ansible_svc_user }}"
+#     state: absent
+#   when: remove_user | default(false)
+
+# - name: Remove authorized_keys file for ansible_svc_user
+#   ansible.builtin.file:
+#     path: "/home/{{ ansible_svc_user }}/.ssh/authorized_keys"
+#     state: absent
+#   when: remove_user | default(false)
+
+# - name: Remove .ssh directory for ansible_svc_user
+#   ansible.builtin.file:
+#     path: "/home/{{ ansible_svc_user }}/.ssh"
+#     state: absent
+#   when: remove_user | default(false)
+
+# - name: Remove home directory for ansible_svc_user
+#   ansible.builtin.file:
+#     path: "/home/{{ ansible_svc_user }}"
+#     state: absent
+#   when: remove_user | default(false)

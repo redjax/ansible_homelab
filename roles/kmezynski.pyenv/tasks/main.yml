@@ -1,0 +1,22 @@
+---
+- name: Include OS-specific variables.
+  ansible.builtin.include_vars: "{{ ansible_os_family }}.yml"
+
+- name: Include OS-specific setup tasks.
+  ansible.builtin.include_tasks: setup-{{ ansible_os_family }}.yml
+
+- name: Install Pyenv locally.
+  ansible.builtin.import_tasks: install.yml
+  become: true
+  become_user: "{{ pyenv_owner }}"
+  when: not pyenv_global | bool
+
+- name: Install Pyenv system-wide.
+  ansible.builtin.import_tasks: install.yml
+  become: true
+  when: pyenv_global | bool
+
+- name: Ensure proper permissions for system-wide Pyenv.
+  ansible.builtin.import_tasks: permissions.yml
+  become: true
+  when: pyenv_global and pyenv_owner != "root"

@@ -5,18 +5,34 @@ ansible_python_interpreter: "/usr/bin/python3"
 
 ## User for connection. I use a service account, "ansible_svc"
 ansible_ssh_user: "ansible_svc"
-## Path to SSH key (note: you must copy this to the host with ssh-copy-id before using Ansible)
-ansible_ssh_private_key_file: "/home/$USER/.ssh/cybernex_ansible_id_rsa"
-ansible_ssh_public_key_file: "/home/$USER/.ssh/cybernex_id_rsa.pub"
+## Name of ansible service user account
+ansible_svc_user: "ansible_svc"
 
-## Path to service account SSH key
-ansible_ssh_service_public_key_file: "/home/$USER/.ssh/cybernex_ansible_id_rsa.pub"
+## Path to SSH key (note: you must copy this to the host with ssh-copy-id before using Ansible)
+ansible_ssh_public_key_file: "/home/$USER/.ssh/id_rsa.pub"
+
+## Directory where SSH keys will be output. Defaults to the directory
+#  a playbook was called from, i.e. plays/onboard/ssh_keys
+ansible_ssh_key_dir: "/home/$USER/ansible_ssh"
+
+## Path to service account SSH private key
+ansible_ssh_private_key_file: "{{ ansible_ssh_key_dir }}/{{ ansible_svc_user }}"
+## Path to service account SSH public key
+ansible_ssh_service_public_key_file: "{{ ansible_ssh_key_dir }}/{{ ansible_svc_user }}.pub"
 
 ## For path substitution, i.e. "/home/{{ remote_host_user }}"
-remote_host_user: "$REMOTE_USER"
+remote_host_user: "$USER"
 
-## Pyenv
-pyenv_python_ver: "3.11.4"
+#########
+# Pyenv #
+#########
+
+# Set Python version(s) to install
+pyenv_install_versions_str: "3.11.8 3.12.0 3.12.4"
+# String for "pyenv global ..."
+pyenv_global_versions_str: "3.11.8 3.12.0"
+# String for when a single Python version is required
+pyenv_python_ver: "3.11.8"
 
 #############
 # Tailscale #
@@ -29,8 +45,8 @@ tailscale_preauth_key: ""
 # Git #
 #######
 git_default_branch_name: "main"
-git_user_name: "$GIT_USERNAME"
-git_user_email: "$GIT_EMAIL"
+git_user_name: ""
+git_user_email: ""
 
 ##########
 # System #
@@ -42,5 +58,5 @@ dns_ns: "1.1.1.1"
 # Python #
 ##########
 
-pypi_token: "$PYPI_TOKEN"
-test_pypi_token: "$TEST_PYPI_TOKEN"
+pypi_token: ""
+test_pypi_token: ""

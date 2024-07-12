@@ -1,0 +1,76 @@
+---
+name: Tests
+
+"on":
+  pull_request:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: "0 7 * * 0"
+
+defaults:
+  run:
+    working-directory: "staticdev.pyenv"
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+        with:
+          path: "staticdev.pyenv"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install test dependencies
+        run: pip install --constraint=.github/workflows/constraints.txt ansible yamllint ansible-lint
+
+      - name: Lint code
+        run: |
+          yamllint .
+          ansible-lint
+
+  molecule:
+    name: Molecule
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        distro:
+          - debian12
+          - debian11
+          - ubuntu2204
+          - ubuntu2004
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+        with:
+          path: "staticdev.pyenv"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Upgrade pip
+        run: |
+          python3 -m pip install --constraint=.github/workflows/constraints.txt pip
+          python3 -m pip --version
+
+      - name: Install test dependencies
+        run: |
+          python3 -m pip install --constraint=.github/workflows/constraints.txt ansible 'molecule-plugins[podman]'
+
+      - name: Run Molecule tests
+        run: molecule test
+        env:
+          PY_COLORS: "1"
+          ANSIBLE_FORCE_COLOR: "1"
+          MOLECULE_DISTRO: ${{ matrix.distro }}

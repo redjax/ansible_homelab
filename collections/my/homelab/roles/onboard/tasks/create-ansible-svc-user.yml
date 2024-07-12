@@ -1,33 +1,59 @@
 ---
-- name: "Ensure 'wheel' group exists"
-  group:
-    name: wheel
-    state: present
-  become: true
+- name: Create local SSH key output directory
+  ansible.builtin.file:
+    path: "{{ ansible_ssh_key_dir }}"
+    state: directory
+    mode: "0700"
+  delegate_to: localhost
+  run_once: true
+  when: not remove_user | default(false)
 
-- name: "Allow 'wheel' group passwordless sudo"
-  lineinfile:
-    dest: /etc/sudoers
-    state: present
-    regexp: "^%wheel"
-    line: "%wheel ALL=(ALL) NOPASSWD: ALL"
-    validate: "visudo -cf %s"
-  become: true
+- name: Generate SSH key pair
+  ansible.builtin.openssh_keypair:
+    path: "{{ ansible_ssh_key_dir }}/{{ ansible_svc_user }}"
+    type: rsa
+    size: 2048
+  delegate_to: localhost
+  run_once: true
+  when: not remove_user | default(false)
 
-- name: "Add user '{{ ansible_svc_user }}' to 'wheel' group"
-  user: name="{{ ansible_svc_user }}"
-    groups=wheel
-    append=yes
-    state=present
-    createhome=yes
-  become: true
-
-- name: "Authorize SSH keys for {{ ansible_svc_user }}"
-  ansible.posix.authorized_key:
-    user: "{{ ansible_svc_user }}"
+- name: Ensure Ansible service user exists
+  ansible.builtin.user:
+    name: "{{ ansible_svc_user }}"
+    home: "/home/{{ ansible_svc_user }}"
     state: present
-    key: "{{ item }}"
-  with_file:
-    - "{{ ansible_ssh_service_public_key_file }}"
-    - "{{ ansible_ssh_public_key_file }}"
+    shell: /bin/bash
   become: true
+  when: not remove_user | default(false)
+
+- name: Ensure remote SSH directory exists
+  file:
+    path: "/home/{{ ansible_svc_user }}/.ssh"
+    state: directory
+    mode: "0700"
+    owner: "{{ ansible_svc_user }}"
+    group: "{{ ansible_svc_user }}"
+  become: true
+  when: not remove_user | default(false)
+
+- name: Copy public key to remote authorized_keys
+  ansible.builtin.copy:
+    src: "{{ ansible_ssh_key_dir }}/{{ ansible_svc_user }}.pub"
+    dest: "/home/{{ ansible_svc_user }}/.ssh/authorized_keys"
+    mode: "0600"
+    owner: "{{ ansible_svc_user }}"
+    group: "{{ ansible_svc_user }}"
+  become: true
+  when: not remove_user | default(false)
+
+- name: Add user to sudoers
+  ansible.builtin.template:
+    src: sudoers.j2
+    dest: "/etc/sudoers.d/{{ ansible_svc_user }}"
+    mode: "0440"
+  become: true
+  when: not remove_user | default(false)
+
+- name: "[DEBUG] Generated SSH keypair for {{ ansible_svc_user }}"
+  ansible.builtin.debug:
+    msg: "SSH keys for {{ ansible_svc_user }} saved on localhost to {{ ansible_ssh_key_dir }}/{{ ansible_svc_user }}"
