@@ -128,6 +128,28 @@ PY_VER_TUPLE = platform.python_version_tuple()
 ## Dynamically set Python version
 DEFAULT_PYTHON: str = f"{PY_VER_TUPLE[0]}.{PY_VER_TUPLE[1]}"
 
+@nox.session(python=[DEFAULT_PYTHON], name="setup-mkdocs", tags=["mkdocs", "docs"])
+def run_mkdocs_venv_setup(session: nox.Session):
+    DOCS_REQUIREMENTS_FILE: Path = Path("docs/requirements.txt")
+    DOCS_VENV_PATH: Path = Path(".mkdocs-venv")
+    
+    if not DOCS_REQUIREMENTS_FILE.exists():
+        raise FileNotFoundError(f"Could not find mkdocs requirements file at '{DOCS_REQUIREMENTS_FILE}'.")
+    
+    # session.install("-r", f"{DOCS_REQUIREMENTS_FILE}")
+    session.install("virtualenv")
+    
+    log.info(f"Creating MKDocs virtual environment at path: {DOCS_VENV_PATH}")
+    try:
+        session.run("virtualenv", f"{DOCS_VENV_PATH}")
+    except Exception as exc:
+        msg = Exception(f"({type(exc)}) Unhandled exception creating mkdocs virtual environment. Details: {exc}")
+        log.error(msg)
+        
+        raise exc
+    
+    log.warning(f"!!! [MANUAL STEP REQUIRED]\nMKDocs virtual environment created at path '{DOCS_VENV_PATH}'. Activate with '. {DOCS_VENV_PATH}/bin/activate', then install requirements  with 'pip install -r docs/requirements.txt'.")
+
 @nox.session(python=[DEFAULT_PYTHON], name="lint", tags=["style"])
 @nox.parametrize("lint_paths", [LINT_PATHS])
 def run_linter(session: nox.Session, lint_paths: list[Path]):
