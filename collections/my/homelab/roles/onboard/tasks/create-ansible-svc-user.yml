@@ -1,4 +1,11 @@
 ---
+- name: Check if Ansible service account SSH keys exist
+  ansible.builtin.stat:
+    path: "{{ ansible_ssh_key_dir }}/{{ ansible_svc_user }}"
+  delegate_to: localhost
+  register: ssh_key_status
+  run_once: true
+
 - name: Create local SSH key output directory
   ansible.builtin.file:
     path: "{{ ansible_ssh_key_dir }}"
@@ -15,7 +22,7 @@
     size: 2048
   delegate_to: localhost
   run_once: true
-  when: not remove_user | default(false)
+  when: not remove_user | default(false) and ssh_key_status.stat.exists == false
 
 - name: Ensure Ansible service user exists
   ansible.builtin.user:

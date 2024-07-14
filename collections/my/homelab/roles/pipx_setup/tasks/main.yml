@@ -1,14 +1,15 @@
 ---
-# tasks file for python_setup
+# tasks file for pipx_setup
 - name: "Gather the package facts"
   ansible.builtin.package_facts:
     manager: auto
 
+- name: "[DEBUG] Pipx install check"
+  ansible.builtin.debug:
+    msg: "Found pipx in packages: {{ 'pipx' in ansible_facts.packages }}"
+
 - name: "Include pipx install tasks"
   ansible.builtin.include_tasks: install-pipx.yml
 
-- name: "Include virtualenv install tasks"
-  ansible.builtin.include_tasks: install-virtualenv.yml
-
-- name: "Include pipx install tasks"
+- name: "Include pipx app install tasks"
   ansible.builtin.include_tasks: install-pipx-apps.yml

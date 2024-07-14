@@ -1,0 +1,13 @@
+---
+- name: "Install pipx & common apps"
+  hosts: all
+
+  vars:
+    install_apps: false
+    python_bin: "/home/{{ remote_host_user }}/.pyenv/shims/python"
+    pipx_bin: "/home/{{ remote_host_user }}/.pyenv/bin/pyenv exec pipx"
+
+  tasks:
+    - name: "Call homelab collection's pipx install role"
+      ansible.builtin.import_role:
+        name: my.homelab.pipx_setup

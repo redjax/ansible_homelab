@@ -1,5 +1,5 @@
 ---
-- name: "[All OS Types] [Pyenv Setup] Gather the package facts"
+- name: "Gather the package facts"
   ansible.builtin.package_facts:
     manager: auto
 
@@ -7,18 +7,18 @@
   ansible.builtin.debug:
     msg: "Found pyenv in packages: {{ 'pyenv' in ansible_facts.packages }}"
 
-- name: "[All OS Types] [Pyenv Setup] Check if dir exists: /home/{{ remote_host_user }}/.pyenv"
-  stat:
+- name: "[DEBUG] Print pyenv path"
+  ansible.builtin.debug:
+    msg: "Pyenv path: /home/{{ remote_host_user }}/.pyenv"
+
+- name: "Check if pyenv dir exists"
+  ansible.builtin.stat:
     path: "/home/{{ remote_host_user }}/.pyenv"
   become: true
   register: pyenv_dir
 
-- name: "[DEBUG] .pyenv directory exist check"
-  ansible.builtin.debug:
-    msg: "Pyenv directory '/home/{{ remote_host_user }}/.pyenv' exists: {{ pyenv_dir }}"
-
-- name: "[All OS Types] [Pyenv Setup] Check if dir exists: /home/{{ remote_host_user }}/.pyenv/{{ pyenv_python_ver }}"
-  stat:
+- name: "Check if Python version already installed with pyenv (directory exists in pyenv path)"
+  ansible.builtin.stat:
     path: "/home/{{ remote_host_user }}/.pyenv/versions/{{ pyenv_python_ver }}"
   become: true
   register: pyenv_ver_exists
@@ -27,12 +27,16 @@
   ansible.builtin.debug:
     msg: "Pyenv Python path '{/home/{{ remote_host_user }}/.pyenv/{{ pyenv_python_ver }}}' exists: {{ pyenv_ver_exists }}"
 
-- include_tasks: install-dependencies.yml
+- name: "Include pyenv dependency install tasks"
+  ansible.builtin.include_tasks: install-dependencies.yml
   when: (ansible_facts['os_family'] == "Debian") and ("pyenv" not in ansible_facts.packages)
 
-- include_tasks: install-pyenv.yml
+- name: "Include pyenv install tasks"
+  ansible.builtin.include_tasks: install-pyenv.yml
   when: ("pyenv" not in ansible_facts.packages) and (not pyenv_dir.stat.exists)
 
-- include_tasks: configure-env.yml
+- name: "Include pyenv configure tasks"
+  ansible.builtin.include_tasks: configure-env.yml
 
-- include_tasks: pyenv-global-python.yml
+- name: "Include pyenv tasks to set global Python version"
+  ansible.builtin.include_tasks: pyenv-global-python.yml

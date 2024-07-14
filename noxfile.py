@@ -16,7 +16,7 @@ nox.options.error_on_external_run = False
 nox.options.error_on_missing_interpreters = False
 # nox.options.report = True
 
-nox.options.sessions = ["lint", "build-my-collections", "install-ansible-requirements"]
+nox.options.sessions = ["build-my-collections", "install-ansible-requirements"]
 
 ## Detect container env, or default to False
 if "CONTAINER_ENV" in os.environ:
@@ -281,6 +281,20 @@ def ansible_playbook_update_systems(session: nox.Session):
         session.run("ansible-playbook", "-i", "inventories/homelab/inventory.yml", "--limit", "autoReboot", "plays/maint/update-system.yml")
     except Exception as exc:
         msg = Exception(f"({type(exc)}) Unhandled exception running system update playbook. Details: {exc}")
+        log.error(msg)
+        
+        raise exc
+    
+@nox.session(python=DEFAULT_PYTHON, name="onboard", tags=["ansible", "onboard"])
+def run_ansible_onboarding(session: nox.Session):
+    session.install("ansible-core")
+    
+    log.info("Running Ansible onboarding playbook")
+    
+    try:
+        session.run("ansible-playbook", "-i", "inventories/onboard/inventory.yml", "--limit", "onboard", "plays/onboard/create-ansible-svc-user.yml")
+    except Exception as exc:
+        msg  = Exception(f"Unhandled exception running Ansible onboarding playbook. Details: {exc}")
         log.error(msg)
         
         raise exc

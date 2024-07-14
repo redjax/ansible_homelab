@@ -1,0 +1,15 @@
+---
+- name: "[DEBUG] Print apps to be installed by pipx"
+  ansible.builtin.debug:
+    msg: "{{ pipx_install_apps }}"
+
+- name: "Install pipx apps"
+  ansible.builtin.shell: |
+    {{ pipx_bin }} install {{ item }}
+  args:
+    executable: /bin/bash
+  with_items: "{{ pipx_install_apps }}"
+  become_user: "{{ remote_host_user }}"
+  become: true
+  register: pipx_app_install
+  changed_when: pipx_app_install.rc != 0
