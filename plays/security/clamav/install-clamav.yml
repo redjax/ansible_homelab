@@ -1,5 +1,5 @@
 ---
-- name: "Disable firewall"
+- name: "Install ClamAV & do base setup"
   hosts: all
 
   tasks:
@@ -8,7 +8,6 @@
         name: my.homelab.base_setup
         tasks_from: gather-facts.yml
 
-    - name: "Include homelab collection's firewall disable role"
+    - name: "Include homelab collection's clamav role"
       ansible.builtin.import_role:
-        name: my.homelab.security.firewall
-        tasks_from: disable-firewall.yml
+        name: my.homelab.security.clamav

@@ -10,5 +10,5 @@
 
     - name: "Include homelab collection's firewall enable role"
       ansible.builtin.import_role:
-        name: my.homelab.firewall
+        name: my.homelab.security.firewall
         tasks_from: disable-firewall.yml

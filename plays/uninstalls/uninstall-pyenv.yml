@@ -5,5 +5,5 @@
   tasks:
     - name: "Call homelab collection's pyenv role's uninstall task"
       ansible.builtin.import_role:
-        name: my.homelab.pyenv_setup
+        name: my.homelab.python.pyenv
         tasks_from: uninstall-pyenv.yml

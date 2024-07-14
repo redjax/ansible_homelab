@@ -3,21 +3,26 @@
   hosts: all
 
   tasks:
+    - name: "Gather the package facts"
+      ansible.builtin.import_role:
+        name: my.homelab.base_setup
+        tasks_from: gather-facts.yml
+
     - name: "Include homelab collection's clamav role"
       ansible.builtin.import_role:
-        name: my.homelab.clamav
+        name: my.homelab.security.clamav
 
     - name: "Include homelab collection's clamav.configure_clamav role"
       ansible.builtin.import_role:
-        name: my.homelab.clamav
+        name: my.homelab.security.clamav
         tasks_from: configure_clamav.yml
 
     - name: "Include homelab collection's clamav.configure_scans role"
       ansible.builtin.import_role:
-        name: my.homelab.clamav
+        name: my.homelab.security.clamav
         tasks_from: configure_scans.yml
 
     - name: "Include homelab collection's clamav.restart_clamav_systemd role"
       ansible.builtin.import_role:
-        name: my.homelab.clamav
+        name: my.homelab.security.clamav
         tasks_from: restart_clamav_systemd.yml

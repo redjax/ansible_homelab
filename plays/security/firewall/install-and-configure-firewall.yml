@@ -10,15 +10,15 @@
 
     - name: "Include homelab collection's firewall install role"
       ansible.builtin.import_role:
-        name: my.homelab.firewall
+        name: my.homelab.security.firewall
         tasks_from: install-firewall.yml
 
     - name: "Include homelab collection's firewall install role"
       ansible.builtin.import_role:
-        name: my.homelab.firewall
+        name: my.homelab.security.firewall
         tasks_from: configure-firewall.yml
 
     - name: "Include homelab collection's firewall service restart role"
       ansible.builtin.import_role:
-        name: my.homelab.firewall
+        name: my.homelab.security.firewall
         tasks_from: enable-firewall.yml

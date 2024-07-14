@@ -1,8 +1,0 @@
----
-- name: "Install ClamAV & do base setup"
-  hosts: all
-
-  tasks:
-    - name: "Include homelab collection's clamav role"
-      ansible.builtin.import_role:
-        name: my.homelab.clamav

@@ -10,4 +10,4 @@
 
     - name: "Include homelab collection's firewall install role"
       ansible.builtin.import_role:
-        name: my.homelab.firewall
+        name: my.homelab.security.firewall

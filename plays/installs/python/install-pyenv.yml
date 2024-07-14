@@ -5,4 +5,4 @@
   tasks:
     - name: "Call homelab collection's pyenv setup role"
       ansible.builtin.import_role:
-        name: my.homelab.pyenv_setup
+        name: my.homelab.python.pyenv

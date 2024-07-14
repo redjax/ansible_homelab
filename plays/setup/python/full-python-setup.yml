@@ -18,12 +18,12 @@
   tasks:
     - name: "Call homelab collection's pyenv_setup role"
       ansible.builtin.import_role:
-        name: my.homelab.pyenv_setup
+        name: my.homelab.python.pyenv
 
     - name: "Call homelab collection's pipx_setup role"
       ansible.builtin.import_role:
-        name: my.homelab.pipx_setup
+        name: my.homelab.python.pipx
 
     - name: "Call homelab collection's python_setup role"
       ansible.builtin.import_role:
-        name: my.homelab.python_setup
+        name: my.homelab.python.python_env
