@@ -1,0 +1,12 @@
+---
+- name: "Reboot remote system if required after updates"
+  hosts: all
+
+  vars:
+    reboot_if_required: true
+
+  tasks:
+    - name: "Import homelab collection's update_system.reboot-debian-for-updates.yml role tasks"
+      ansible.builtin.import_role:
+        name: my.homelab.update_system
+        tasks_from: reboot-for-updates.yml

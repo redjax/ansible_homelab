@@ -4,6 +4,7 @@
     update_cache: true
     update_only: true
   become: true
+  when: ansible_facts.os_family == "RedHat"
 
 - name: "Upgrade all packages"
   ansible.builtin.dnf:
@@ -11,3 +12,4 @@
     state: latest
     autoremove: true
   become: true
+  when: ansible_facts.os_family == "RedHat"
