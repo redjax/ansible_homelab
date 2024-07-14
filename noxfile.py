@@ -32,6 +32,12 @@ COLLECTION_BUILD_OUTPUT_PATH: Path = Path("./build")
 ## Set paths to lint with the lint session
 LINT_PATHS: list[str] = []
 
+## MKDocs
+DOCS_REQUIREMENTS_FILE: Path = Path("docs/requirements.txt")
+DOCS_VENV_PATH: Path = Path(".mkdocs-venv")
+MKDOCS_DEV_PORT: int = 8000
+MKDOCS_DEV_ADDR: str = "0.0.0.0"
+
 def setup_nox_logging(
     level_name: str = "DEBUG", disable_loggers: list[str] | None = []
 ) -> None:
@@ -83,7 +89,6 @@ def setup_nox_logging(
 setup_nox_logging(level_name="DEBUG", disable_loggers=[])
 log = logging.getLogger("nox")
 
-
 @dataclass
 class CustomAnsibleCollection:
     """Define a custom Ansible collection for Nox sessions.
@@ -129,26 +134,61 @@ PY_VER_TUPLE = platform.python_version_tuple()
 DEFAULT_PYTHON: str = f"{PY_VER_TUPLE[0]}.{PY_VER_TUPLE[1]}"
 
 @nox.session(python=[DEFAULT_PYTHON], name="setup-mkdocs", tags=["mkdocs", "docs"])
-def run_mkdocs_venv_setup(session: nox.Session):
-    DOCS_REQUIREMENTS_FILE: Path = Path("docs/requirements.txt")
-    DOCS_VENV_PATH: Path = Path(".mkdocs-venv")
-    
-    if not DOCS_REQUIREMENTS_FILE.exists():
-        raise FileNotFoundError(f"Could not find mkdocs requirements file at '{DOCS_REQUIREMENTS_FILE}'.")
+@nox.parametrize("docs_requirements_file", [DOCS_REQUIREMENTS_FILE])
+@nox.parametrize("docs_venv_path", [DOCS_VENV_PATH])
+def run_mkdocs_venv_setup(session: nox.Session, docs_requirements_file: t.Union[str, Path], docs_venv_path: t.Union[str, Path]):
+    if not docs_requirements_file.exists():
+        raise FileNotFoundError(f"Could not find mkdocs requirements file at '{docs_requirements_file}'.")
     
     # session.install("-r", f"{DOCS_REQUIREMENTS_FILE}")
     session.install("virtualenv")
     
-    log.info(f"Creating MKDocs virtual environment at path: {DOCS_VENV_PATH}")
+    log.info(f"Creating MKDocs virtual environment at path: {docs_venv_path}")
     try:
-        session.run("virtualenv", f"{DOCS_VENV_PATH}")
+        session.run("virtualenv", f"{docs_venv_path}")
     except Exception as exc:
         msg = Exception(f"({type(exc)}) Unhandled exception creating mkdocs virtual environment. Details: {exc}")
         log.error(msg)
         
         raise exc
     
-    log.warning(f"!!! [MANUAL STEP REQUIRED]\nMKDocs virtual environment created at path '{DOCS_VENV_PATH}'. Activate with '. {DOCS_VENV_PATH}/bin/activate', then install requirements  with 'pip install -r docs/requirements.txt'.")
+    log.warning(f"!!! [MANUAL STEP REQUIRED]\nMKDocs virtual environment created at path '{docs_venv_path}'. Activate with '. {docs_venv_path}/bin/activate', then install requirements  with 'pip install -r docs/requirements.txt'.")
+
+@nox.session(python=[DEFAULT_PYTHON], name="build-mkdocs", tags=["mkdocs", "docs", "build"])
+@nox.parametrize("docs_requirements_file", [DOCS_REQUIREMENTS_FILE])
+def run_mkdocs_build(session: nox.Session, docs_requirements_file: t.Union[str, Path]):
+    if not docs_requirements_file.exists():
+        raise FileNotFoundError(f"Could not find mkdocs requirements file at path: '{docs_requirements_file}'")
+
+    session.install("-r", f"{docs_requirements_file}")
+    
+    log.info("Building MKDocs site")
+    try:
+        session.run("mkdocs", "build")
+    except Exception as exc:
+        msg = Exception(f"({type(exc)}) Unhandled exception building MKDocs site. Details: {exc}")
+        log.error(msg)
+        
+        raise exc
+
+@nox.session(python=[DEFAULT_PYTHON], name="serve-mkdocs", tags=["mkdocs", "docs", "serve"])
+@nox.parametrize("docs_requirements_file", [DOCS_REQUIREMENTS_FILE])
+@nox.parametrize("mkdocs_dev_port", [MKDOCS_DEV_PORT])
+@nox.parametrize("mkdocs_dev_addr", [MKDOCS_DEV_ADDR])
+def run_mkdocs_serve(session: nox.Session, docs_requirements_file: t.Union[str, Path], mkdocs_dev_addr: str, mkdocs_dev_port: int):
+    if not docs_requirements_file.exists():
+        raise FileNotFoundError(f"Could not find mkdocs requirements file at path: '{docs_requirements_file}'")
+
+    session.install("-r", f"{docs_requirements_file}")
+    
+    log.info("Serving MKDocs site")
+    try:
+        session.run("mkdocs", "serve", "--dev-addr", f"{mkdocs_dev_addr}:{mkdocs_dev_port}")
+    except Exception as exc:
+        msg = Exception(f"({type(exc)}) Unhandled exception serving MKDocs site. Details: {exc}")
+        log.error(msg)
+        
+        raise exc
 
 @nox.session(python=[DEFAULT_PYTHON], name="lint", tags=["style"])
 @nox.parametrize("lint_paths", [LINT_PATHS])
