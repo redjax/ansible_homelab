@@ -1,0 +1,13 @@
+---
+- name: "Install & configure git"
+  hosts: all
+
+  vars:
+    git_default_branch: "{{ git_default_branch_name }}"
+    git_user: "{{ git_user_name }}"
+    git_email: "{{ git_user_email }}"
+
+  tasks:
+    - name: "Call homelab collection's configure_git role"
+      ansible.builtin.import_role:
+        name: my.homelab.configure_git

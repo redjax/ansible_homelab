@@ -1,0 +1,9 @@
+---
+- name: "Ansible debug uptime"
+  hosts: all
+
+  tasks:
+    - name: "Call homelab collection's update-system.check-uptime role"
+      ansible.builtin.import_role:
+        name: my.homelab.update_system
+        tasks_from: check-uptime.yml

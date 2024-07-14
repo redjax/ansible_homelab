@@ -1,0 +1,4 @@
+---
+- name: "[NotImplemented]"
+  ansible.builtin.debug:
+    msg: "RedHat package install tasks not implemented yet."

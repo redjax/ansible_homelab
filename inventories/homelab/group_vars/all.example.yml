@@ -54,6 +54,23 @@ git_user_email: ""
 
 dns_ns: "xxx.xxx.xxx.xxx"
 
+common_debian_packages:
+  [
+    "btop",
+    "curl",
+    "dos2unix",
+    "git",
+    "htop",
+    "ncdu",
+    "neovim",
+    "tmux",
+    "unzip",
+    "wget",
+    "zip",
+  ]
+
+common_redhat_packages: []
+
 ##########
 # Python #
 ##########

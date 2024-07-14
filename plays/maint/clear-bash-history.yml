@@ -1,0 +1,9 @@
+---
+- name: "Clear bash history"
+  hosts: all
+
+  tasks:
+    - name: "Include homelab collection's cron.clear_bash_history role"
+      ansible.builtin.import_role:
+        name: my.homelab.cron
+        tasks_from: clear-bash-history.yml

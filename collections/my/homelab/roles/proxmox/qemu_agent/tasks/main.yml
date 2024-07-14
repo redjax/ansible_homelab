@@ -1,0 +1,10 @@
+---
+# tasks file for proxmox_qemu_agent
+
+- name: "Include tasks to install qemu guest agent."
+  include_tasks: install_qemu_guest_agent.yml
+  when: ansible_facts['os_family'] == "Debian"
+
+- name: "Include tasks to restart qemu guest agent systemd service"
+  ansible.builtin.include_tasks: restart_qemu_guest_agent_service.yml
+  # when: ansible_facts['os_family'] == "Debian"

@@ -3,4 +3,4 @@
   ansible.builtin.shell: "uptime"
   register: Uptime
 
-- ansible.builtin.debug: var=Uptime
+- ansible.builtin.debug: var=Uptime.stdout

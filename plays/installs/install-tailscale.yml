@@ -1,0 +1,7 @@
+---
+- name: "Install Tailscale"
+  hosts: all
+
+  tasks:
+    - ansible.builtin.import_role:
+        name: my.homelab.tailscale

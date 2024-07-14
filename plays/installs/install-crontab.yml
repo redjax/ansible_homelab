@@ -1,0 +1,13 @@
+---
+- name: "Install crontab"
+  hosts: all
+
+  tasks:
+    - name: "Gather the package facts"
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: "Include homelab collection's cron.install-crontab role"
+      ansible.builtin.import_role:
+        name: my.homelab.cron
+        tasks_from: install-cron.yml

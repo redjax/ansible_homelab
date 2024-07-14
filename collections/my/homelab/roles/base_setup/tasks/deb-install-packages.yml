@@ -1,0 +1,18 @@
+---
+- name: Update and upgrade apt packages
+  ansible.builtin.apt:
+    ## Do not upgrade packages, only update cache
+    upgrade: false
+    update_cache: true
+    ## One day
+    cache_valid_time: 86400
+  become: true
+  when: ansible_facts.os_family == "Debian"
+
+- name: "Install required packages"
+  ansible.builtin.apt:
+    state: present
+    name: "{{ item }}"
+  with_items: "{{ debian_pkgs }}"
+  become: true
+  when: ansible_facts.os_family == "Debian"

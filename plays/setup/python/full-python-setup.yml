@@ -6,8 +6,6 @@
   hosts: all
 
   vars:
-    ## If 'true', installs apps in pipx_apps_list with pipx
-    install_pipx_apps: false
     ## List of apps to install with pipx
     pipx_apps_list: [pdm, ruff, nox]
     ## Path to Python binary

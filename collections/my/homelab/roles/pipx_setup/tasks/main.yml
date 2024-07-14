@@ -10,6 +10,3 @@
 
 - name: "Include pipx install tasks"
   ansible.builtin.include_tasks: install-pipx.yml
-
-- name: "Include pipx app install tasks"
-  ansible.builtin.include_tasks: install-pipx-apps.yml

@@ -1,0 +1,8 @@
+---
+- name: "Restart Qemu agent service on Proxmox guests"
+  hosts: all
+
+  tasks:
+    - ansible.builtin.import_role:
+        name: my.homelab.proxmox.qemu_agent
+        tasks_from: restart_qemu_guest_agent_service.yml

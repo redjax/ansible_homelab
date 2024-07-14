@@ -3,7 +3,6 @@
   hosts: all
 
   vars:
-    install_pipx_apps: false
     python_bin: "/home/{{ remote_host_user }}/.pyenv/shims/python"
     pipx_bin: "/home/{{ remote_host_user }}/.pyenv/bin/pyenv exec pipx"
     pipx_apps_list: [pdm, ruff, nox]
@@ -12,3 +11,9 @@
     - name: "Call homelab collection's pipx install role"
       ansible.builtin.import_role:
         name: my.homelab.pipx_setup
+
+    ## If you don't want to install the "base" pipx app collection, comment this task out
+    - name: "Call homelab collection's pipx role that installs common packages"
+      ansible.builtin.import_role:
+        name: my.homelab.pipx_setup
+        tasks_from: install-pipx-apps.yml

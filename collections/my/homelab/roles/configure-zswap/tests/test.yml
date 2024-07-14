@@ -1,0 +1,5 @@
+---
+- hosts: localhost
+  remote_host_user: root
+  roles:
+    - enable_zswap

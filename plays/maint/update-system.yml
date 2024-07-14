@@ -2,6 +2,10 @@
 - name: "Run system updates"
   hosts: all
 
+  vars:
+    ## If 'true', systems will reboot after updates if required by updates
+    reboot_if_necessary: false
+
   tasks:
     - name: "Call homelab collection's update-system role"
       ansible.builtin.import_role:

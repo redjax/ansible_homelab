@@ -1,0 +1,14 @@
+---
+- name: "Setup common ClamAV scans"
+  hosts: all
+
+  tasks:
+    - name: "Include homelab collection's clamav.configure_scans role"
+      ansible.builtin.import_role:
+        name: my.homelab.clamav
+        tasks_from: configure_scans.yml
+
+    - name: "Include homelab collection's clamav.restart_clamav_systemd role"
+      ansible.builtin.import_role:
+        name: my.homelab.clamav
+        tasks_from: restart_clamav_systemd.yml
