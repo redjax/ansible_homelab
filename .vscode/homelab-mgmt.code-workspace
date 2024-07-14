@@ -20,5 +20,8 @@
 			"path": "../collections/my/homelab/roles",
 			"name": "my.homelab Collection Roles"
 		}
-	]
+	],
+	"settings": {
+		"ansible.python.interpreterPath": "/home/jack/homelab-mgmt/.venv/bin/python"
+	}
 }
