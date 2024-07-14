@@ -7,6 +7,7 @@ import os
 from pathlib import Path
 import platform
 import typing as t
+import shutil
 
 import nox
 
@@ -189,6 +190,46 @@ def run_mkdocs_serve(session: nox.Session, docs_requirements_file: t.Union[str, 
         log.error(msg)
         
         raise exc
+
+@nox.session(python=[DEFAULT_PYTHON], name="update-pip-requirements", tags=["requirements", "update"])
+def run_pip_update_all(session: nox.Session):
+    if not Path("requirements.txt").exists():
+        raise FileNotFoundError(f"Could not find requirements file at path 'requirements.txt'")
+    
+    # session.install("-r", "requirements.txt")
+    
+    log.info("Updating all pip requirements")
+    try:
+        session.run("pip", "install", "--ignore-installed", "--upgrade", "--force-reinstall", "-r", "requirements.txt")
+    except Exception as exc:
+        msg = Exception(f"({type(exc)}) Unhandled exception upgrading pip requirements with pip-upgrader. Details: {exc}")
+        log.error(msg)
+        
+        raise exc
+    
+    log.info("Re-exporting pip requirements")
+    try:
+        ## Capture pip freeze lines
+        updated_requirements = session.run("pip", "freeze", silent=True).splitlines()
+        
+        ## Manually write them to requirements.txt file
+        with open("requirements.new.txt", "w") as requirements_file:
+            requirements_file.write("\n".join(updated_requirements))
+    except Exception as exc:
+        msg = Exception(f"({type(exc)}) Unhandled exception saving new pip requirements. Details: {exc}")
+        log.error(msg)
+        
+        raise exc
+    
+    log.info("Replacing existing requirements.txt file with contents of requirements.new.txt")
+    try:
+        shutil.move("requirements.new.txt", "requirements.txt")
+    except Exception as exc:
+        msg = Exception(f"({type(exc)}) Unhandled exception overwriting requirements.txt file. Details: {exc}")
+        log.error(msg)
+        
+        raise exc
+    
 
 @nox.session(python=[DEFAULT_PYTHON], name="lint", tags=["style"])
 @nox.parametrize("lint_paths", [LINT_PATHS])
