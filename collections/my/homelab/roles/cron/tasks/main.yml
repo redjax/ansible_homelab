@@ -1,4 +1,8 @@
 ---
+- name: "Gather the package facts"
+  ansible.builtin.package_facts:
+    manager: auto
+
 # tasks file for configure/configure-cron
 - name: "Check if Cron is installed"
   ansible.builtin.include_tasks: check-cron-installed.yml
