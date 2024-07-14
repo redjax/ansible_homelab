@@ -1,2 +1,18 @@
 ---
 # defaults file for base_setup
+debian_pkgs:
+  [
+    "btop",
+    "curl",
+    "dos2unix",
+    "git",
+    "htop",
+    "ncdu",
+    "neovim",
+    "tmux",
+    "unzip",
+    "wget",
+    "zip",
+  ]
+
+redhat_pkgs: []

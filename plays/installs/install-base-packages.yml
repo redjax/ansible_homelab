@@ -1,0 +1,21 @@
+---
+- name: "Install common packages across all Ansible-managed devices."
+  hosts: all
+
+  vars:
+    debian_pkgs: "{{ common_debian_packages }}"
+
+    redhat_pkgs: "{{ common_redhat_packages }}"
+
+  tasks:
+    - name: "Call homelab collection's base_setup.deb-install-packages"
+      ansible.builtin.import_role:
+        name: my.homelab.base_setup
+        tasks_from: deb-install-packages.yml
+      when: ansible_facts.os_family == "Debian"
+
+    - name: "Call homelab collections' base_setup.rpm-install-packages"
+      ansible.builtin.import_role:
+        name: my.homelab.base_setup
+        tasks_from: rpm-install-packages.yml
+      when: ansible_facts.os_family == "RedHat"

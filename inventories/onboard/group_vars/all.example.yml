@@ -11,3 +11,24 @@ ansible_ssh_public_key_file: "/home/$USER/.ssh/id_rsa.pub"
 ansible_ssh_key_dir: "/home/$USER/ansible_ssh"
 
 ansible_ssh_service_public_key_file: "{{ ansible_ssh_key_dir }}/{{ ansible_svc_user }}.pub"
+
+##########
+# System #
+##########
+
+common_debian_packages:
+  [
+    "btop",
+    "curl",
+    "dos2unix",
+    "git",
+    "htop",
+    "ncdu",
+    "neovim",
+    "tmux",
+    "unzip",
+    "wget",
+    "zip",
+  ]
+
+common_redhat_packages: []
