@@ -1,0 +1,9 @@
+---
+- name: "Update Tailscale app"
+  hosts: all
+
+  tasks:
+    - name: "Include homelab collection's tailscale.update-tailscale role"
+      ansible.builtin.import_role:
+        name: my.homelab.tailscale
+        tasks_from: update-tailscale.yml

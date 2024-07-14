@@ -1,0 +1,7 @@
+---
+- name: "Add Tailscale GPG key"
+  apt_key:
+    url: "https://pkgs.tailscale.com/stable/{{ ansible_distribution | lower }}/{{ ansible_distribution_release | lower }}.gpg"
+    state: present
+  become: true
+  when: ansible_facts['os_family'] == "Debian"

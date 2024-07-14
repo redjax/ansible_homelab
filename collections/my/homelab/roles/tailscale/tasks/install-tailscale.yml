@@ -1,0 +1,8 @@
+---
+- name: "Install Tailscale"
+  apt:
+    name: tailscale
+    state: present
+    update_cache: yes
+  become: true
+  when: ansible_facts['os_family'] == "Debian"
