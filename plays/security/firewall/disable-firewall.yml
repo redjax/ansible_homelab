@@ -1,0 +1,14 @@
+---
+- name: "Disable firewall"
+  hosts: all
+
+  tasks:
+    - name: "Gather the package facts"
+      ansible.builtin.import_role:
+        name: my.homelab.base_setup
+        tasks_from: gather-facts.yml
+
+    - name: "Include homelab collection's firewall disable role"
+      ansible.builtin.import_role:
+        name: my.homelab.firewall
+        tasks_from: disable-firewall.yml

@@ -1,0 +1,14 @@
+---
+- name: Install ufw if not installed
+  apt:
+    name: ufw
+    state: present
+  become: true
+  when: (ansible_facts.os_family == "Debian") and ("ufw" not in ansible_facts.packages)
+
+- name: Install firewalld if not installed
+  yum:
+    name: firewalld
+    state: present
+  become: true
+  when: (ansible_os_family == "Redhat") and ("firewalld" not in ansible_facts.packages)
