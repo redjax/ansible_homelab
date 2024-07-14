@@ -10,4 +10,4 @@
   tasks:
     - name: "Call homelab collection's configure_git role"
       ansible.builtin.import_role:
-        name: my.homelab.configure_git
+        name: my.homelab.git
