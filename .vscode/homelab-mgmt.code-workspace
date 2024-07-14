@@ -5,6 +5,10 @@
 			"name": "Git Root"
 		},
 		{
+			"path": "../docs/",
+			"name": "Repo Docs"
+		},
+		{
 			"path": "../collections",
 			"name": "Ansible Collections"
 		},
