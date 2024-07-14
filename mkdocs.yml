@@ -1,6 +1,6 @@
 site_name: Ansible Homelab
 site_description: Documentation for my homelab's Ansible management.
-# site_url: https://red-utils.readthedocs.io/en/latest/
+site_url: https://ansible-homelab.readthedocs.io/en/latest/
 
 repo_name: redjax/ansible_homelab
 repo_url: https://github.com/redjax/ansible_homelab
