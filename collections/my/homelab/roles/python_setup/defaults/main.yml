@@ -1,19 +1,4 @@
 ---
 # defaults file for python_setup
-pyenv_depends:
-  [
-    git,
-    gcc,
-    make,
-    openssl,
-    libssl-dev,
-    libbz2-dev,
-    libreadline-dev,
-    libsqlite3-dev,
-    zlib1g-dev,
-    libncursesw5-dev,
-    libgdbm-dev,
-    libc6-dev,
-    zlib1g-dev,
-    libffi-dev,
-  ]
+python_bin: "python3"
+pip_bin: "pip"

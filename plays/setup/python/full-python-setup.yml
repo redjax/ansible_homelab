@@ -1,0 +1,31 @@
+---
+## Runs through all Python environment setup roles
+#  If you only want to run certain roles (i.e. only install pyenv, but not pipx),
+#  use plays in plays/installs/python
+- name: "Install pyenv & configure Python environment"
+  hosts: all
+
+  vars:
+    ## If 'true', installs apps in pipx_apps_list with pipx
+    install_pipx_apps: false
+    ## List of apps to install with pipx
+    pipx_apps_list: [pdm, ruff, nox]
+    ## Path to Python binary
+    python_bin: "/home/{{ remote_host_user }}/.pyenv/shims/python"
+    ## Path to pip binary
+    pip_bin: "/home/{{ remote_host_user }}/.pyenv/shims/pip"
+    ## Path/command to pipx binary
+    pipx_bin: "/home/{{ remote_host_user }}/.pyenv/bin/pyenv exec pipx"
+
+  tasks:
+    - name: "Call homelab collection's pyenv_setup role"
+      ansible.builtin.import_role:
+        name: my.homelab.pyenv_setup
+
+    - name: "Call homelab collection's pipx_setup role"
+      ansible.builtin.import_role:
+        name: my.homelab.pipx_setup
+
+    - name: "Call homelab collection's python_setup role"
+      ansible.builtin.import_role:
+        name: my.homelab.python_setup

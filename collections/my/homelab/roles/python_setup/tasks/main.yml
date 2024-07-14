@@ -4,11 +4,5 @@
   ansible.builtin.package_facts:
     manager: auto
 
-- name: "Include pipx install tasks"
-  ansible.builtin.include_tasks: install-pipx.yml
-
 - name: "Include virtualenv install tasks"
   ansible.builtin.include_tasks: install-virtualenv.yml
-
-- name: "Include pipx install tasks"
-  ansible.builtin.include_tasks: install-pipx-apps.yml

@@ -1,15 +1,10 @@
 ---
-- name: "Install virtualenv in pyenv environment"
+- name: "Install virtualenv in Python environment"
   ansible.builtin.shell: |
-    export PATH="$HOME/.pyenv/bin:$PATH"
-    eval "$(pyenv init --path)"
-    eval "$(pyenv init -)"
-
-    pyenv shell {{ pyenv_python_ver }}
-    pyenv exec pip install virtualenv
+    {{ pip_bin }} install virtualenv
   args:
     executable: /bin/bash
   become_user: "{{ remote_host_user }}"
   become: true
-  register: pyenv_install_virtualenv
-  changed_when: pyenv_install_virtualenv.rc != 0
+  register: pip_install_virtualenv
+  changed_when: pip_install_virtualenv.rc != 0

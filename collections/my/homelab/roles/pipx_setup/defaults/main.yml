@@ -1,6 +1,6 @@
 ---
 # defaults file for pipx_setup
-pipx_install_apps: [pdm, ruff, nox]
+pipx_apps_list: [pdm, ruff, nox]
 pipx_bin: "~/.local/bin/pipx"
 python_bin: "python3"
-install_apps: false
+install_pipx_apps: false

@@ -1,0 +1,22 @@
+---
+## This playbook only runs the Python environment setup role(s).
+#  To run the "full" Python environment setup, use plays/setup/python/full-python-setup.yml
+- name: "Install pyenv & configure Python environment"
+  hosts: all
+
+  vars:
+    ## If 'true', installs apps in pipx_apps_list with pipx
+    install_pipx_apps: false
+    ## List of apps to install with pipx
+    pipx_apps_list: [pdm, ruff, nox]
+    ## Path to Python binary
+    python_bin: "/home/{{ remote_host_user }}/.pyenv/shims/python"
+    ## Path to pip binary
+    pip_bin: "/home/{{ remote_host_user }}/.pyenv/shims/pip"
+    ## Path/command to pipx binary
+    pipx_bin: "/home/{{ remote_host_user }}/.pyenv/bin/pyenv exec pipx"
+
+  tasks:
+    - name: "Call homelab collection's python_setup role"
+      ansible.builtin.import_role:
+        name: my.homelab.python_setup
