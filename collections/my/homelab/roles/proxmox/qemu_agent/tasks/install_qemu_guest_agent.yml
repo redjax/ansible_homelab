@@ -1,0 +1,15 @@
+---
+- name: "Update apt repo and cache"
+  apt:
+    update_cache: yes
+    force_apt_get: yes
+    cache_valid_time: 3600
+  become: true
+  when: ansible_facts.os_family == "Debian"
+
+- name: "Install qemu-guest-agent"
+  apt:
+    name: "qemu-guest-agent"
+    state: present
+  become: true
+  when: ansible_facts.os_family == "Debian"

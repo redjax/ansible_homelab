@@ -1,0 +1,7 @@
+---
+- name: "Install Qemu agent on Proxmox guests"
+  hosts: all
+
+  tasks:
+    - ansible.builtin.import_role:
+        name: my.homelab.proxmox.qemu_agent
