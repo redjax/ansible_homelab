@@ -1,0 +1,22 @@
+---
+# tasks file for enable_zswap
+- name: Enable zswap tweak for improved performance on Raspberry Pi 4+
+  ansible.builtin.include_tasks: enable-zswap-tweak.yml
+  when: ansible_architecture == "aarch64"
+  register: zswap_tweak_applied
+
+- name: Reboot remote
+  ansible.builtin.include_tasks: reboot.yml
+  when: zswap_tweak_applied.rc == 0
+
+- name: Check uptime
+  ansible.builtin.shell: |
+    uptime
+  register: uptime
+  changed_when: Uptime.rc != 0
+  become: true
+  when: (ansible_architecture == "aarch64") and (ansible_distribution == "Ubuntu")
+
+- name: "[DEBUG] Print uptime"
+  ansible.builtin.debug:
+    msg: "{{ uptime.stdout }}"
