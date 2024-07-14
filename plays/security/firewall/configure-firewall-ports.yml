@@ -2,6 +2,11 @@
 - name: "Configure firewall"
   hosts: all
 
+  vars:
+    ufw_allow_tcp_ports: "{{ ufw_tcp_allowed_ports }}"
+    ufw_allow_udp_ports: "{{ ufw_udp_allowed_ports }}"
+    firewalld_allow_ports: "{{ firewalld_allowed_ports }}"
+
   tasks:
     - name: "Gather the package facts"
       ansible.builtin.import_role:

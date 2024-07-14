@@ -5,7 +5,7 @@
     policy: "deny"
     logging: "on"
   become: true
-  when: ansible_os_family == "Debian"
+  when: ansible_facts.os_family == "Debian"
 
 - name: "Enable firewalld"
   service:
@@ -13,4 +13,4 @@
     state: restarted
     enabled: true
   become: true
-  when: ansible_facts['os_family'] == "Redhat"
+  when: ansible_facts.os_family == "Redhat"

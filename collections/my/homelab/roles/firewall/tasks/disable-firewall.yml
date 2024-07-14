@@ -13,4 +13,4 @@
     state: stopped
     enabled: false
   become: true
-  when: ansible_facts['os_family'] == "Redhat"
+  when: ansible_facts.os_family == "Redhat"

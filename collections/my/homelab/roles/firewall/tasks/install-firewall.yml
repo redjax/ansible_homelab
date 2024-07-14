@@ -11,4 +11,4 @@
     name: firewalld
     state: present
   become: true
-  when: (ansible_os_family == "Redhat") and ("firewalld" not in ansible_facts.packages)
+  when: (ansible_facts.os_family == "Redhat") and ("firewalld" not in ansible_facts.packages)
