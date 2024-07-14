@@ -1,0 +1,13 @@
+---
+- name: "Install ClamAV & do base setup"
+  hosts: all
+
+  tasks:
+    - name: "Gather the package facts"
+      ansible.builtin.import_role:
+        name: my.homelab.base_setup
+        tasks_from: gather-facts.yml
+
+    - name: "Include homelab collection's clamav role"
+      ansible.builtin.import_role:
+        name: my.homelab.security.clamav

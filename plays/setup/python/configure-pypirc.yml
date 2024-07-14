@@ -11,4 +11,4 @@
   tasks:
     - name: "Call homelab collection's python_setup role"
       ansible.builtin.import_role:
-        name: my.homelab.configure_pypirc
+        name: my.homelab.python.pypirc

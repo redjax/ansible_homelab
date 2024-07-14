@@ -10,10 +10,10 @@
   tasks:
     - name: "Call homelab collection's pipx install role"
       ansible.builtin.import_role:
-        name: my.homelab.pipx_setup
+        name: my.homelab.python.pipx
 
     ## If you don't want to install the "base" pipx app collection, comment this task out
     - name: "Call homelab collection's pipx role that installs common packages"
       ansible.builtin.import_role:
-        name: my.homelab.pipx_setup
+        name: my.homelab.python.pipx
         tasks_from: install-pipx-apps.yml

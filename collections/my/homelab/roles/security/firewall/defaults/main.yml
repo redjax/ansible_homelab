@@ -1,0 +1,13 @@
+---
+# defaults file for roles/security/install-firewall
+
+## Ex: "22", "80", "443"
+ufw_allow_tcp_ports: []
+ufw_allow_udp_ports: []
+
+## Ex: "22/tcp", "80/tcp", "443/tcp", "5555/udp"
+firewalld_allow_ports: []
+
+ufw_disallow_tcp_ports: []
+ufw_disallow_udp_ports: []
+firewalld_disallow_ports: []

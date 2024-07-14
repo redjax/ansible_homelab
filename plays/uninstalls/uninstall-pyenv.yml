@@ -1,0 +1,9 @@
+---
+- name: "Uninstall pyenv"
+  hosts: all
+
+  tasks:
+    - name: "Call homelab collection's pyenv role's uninstall task"
+      ansible.builtin.import_role:
+        name: my.homelab.python.pyenv
+        tasks_from: uninstall-pyenv.yml

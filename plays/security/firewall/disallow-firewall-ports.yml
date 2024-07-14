@@ -1,0 +1,24 @@
+---
+- name: "Disallow firewall ports"
+  hosts: all
+
+  vars:
+    ufw_disallow_tcp_ports: "{{ ufw_tcp_disallowed_ports }}"
+    ufw_disallow_udp_ports: "{{ ufw_udp_disallowed_ports }}"
+    firewalld_disallow_ports: "{{ firewalld_disallowed_ports }}"
+
+  tasks:
+    - name: "Gather the package facts"
+      ansible.builtin.import_role:
+        name: my.homelab.base_setup
+        tasks_from: gather-facts.yml
+
+    - name: "Include homelab's firewall role, disallow port tasks"
+      ansible.builtin.import_role:
+        name: my.homelab.security.firewall
+        tasks_from: disallow-ports.yml
+
+    - name: "Include homelab collection's firewall service restart role"
+      ansible.builtin.import_role:
+        name: my.homelab.security.firewall
+        tasks_from: enable-firewall.yml
