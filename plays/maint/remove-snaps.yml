@@ -1,0 +1,8 @@
+---
+- name: "Remove Snaps from Ubuntu"
+  hosts: all
+
+  tasks:
+    - name: "Call homelab collection's remove-snaps role"
+      ansible.builtin.import_role:
+        name: my.homelab.remove_snaps

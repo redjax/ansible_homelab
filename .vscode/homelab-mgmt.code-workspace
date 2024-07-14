@@ -17,8 +17,8 @@
 			"name": "Ansible Plays"
 		},
 		{
-			"path": "../roles",
-			"name": "Ansible Roles"
+			"path": "../collections/my/homelab/roles",
+			"name": "my.homelab Collection Roles"
 		}
 	]
 }
