@@ -1,0 +1,14 @@
+---
+## This playbook only runs the Python environment setup role(s).
+#  To run the "full" Python environment setup, use plays/setup/python/full-python-setup.yml
+- name: "Install pyenv & configure Python environment"
+  hosts: all
+
+  vars:
+    test_pypi_token: "{{ test_pypi_token  }}"
+    pypi_token: "{{ pypi_token  }}"
+
+  tasks:
+    - name: "Call homelab collection's python_setup role"
+      ansible.builtin.import_role:
+        name: my.homelab.configure_pypirc

@@ -1,0 +1,10 @@
+---
+- name: "Copy .pypirc to /home/{{ remote_host_user }}"
+  ansible.builtin.template:
+    src: .pypirc.j2
+    dest: "/home/{{ remote_host_user }}/.pypirc"
+    force: false
+    mode: '0600'
+    owner: "{{ remote_host_user }}"
+    group: "{{ remote_host_user }}"
+  become: true

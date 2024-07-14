@@ -1,0 +1,10 @@
+---
+# tasks file for configure-pypirc
+- name: "Check for existence of .pypirc"
+  ansible.builtin.stat:
+    path: "/home/{{ remote_host_user }}/.pypirc"
+  register: pypirc_file
+
+- name: "Setup .pypirc"
+  ansible.builtin.include_tasks: copy_pypirc.yml
+  when: not pypirc_file.stat.exists
