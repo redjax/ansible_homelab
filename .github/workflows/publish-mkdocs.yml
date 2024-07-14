@@ -2,16 +2,14 @@ name: publish-mkdocs
 
 on:
   pull_request:
-    types: [labeled]
     branches:
-      - main
+      - publish-docs
 
 permissions:
   contents: write
 
 jobs:
   deploy:
-    if: ${{ github.event.label.name == 'publish' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
