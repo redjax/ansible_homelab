@@ -14,7 +14,7 @@
 - name: "firewalld rules"
   firewalld:
     port: "{{ item }}"
-    permanent: yes
+    permanent: true
     state: enabled
   with_items:
     - "22/tcp"
