@@ -1,6 +1,7 @@
 ---
 - name: "Uninstall pyenv"
   hosts: all
+  gather_facts: true
 
   tasks:
     - name: "Call homelab collection's pyenv role's uninstall task"

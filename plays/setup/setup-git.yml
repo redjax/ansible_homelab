@@ -1,6 +1,7 @@
 ---
 - name: "Install & configure git"
   hosts: all
+  gather_facts: true
 
   vars:
     git_default_branch: "{{ git_default_branch_name }}"

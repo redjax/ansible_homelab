@@ -4,6 +4,7 @@
 #  use plays in plays/installs/python
 - name: "Install pyenv & configure Python environment"
   hosts: all
+  gather_facts: true
 
   vars:
     ## List of apps to install with pipx
