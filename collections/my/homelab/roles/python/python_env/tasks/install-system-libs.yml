@@ -1,0 +1,9 @@
+---
+- name: "Install Python system libraries"
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: true
+  become: true
+  with_items:
+    - python3-argcomplete
