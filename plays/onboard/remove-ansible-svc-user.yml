@@ -2,6 +2,7 @@
 - name: "Remove ansible_svc user"
   hosts: all
   # become: true
+  gather_facts: true
 
   vars:
     remove_user: true

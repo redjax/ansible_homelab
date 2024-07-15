@@ -1,6 +1,7 @@
 ---
 - name: "Install Tailscale and join to network"
   hosts: all
+  gather_facts: true
 
   tasks:
     - ansible.builtin.import_role:

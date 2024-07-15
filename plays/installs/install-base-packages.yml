@@ -1,6 +1,7 @@
 ---
 - name: "Install common packages across all Ansible-managed devices."
   hosts: all
+  gather_facts: true
 
   vars:
     debian_pkgs: "{{ common_debian_packages }}"

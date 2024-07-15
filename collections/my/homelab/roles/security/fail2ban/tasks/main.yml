@@ -1,0 +1,4 @@
+---
+# tasks file for fail2ban
+- name: "Include fail2ban install tasks"
+  ansible.builtin.include_tasks: install-fail2ban.yml

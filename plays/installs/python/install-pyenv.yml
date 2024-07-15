@@ -1,6 +1,7 @@
 ---
 - name: "Install pyenv & configure Python environment"
   hosts: all
+  gather_facts: true
 
   tasks:
     - name: "Call homelab collection's pyenv setup role"

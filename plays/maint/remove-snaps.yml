@@ -1,6 +1,7 @@
 ---
 - name: "Remove Snaps from Ubuntu"
   hosts: all
+  gather_facts: true
 
   tasks:
     - name: "Call homelab collection's remove-snaps role"

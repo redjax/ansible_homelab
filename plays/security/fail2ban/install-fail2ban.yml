@@ -1,0 +1,10 @@
+---
+- name: "Install fail2ban package"
+  hosts: all
+  gather_facts: true
+
+  tasks:
+    - name: "Include homelab collection's security.fail2ban role's install tasks"
+      ansible.builtin.import_role:
+        name: my.homelab.security.fail2ban
+        tasks_from: install-fail2ban.yml

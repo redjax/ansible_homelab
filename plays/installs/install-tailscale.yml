@@ -1,6 +1,7 @@
 ---
 - name: "Install Tailscale"
   hosts: all
+  gather_facts: true
 
   tasks:
     - ansible.builtin.import_role:

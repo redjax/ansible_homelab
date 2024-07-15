@@ -1,6 +1,7 @@
 ---
 - name: "Run ansible_svc user setup"
   hosts: all
+  gather_facts: true
 
   tasks:
     - name: "Call homelab collection's onboard role"
