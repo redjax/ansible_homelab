@@ -1,7 +1,6 @@
 ---
 - name: "Install & configure git"
   hosts: all
-  gather_facts: true
 
   vars:
     git_default_branch: "{{ git_default_branch_name }}"
@@ -9,6 +8,11 @@
     git_email: "{{ git_user_email }}"
 
   tasks:
+    - name: "Gather facts"
+      ansible.builtin.import_role:
+        name: my.homelab.base_setup
+        tasks_from: gather-facts.yml
+
     - name: "Call homelab collection's configure_git role"
       ansible.builtin.import_role:
         name: my.homelab.git

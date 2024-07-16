@@ -1,9 +1,13 @@
 ---
 - name: "Setup common ClamAV scans"
   hosts: all
-  gather_facts: true
 
   tasks:
+    - name: "Gather facts"
+      ansible.builtin.import_role:
+        name: my.homelab.base_setup
+        tasks_from: gather-facts.yml
+
     - name: "Include homelab collection's clamav.configure_scans role"
       ansible.builtin.import_role:
         name: my.homelab.security.clamav

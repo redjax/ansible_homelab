@@ -1,0 +1,9 @@
+---
+- name: "Configure fail2ban package"
+  hosts: all
+
+  tasks:
+    - name: "Configure fail2ban"
+      ansible.builtin.import_role:
+        name: my.homelab.security.fail2ban
+        tasks_from: configure-fail2ban.yml

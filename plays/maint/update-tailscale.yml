@@ -1,9 +1,13 @@
 ---
 - name: "Update Tailscale app"
   hosts: all
-  gather_facts: true
 
   tasks:
+    - name: "Gather facts"
+      ansible.builtin.import_role:
+        name: my.homelab.base_setup
+        tasks_from: gather-facts.yml
+
     - name: "Include homelab collection's tailscale.update-tailscale role"
       ansible.builtin.import_role:
         name: my.homelab.tailscale

@@ -4,7 +4,6 @@
 #  use plays in plays/installs/python
 - name: "Install pyenv & configure Python environment"
   hosts: all
-  gather_facts: true
 
   vars:
     ## List of apps to install with pipx
@@ -17,6 +16,11 @@
     pipx_bin: "/home/{{ remote_host_user }}/.pyenv/bin/pyenv exec pipx"
 
   tasks:
+    - name: "Gather facts"
+      ansible.builtin.import_role:
+        name: my.homelab.base_setup
+        tasks_from: gather-facts.yml
+
     - name: "Call homelab collection's pyenv_setup role"
       ansible.builtin.import_role:
         name: my.homelab.python.pyenv

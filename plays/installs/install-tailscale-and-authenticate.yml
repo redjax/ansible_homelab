@@ -1,9 +1,13 @@
 ---
 - name: "Install Tailscale and join to network"
   hosts: all
-  gather_facts: true
 
   tasks:
+    - name: "Gather facts"
+      ansible.builtin.import_role:
+        name: my.homelab.base_setup
+        tasks_from: gather-facts.yml
+
     - ansible.builtin.import_role:
         name: my.homelab.tailscale
         tasks_from: authenticate.yml

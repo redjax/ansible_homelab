@@ -1,9 +1,13 @@
 ---
 - name: "Remove Snaps from Ubuntu"
   hosts: all
-  gather_facts: true
 
   tasks:
+    - name: "Gather facts"
+      ansible.builtin.import_role:
+        name: my.homelab.base_setup
+        tasks_from: gather-facts.yml
+
     - name: "Call homelab collection's remove-snaps role"
       ansible.builtin.import_role:
         name: my.homelab.remove_snaps
