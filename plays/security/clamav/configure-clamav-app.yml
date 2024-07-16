@@ -3,10 +3,9 @@
   hosts: all
 
   tasks:
-    - name: "Gather the package facts"
+    - name: "Gather facts"
       ansible.builtin.import_role:
-        name: my.homelab.base_setup
-        tasks_from: gather-facts.yml
+        name: my.homelab.facts
 
     - name: "Include homelab collection's clamav.configure_clamav role"
       ansible.builtin.import_role:

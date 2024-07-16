@@ -5,8 +5,7 @@
   tasks:
     - name: "Gather facts"
       ansible.builtin.import_role:
-        name: my.homelab.base_setup
-        tasks_from: gather-facts.yml
+        name: my.homelab.facts
 
     - name: "Include homelab collection's clamav role"
       ansible.builtin.import_role:

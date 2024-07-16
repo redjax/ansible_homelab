@@ -3,8 +3,8 @@
   hosts: all
 
   tasks:
-    - name: "Gather package facts"
-      ansible.builtin.include_role:
+    - name: "Gather facts"
+      ansible.builtin.import_role:
         name: my.homelab.facts
 
     - name: "Debug packages"

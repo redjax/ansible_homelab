@@ -8,9 +8,9 @@
     pipx_apps_list: [pdm, ruff, nox]
 
   tasks:
-    - name: "Call homelab collection's pipx install role"
+    - name: "Gather facts"
       ansible.builtin.import_role:
-        name: my.homelab.python.pipx
+        name: my.homelab.facts
 
     ## If you don't want to install the "base" pipx app collection, comment this task out
     - name: "Call homelab collection's pipx role that installs common packages"

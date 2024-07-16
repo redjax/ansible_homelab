@@ -10,8 +10,7 @@
   tasks:
     - name: "Gather facts"
       ansible.builtin.import_role:
-        name: my.homelab.base_setup
-        tasks_from: gather-facts.yml
+        name: my.homelab.facts
 
     - name: "Call homelab collection's base_setup.deb-install-packages"
       ansible.builtin.import_role:
