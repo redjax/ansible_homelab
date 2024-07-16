@@ -4,5 +4,8 @@
   ansible.builtin.package_facts:
     manager: auto
 
+- name: "Include system library install tasks"
+  ansible.builtin.include_tasks: install-system-libs.yml
+
 - name: "Include virtualenv install tasks"
   ansible.builtin.include_tasks: install-virtualenv.yml

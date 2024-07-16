@@ -1,12 +1,15 @@
 ---
 - name: "Remove ansible_svc user"
   hosts: all
-  # become: true
 
   vars:
     remove_user: true
 
   tasks:
+    - name: "Gather facts"
+      ansible.builtin.import_role:
+        name: my.homelab.facts
+
     - name: "Call homelab collection's onboard role"
       ansible.builtin.import_role:
         name: my.homelab.onboard

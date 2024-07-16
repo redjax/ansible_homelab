@@ -16,6 +16,10 @@
     pipx_bin: "/home/{{ remote_host_user }}/.pyenv/bin/pyenv exec pipx"
 
   tasks:
+    - name: "Gather facts"
+      ansible.builtin.import_role:
+        name: my.homelab.facts
+
     - name: "Call homelab collection's pyenv_setup role"
       ansible.builtin.import_role:
         name: my.homelab.python.pyenv

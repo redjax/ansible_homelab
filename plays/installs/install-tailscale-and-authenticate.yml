@@ -3,6 +3,10 @@
   hosts: all
 
   tasks:
+    - name: "Gather facts"
+      ansible.builtin.import_role:
+        name: my.homelab.facts
+
     - ansible.builtin.import_role:
         name: my.homelab.tailscale
         tasks_from: authenticate.yml

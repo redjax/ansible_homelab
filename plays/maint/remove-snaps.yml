@@ -3,6 +3,10 @@
   hosts: all
 
   tasks:
+    - name: "Gather facts"
+      ansible.builtin.import_role:
+        name: my.homelab.facts
+
     - name: "Call homelab collection's remove-snaps role"
       ansible.builtin.import_role:
         name: my.homelab.remove_snaps

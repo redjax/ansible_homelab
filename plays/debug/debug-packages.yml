@@ -1,0 +1,12 @@
+---
+- name: "Debug packages on remote machine"
+  hosts: all
+
+  tasks:
+    - name: "Gather facts"
+      ansible.builtin.import_role:
+        name: my.homelab.facts
+
+    - name: "Debug packages"
+      ansible.builtin.debug:
+        msg: "{{ ansible_facts.packages }}"

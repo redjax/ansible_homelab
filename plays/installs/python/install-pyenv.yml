@@ -3,6 +3,10 @@
   hosts: all
 
   tasks:
+    - name: "Gather facts"
+      ansible.builtin.import_role:
+        name: my.homelab.facts
+
     - name: "Call homelab collection's pyenv setup role"
       ansible.builtin.import_role:
         name: my.homelab.python.pyenv

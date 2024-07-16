@@ -183,3 +183,7 @@ CUSTOM_COLLECTIONS: t.List[CustomAnsibleCollection] = [
 
 - [ ] Document existing sessions & usage
 - [ ] Document adding new sessions
+
+## Links
+
+- [Linode: Using fail2ban to secure your server](https://www.linode.com/docs/guides/using-fail2ban-to-secure-your-server-a-tutorial/)

@@ -1,0 +1,8 @@
+## [ MANAGED BY ANSIBLE ]
+#  Modifications here will overwrite all other [selinux-ssh] jails
+
+[selinux-ssh]
+
+mode     = {{ jail_selinux_ssh_filter_mode | default('normal') }}
+port     = {{ jail_selinux_ssh_port | default('ssh') }}
+logpath  = {{ jail_selinux_ssh_logpath | default('%(auditd_log)s') }}
