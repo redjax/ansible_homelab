@@ -28,3 +28,8 @@ roles:
   ## https://galaxy.ansible.com/ui/standalone/roles/staticdev/pyenv/
   - name: staticdev.pyenv
     version: "2.11.0"
+
+  ## https://galaxy.ansible.com/ui/repo/published/robertdebock/roles/content/role/fail2ban/
+  # - name: robertdebock.fail2ban
+  ## https://github.com/robertdebock/ansible-role-fail2ban/releases
+  # version: "5.0.5"
