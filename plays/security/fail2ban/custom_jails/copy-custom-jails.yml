@@ -4,12 +4,7 @@
 
   vars:
     custom_jails:
-      [
-        {
-          "template": "custom_jails/example.local.j2",
-          "dest": "example/example.local",
-        },
-      ]
+      [{ "template": "example.local.j2", "dest": "example/example.local" }]
 
   tasks:
     - name: "Copy jails"
