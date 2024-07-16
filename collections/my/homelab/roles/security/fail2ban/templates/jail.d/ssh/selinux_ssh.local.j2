@@ -1,3 +1,6 @@
+## [ MANAGED BY ANSIBLE ]
+#  Modifications here will overwrite all other [selinux-ssh] jails
+
 [selinux-ssh]
 
 mode     = {{ jail_selinux_ssh_filter_mode | default('normal') }}

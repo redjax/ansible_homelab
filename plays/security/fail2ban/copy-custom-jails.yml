@@ -16,3 +16,8 @@
       ansible.builtin.import_role:
         name: my.homelab.security.fail2ban
         tasks_from: add-custom-jail.yml
+
+    - name: "Restart fail2ban"
+      ansible.builtin.import_role:
+        name: my.homelab.security.fail2ban
+        tasks_from: restart-fail2ban.yml
