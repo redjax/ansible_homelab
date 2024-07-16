@@ -1,4 +1,8 @@
-# Custom fail2ban jails
+## Fail2Ban Playbooks
+
+Install & configure [`fail2ban`](github.com/fail2ban/fail2ban). The role sets up fail2ban's default configurations (configurable by variable), and also supports adding custom jails from a local Ansible template file.
+
+## Custom fail2ban jails
 
 Place fail2ban jail templates (`.j2` files) in this directory. In a playbook, i.e. `copy-custom-jails.yml`, use the template below to describe where Ansible should render the template on the remote server; note that the jails are defined in a directory at the same path as the playbook.
 
