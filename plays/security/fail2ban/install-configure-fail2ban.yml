@@ -12,7 +12,17 @@
         name: my.homelab.security.fail2ban
         tasks_from: install-fail2ban.yml
 
-    - name: "Enable fail2ban"
+    - name: "Backup fail2ban configs"
+      ansible.builtin.import_role:
+        name: my.homelab.security.fail2ban
+        tasks_from: backup-fail2ban-confs.yml
+
+    - name: "Copy templated fail2ban config files"
+      ansible.builtin.import_role:
+        name: my.homelab.security.fail2ban
+        tasks_from: install-fail2ban-confs.yml
+
+    - name: "Enable & start fail2ban"
       ansible.builtin.import_role:
         name: my.homelab.security.fail2ban
         tasks_from: enable-fail2ban.yml

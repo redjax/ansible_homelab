@@ -1,5 +1,5 @@
 ---
-- name: "Install fail2ban package"
+- name: "Enable & start fail2ban service"
   hosts: all
 
   tasks:
@@ -11,3 +11,4 @@
       ansible.builtin.import_role:
         name: my.homelab.security.fail2ban
         tasks_from: install-fail2ban.yml
+      when: ("fail2ban" in ansible_facts.packages)

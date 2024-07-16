@@ -5,3 +5,4 @@
       - fail2ban
     state: present
   become: true
+  when: ("fail2ban" not in ansible_facts.packages)
