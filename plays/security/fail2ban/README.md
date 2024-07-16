@@ -1,4 +1,4 @@
-## Fail2Ban Playbooks
+# Fail2Ban Playbooks
 
 Install & configure [`fail2ban`](github.com/fail2ban/fail2ban). The role sets up fail2ban's default configurations (configurable by variable), and also supports adding custom jails from a local Ansible template file.
 
