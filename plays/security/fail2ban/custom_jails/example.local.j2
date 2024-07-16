@@ -1,0 +1,10 @@
+## ANSIBLE TEST, ALL CONFIGURATIONS COMMENTED & IGNORED BY FAIL2BAN
+# [sshd]
+
+# # To use more aggressive sshd modes set filter parameter "mode" in jail.local:
+# # normal (default), ddos, extra or aggressive (combines all).
+# # See "tests/files/logs/sshd" or "filter.d/sshd.conf" for usage example and details.
+# mode    = {{ jail_sshd_filter_mode | default('normal') }}
+# port    = {{ jail_sshd_port | default('ssh') }}
+# logpath = {{ jail_sshd_logpath | default('%(sshd_log)s') }}
+# backend = {{ jail_sshd_backend | default('%(sshd_backend)s') }}

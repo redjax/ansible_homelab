@@ -1,6 +1,8 @@
 ---
 # defaults file for fail2ban
 
+custom_jails: []
+
 ## fail2ban.local
 fail2ban_default_loglevel: INFO
 fail2ban_default_logtarget: /var/log/fail2ban.log

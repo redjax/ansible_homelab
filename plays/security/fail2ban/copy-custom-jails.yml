@@ -1,0 +1,18 @@
+---
+- name: "Add extra fail2ban jails using the homelab.fail2ban role"
+  hosts: all
+
+  vars:
+    custom_jails:
+      [
+        {
+          "template": "custom_jails/example.local.j2",
+          "dest": "example/example.local",
+        },
+      ]
+
+  tasks:
+    - name: "Copy jails"
+      ansible.builtin.import_role:
+        name: my.homelab.security.fail2ban
+        tasks_from: add-custom-jail.yml
