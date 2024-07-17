@@ -1,4 +1,15 @@
 ---
+- name: "Install Python system dependencies for development"
+  ansible.builtin.apt:
+    name:
+      - "{{ item }}"
+    update_cache: true
+    state: present
+  become: true
+  with_items:
+    - "{{ python_apt_dependencies }}"
+  when: ansible_facts.os_family == "Debian"
+
 - name: "Install Python system libraries"
   ansible.builtin.apt:
     name: "{{ item }}"
@@ -7,3 +18,4 @@
   become: true
   with_items:
     - python3-argcomplete
+  when: ansible_facts.os_family == "Debian"
