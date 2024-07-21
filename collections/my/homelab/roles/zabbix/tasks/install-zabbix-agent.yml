@@ -1,17 +1,25 @@
 ---
 - name: Check existence of Zabbix agent installer
   ansible.builtin.stat:
-    path: /tmp/zabbix-release_{{ zabbix_agent_install_ver }}+{{ ansible_distribution | lower }}{{ ansible_distribution_major_version }}_all.deb
+    path: /tmp/zabbix-agent-installer.deb
   register: zabbix_agent_installer
   become: true
 
-- name: Download Zabbix agent installer
+- name: Download Zabbix agent installer for Debian
   ansible.builtin.get_url:
     url: https://repo.zabbix.com/zabbix/{{ zabbix_agent_ver }}/{{ ansible_distribution | lower }}/pool/main/z/zabbix-release/zabbix-release_{{ zabbix_agent_install_ver }}+{{ ansible_distribution | lower }}{{ ansible_distribution_major_version }}_all.deb
-    dest: /tmp/zabbix-release_{{ zabbix_agent_install_ver }}+{{ ansible_distribution | lower }}{{ ansible_distribution_major_version }}_all.deb
+    dest: /tmp/zabbix-agent-installer.deb
     mode: "0755"
   become: true
-  when: (ansible_facts.os_family == "Debian") and (not zabbix_agent_installer.stat.exists)
+  when: (ansible_distribution == "Debian") and (not zabbix_agent_installer.stat.exists)
+
+- name: Download Zabbix agent installer for Ubuntu
+  ansible.builtin.get_url:
+    url: https://repo.zabbix.com/zabbix/{{ zabbix_agent_ver }}/{{ ansible_distribution | lower }}/pool/main/z/zabbix-release/zabbix-release_{{ zabbix_agent_install_ver }}+{{ ansible_distribution | lower }}{{ ansible_facts.lsb.release }}_all.deb
+    dest: /tmp/zabbix-agent-installer.deb
+    mode: "0755"
+  become: true
+  when: (ansible_distribution == "Ubuntu") and (not zabbix_agent_installer.stat.exists)
 
 - name: "[DEBUG] Zabbix agent installer presence"
   ansible.builtin.debug:
@@ -20,9 +28,16 @@
 
 - name: Install Zabbix agent from package
   ansible.builtin.apt:
-    deb: /tmp/zabbix-release_{{ zabbix_agent_install_ver }}+{{ ansible_distribution | lower}}{{ ansible_distribution_major_version }}_all.deb
+    deb: /tmp/zabbix-agent-installer.deb
   become: true
   when: (ansible_facts.os_family == "Debian") and (zabbix_agent_installer.stat.exists) and ('zabbix-agent2' not in ansible_facts.packages)
+
+- name: Update APT cache
+  apt:
+    update_cache: true
+    cache_valid_time: 3600
+  become: true
+  when: ansible_facts.os_family == "Debian"
 
 - name: Install Zabbix agent
   ansible.builtin.apt:

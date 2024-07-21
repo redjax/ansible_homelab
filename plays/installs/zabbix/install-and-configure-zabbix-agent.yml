@@ -1,0 +1,27 @@
+---
+- name: Install and configure Zabbix agent on remote hosts
+  hosts: all
+
+  vars:
+    zabbix_agent_ver: "6.5"
+    zabbix_agent_install_ver: "6.5-1"
+
+  tasks:
+    - name: "Gather facts"
+      ansible.builtin.import_role:
+        name: my.homelab.facts
+
+    - name: Import Zabbix agent installer role tasks
+      ansible.builtin.import_role:
+        name: my.homelab.zabbix
+        tasks_from: install-zabbix-agent.yml
+
+    - name: Import Zabbix agent config role tasks
+      ansible.builtin.import_role:
+        name: my.homelab.zabbix
+        tasks_from: configure-zabbix-agent.yml
+
+    - name: Import Zabbix agent service role tasks
+      ansible.builtin.import_role:
+        name: my.homelab.zabbix
+        tasks_from: enable-zabbix-agent.yml
