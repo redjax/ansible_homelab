@@ -1,0 +1,50 @@
+---
+- name: Check Zabbix agent config
+  ansible.builtin.stat:
+    path: /etc/zabbix/zabbix_agent2.conf
+  become: true
+  register: zabbix_agent_conf_file
+
+- name: Check Zabbix agent config .orig backup
+  ansible.builtin.stat:
+    path: /etc/zabbix/zabbix_agent2.conf.orig
+  become: true
+  register: zabbix_agent_conf_orig_file
+
+- name: Check /etc/zabbix directory exists
+  ansible.builtin.stat:
+    path: /etc/zabbix
+  become: true
+  register: zabbix_conf_dir
+
+- name: "[DEBUG] Zabbix agent config file presence"
+  ansible.builtin.debug:
+    msg: "Found Zabbix agent configuration file at /etc/zabbix/zabbix_agent2.conf: {{ zabbix_agent_conf_file.stat.exists }}"
+
+- name: "[DEBUG] Zabbix agent config .orig backup file presence"
+  ansible.builtin.debug:
+    msg: "Found Zabbix agent configuration .orig file at /etc/zabbix/zabbix_agent2.conf.orig: {{ zabbix_agent_conf_file.stat.exists }}"
+
+- name: "[DEBUG] Zabbix config dir presence"
+  ansible.builtin.debug:
+    msg: "Found Zabbix configuration directory at /etc/zabbix: {{ zabbix_conf_dir.stat.exists }}"
+
+- name: Create zabbix_agent2.conf.orig backup, if backup does not exist
+  ansible.builtin.template:
+    src: zabbix_agent2.conf.orig.j2
+    dest: /etc/zabbix/zabbix_agent2.conf.orig
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  when: ('zabbix-agent2' in ansible_facts.packages) and (not zabbix_agent_conf_orig_file.stat.exists)
+
+- name: Create Zabbix agent config if it does not exist
+  ansible.builtin.template:
+    src: zabbix_agent2.conf.j2
+    dest: /etc/zabbix/zabbix_agent2.conf
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  when: ('zabbix-agent2' in ansible_facts.packages)
