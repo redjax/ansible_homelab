@@ -1,0 +1,4 @@
+---
+- name: "[DEBUG] Full LSB"
+  ansible.builtin.debug:
+    var: ansible_facts.lsb
