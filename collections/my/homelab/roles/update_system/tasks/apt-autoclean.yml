@@ -1,0 +1,6 @@
+---
+- name: Remove dependencies that are no longer required
+  ansible.builtin.apt:
+    autoremove: true
+  become: true
+  when: ansible_facts.os_family == "Debian"
