@@ -1,0 +1,12 @@
+---
+- name: "Install podman"
+  hosts: all
+
+  tasks:
+    - name: "Gather facts"
+      ansible.builtin.import_role:
+        name: my.homelab.facts
+
+    - ansible.builtin.import_role:
+        name: my.homelab.podman
+        tasks_from: install-podman.yml
