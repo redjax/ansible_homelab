@@ -11,6 +11,9 @@ import shutil
 
 import nox
 
+## https://pdm-project.org/latest/usage/advanced/#use-nox-as-the-runner
+os.environ.update({"PDM_IGNORE_SAVED_PYTHON": "1"})
+
 nox.options.default_venv_backend = "venv"
 nox.options.reuse_existing_virtualenvs = True
 nox.options.error_on_external_run = False
@@ -24,7 +27,7 @@ if "CONTAINER_ENV" in os.environ:
     CONTAINER_ENV: bool = os.environ["CONTAINER_ENV"]
 else:
     CONTAINER_ENV: bool = False
-    
+
 COLLECTIONS_PATH: Path = Path("./collections")
 ANSIBLE_COLLECTIONS_PATH: Path = Path(f"{COLLECTIONS_PATH}/ansible_collections")
 MY_COLLECTIONS_PATH: Path = Path(f"{COLLECTIONS_PATH}/my")
@@ -38,6 +41,7 @@ DOCS_REQUIREMENTS_FILE: Path = Path("docs/requirements.txt")
 DOCS_VENV_PATH: Path = Path(".mkdocs-venv")
 MKDOCS_DEV_PORT: int = 8000
 MKDOCS_DEV_ADDR: str = "0.0.0.0"
+
 
 def setup_nox_logging(
     level_name: str = "DEBUG", disable_loggers: list[str] | None = []
@@ -86,45 +90,50 @@ def setup_nox_logging(
     ## Disable loggers by name. Sets logLevel to logging.WARNING to suppress all but warnings & errors
     for _logger in disable_loggers:
         logging.getLogger(_logger).setLevel(logging.WARNING)
-        
+
+
 setup_nox_logging(level_name="DEBUG", disable_loggers=[])
 log = logging.getLogger("nox")
+
 
 @dataclass
 class CustomAnsibleCollection:
     """Define a custom Ansible collection for Nox sessions.
-    
+
     Params:
         name (str): The simple name of the role, mainly used for logging messages.
         fqcn (str): The fully-qualified collection name, i.e. `my.collection`
         path (Path): The local file path to the Ansible collection.
-    
+
     """
 
     name: str = field(default=None)
     fqcn: str = field(default=None)
     path: Path | None = field(default=None)
-    
+
     @property
     def path_exists(self) -> bool:
         if self.path:
             return self.path.exists()
         else:
             return False
-    
+
     def __post_init__(self):
         if self.path:
             _path: Path = Path(f"{self.path}")
-            
+
             self.path = _path
-            
+
         _log = logging.getLogger("nox.CustomAnsibleCollection")
         self.logger = _log
-                
+
+
 ## Define custom Ansible collection objects. The build-my-collections session iterates over this list, building
 #  the distribution package for each collection in the list.
 CUSTOM_COLLECTIONS: t.List[CustomAnsibleCollection] = [
-    CustomAnsibleCollection(name="homelab", fqcn="my.homelab", path=Path(f"{MY_COLLECTIONS_PATH}/homelab"))
+    CustomAnsibleCollection(
+        name="homelab", fqcn="my.homelab", path=Path(f"{MY_COLLECTIONS_PATH}/homelab")
+    )
 ]
 
 ## Define versions to test
@@ -134,102 +143,157 @@ PY_VER_TUPLE = platform.python_version_tuple()
 ## Dynamically set Python version
 DEFAULT_PYTHON: str = f"{PY_VER_TUPLE[0]}.{PY_VER_TUPLE[1]}"
 
+
 @nox.session(python=[DEFAULT_PYTHON], name="setup-mkdocs", tags=["mkdocs", "docs"])
 @nox.parametrize("docs_requirements_file", [DOCS_REQUIREMENTS_FILE])
 @nox.parametrize("docs_venv_path", [DOCS_VENV_PATH])
-def run_mkdocs_venv_setup(session: nox.Session, docs_requirements_file: t.Union[str, Path], docs_venv_path: t.Union[str, Path]):
+def run_mkdocs_venv_setup(
+    session: nox.Session,
+    docs_requirements_file: t.Union[str, Path],
+    docs_venv_path: t.Union[str, Path],
+):
     if not docs_requirements_file.exists():
-        raise FileNotFoundError(f"Could not find mkdocs requirements file at '{docs_requirements_file}'.")
-    
+        raise FileNotFoundError(
+            f"Could not find mkdocs requirements file at '{docs_requirements_file}'."
+        )
+
     # session.install("-r", f"{DOCS_REQUIREMENTS_FILE}")
     session.install("virtualenv")
-    
+
     log.info(f"Creating MKDocs virtual environment at path: {docs_venv_path}")
     try:
         session.run("virtualenv", f"{docs_venv_path}")
     except Exception as exc:
-        msg = Exception(f"({type(exc)}) Unhandled exception creating mkdocs virtual environment. Details: {exc}")
+        msg = Exception(
+            f"({type(exc)}) Unhandled exception creating mkdocs virtual environment. Details: {exc}"
+        )
         log.error(msg)
-        
-        raise exc
-    
-    log.warning(f"!!! [MANUAL STEP REQUIRED]\nMKDocs virtual environment created at path '{docs_venv_path}'. Activate with '. {docs_venv_path}/bin/activate', then install requirements  with 'pip install -r docs/requirements.txt'.")
 
-@nox.session(python=[DEFAULT_PYTHON], name="build-mkdocs", tags=["mkdocs", "docs", "build"])
+        raise exc
+
+    log.warning(
+        f"!!! [MANUAL STEP REQUIRED]\nMKDocs virtual environment created at path '{docs_venv_path}'. Activate with '. {docs_venv_path}/bin/activate', then install requirements  with 'pip install -r docs/requirements.txt'."
+    )
+
+
+@nox.session(
+    python=[DEFAULT_PYTHON], name="build-mkdocs", tags=["mkdocs", "docs", "build"]
+)
 @nox.parametrize("docs_requirements_file", [DOCS_REQUIREMENTS_FILE])
 def run_mkdocs_build(session: nox.Session, docs_requirements_file: t.Union[str, Path]):
     if not docs_requirements_file.exists():
-        raise FileNotFoundError(f"Could not find mkdocs requirements file at path: '{docs_requirements_file}'")
+        raise FileNotFoundError(
+            f"Could not find mkdocs requirements file at path: '{docs_requirements_file}'"
+        )
 
     session.install("-r", f"{docs_requirements_file}")
-    
+
     log.info("Building MKDocs site")
     try:
         session.run("mkdocs", "build")
     except Exception as exc:
-        msg = Exception(f"({type(exc)}) Unhandled exception building MKDocs site. Details: {exc}")
+        msg = Exception(
+            f"({type(exc)}) Unhandled exception building MKDocs site. Details: {exc}"
+        )
         log.error(msg)
-        
+
         raise exc
 
-@nox.session(python=[DEFAULT_PYTHON], name="serve-mkdocs", tags=["mkdocs", "docs", "serve"])
+
+@nox.session(
+    python=[DEFAULT_PYTHON], name="serve-mkdocs", tags=["mkdocs", "docs", "serve"]
+)
 @nox.parametrize("docs_requirements_file", [DOCS_REQUIREMENTS_FILE])
 @nox.parametrize("mkdocs_dev_port", [MKDOCS_DEV_PORT])
 @nox.parametrize("mkdocs_dev_addr", [MKDOCS_DEV_ADDR])
-def run_mkdocs_serve(session: nox.Session, docs_requirements_file: t.Union[str, Path], mkdocs_dev_addr: str, mkdocs_dev_port: int):
+def run_mkdocs_serve(
+    session: nox.Session,
+    docs_requirements_file: t.Union[str, Path],
+    mkdocs_dev_addr: str,
+    mkdocs_dev_port: int,
+):
     if not docs_requirements_file.exists():
-        raise FileNotFoundError(f"Could not find mkdocs requirements file at path: '{docs_requirements_file}'")
+        raise FileNotFoundError(
+            f"Could not find mkdocs requirements file at path: '{docs_requirements_file}'"
+        )
 
     session.install("-r", f"{docs_requirements_file}")
-    
+
     log.info("Serving MKDocs site")
     try:
-        session.run("mkdocs", "serve", "--dev-addr", f"{mkdocs_dev_addr}:{mkdocs_dev_port}")
+        session.run(
+            "mkdocs", "serve", "--dev-addr", f"{mkdocs_dev_addr}:{mkdocs_dev_port}"
+        )
     except Exception as exc:
-        msg = Exception(f"({type(exc)}) Unhandled exception serving MKDocs site. Details: {exc}")
+        msg = Exception(
+            f"({type(exc)}) Unhandled exception serving MKDocs site. Details: {exc}"
+        )
         log.error(msg)
-        
+
         raise exc
 
-@nox.session(python=[DEFAULT_PYTHON], name="update-pip-requirements", tags=["requirements", "update"])
+
+@nox.session(
+    python=[DEFAULT_PYTHON],
+    name="update-pip-requirements",
+    tags=["requirements", "update"],
+)
 def run_pip_update_all(session: nox.Session):
     if not Path("requirements.txt").exists():
-        raise FileNotFoundError(f"Could not find requirements file at path 'requirements.txt'")
-    
+        raise FileNotFoundError(
+            f"Could not find requirements file at path 'requirements.txt'"
+        )
+
     # session.install("-r", "requirements.txt")
-    
+
     log.info("Updating all pip requirements")
     try:
-        session.run("pip", "install", "--ignore-installed", "--upgrade", "--force-reinstall", "-r", "requirements.txt")
+        session.run(
+            "pip",
+            "install",
+            "--ignore-installed",
+            "--upgrade",
+            "--force-reinstall",
+            "-r",
+            "requirements.txt",
+        )
     except Exception as exc:
-        msg = Exception(f"({type(exc)}) Unhandled exception upgrading pip requirements with pip-upgrader. Details: {exc}")
+        msg = Exception(
+            f"({type(exc)}) Unhandled exception upgrading pip requirements with pip-upgrader. Details: {exc}"
+        )
         log.error(msg)
-        
+
         raise exc
-    
+
     log.info("Re-exporting pip requirements")
     try:
         ## Capture pip freeze lines
         updated_requirements = session.run("pip", "freeze", silent=True).splitlines()
-        
+
         ## Manually write them to requirements.txt file
         with open("requirements.new.txt", "w") as requirements_file:
             requirements_file.write("\n".join(updated_requirements))
     except Exception as exc:
-        msg = Exception(f"({type(exc)}) Unhandled exception saving new pip requirements. Details: {exc}")
+        msg = Exception(
+            f"({type(exc)}) Unhandled exception saving new pip requirements. Details: {exc}"
+        )
         log.error(msg)
-        
+
         raise exc
-    
-    log.info("Replacing existing requirements.txt file with contents of requirements.new.txt")
+
+    log.info(
+        "Replacing existing requirements.txt file with contents of requirements.new.txt"
+    )
     try:
         shutil.move("requirements.new.txt", "requirements.txt")
     except Exception as exc:
-        msg = Exception(f"({type(exc)}) Unhandled exception overwriting requirements.txt file. Details: {exc}")
+        msg = Exception(
+            f"({type(exc)}) Unhandled exception overwriting requirements.txt file. Details: {exc}"
+        )
         log.error(msg)
-        
+
         raise exc
-    
+
 
 @nox.session(python=[DEFAULT_PYTHON], name="lint", tags=["style"])
 @nox.parametrize("lint_paths", [LINT_PATHS])
@@ -237,7 +301,7 @@ def run_linter(session: nox.Session, lint_paths: list[Path]):
     session.install("ruff", "black")
 
     log.info("Linting code")
-    
+
     if lint_paths:
         for d in LINT_PATHS:
             if not Path(d).exists():
@@ -277,7 +341,7 @@ def run_linter(session: nox.Session, lint_paths: list[Path]):
         f"{Path('./noxfile.py')}",
         "--fix",
     )
-    
+
     log.info(f"Running ruff imports sort on noxfile.py")
     session.run(
         "ruff",
@@ -286,118 +350,216 @@ def run_linter(session: nox.Session, lint_paths: list[Path]):
         "--select",
         "I",
         "--fix",
-        
     )
 
-@nox.session(python=DEFAULT_PYTHON, name="build-my-collections", tags=["ansible", "build"])
+
+@nox.session(python=DEFAULT_PYTHON, name="export", tags=["requirements", "dev"])
+def export_requirements(session: nox.Session):
+    session.install("pdm")
+
+    log.info("Exporting production requirements")
+    session.run(
+        "pdm",
+        "export",
+        "--prod",
+        "-o",
+        "requirements.txt",
+        "--without-hashes",
+    )
+
+    log.info("Exporting development requirements")
+    session.run(
+        "pdm",
+        "export",
+        "-d",
+        "-o",
+        "requirements.dev.txt",
+        "--without-hashes",
+    )
+
+
+@nox.session(
+    python=DEFAULT_PYTHON, name="build-my-collections", tags=["ansible", "build"]
+)
 @nox.parametrize("custom_collections", [CUSTOM_COLLECTIONS])
 @nox.parametrize("collection_build_output_path", [COLLECTION_BUILD_OUTPUT_PATH])
-def build_custom_collections(session: nox.Session, custom_collections: list[CustomAnsibleCollection], collection_build_output_path: Path):
+def build_custom_collections(
+    session: nox.Session,
+    custom_collections: list[CustomAnsibleCollection],
+    collection_build_output_path: Path,
+):
     if not collection_build_output_path.exists():
         try:
             collection_build_output_path.mkdir(parents=True, exist_ok=True)
         except Exception as exc:
-            msg = Exception(f"({type(exc)}) Unhandled exception creating build output path '{collection_build_output_path}'. Details: {exc}")
+            msg = Exception(
+                f"({type(exc)}) Unhandled exception creating build output path '{collection_build_output_path}'. Details: {exc}"
+            )
             log.error(msg)
-            
+
             raise exc
-    
+
     session.install("ansible-core")
-    
+
     for _collection in custom_collections:
-        log.info(f"Building collection '{_collection.name}' at path: {_collection.path}")
-        
+        log.info(
+            f"Building collection '{_collection.name}' at path: {_collection.path}"
+        )
+
         if not _collection.path_exists:
-            _exc = FileNotFoundError(f"Could not find collection at path '{_collection.path}'")
+            _exc = FileNotFoundError(
+                f"Could not find collection at path '{_collection.path}'"
+            )
             log.error(_exc)
-            
+
             raise _exc
-        
+
         log.debug(f"Found collection '{_collection.name}' at path: {_collection.path}")
-        
+
         try:
-            session.run("ansible-galaxy", "collection", "build", f"{_collection.path}", "--output-path", f"{collection_build_output_path}", "--force")
+            session.run(
+                "ansible-galaxy",
+                "collection",
+                "build",
+                f"{_collection.path}",
+                "--output-path",
+                f"{collection_build_output_path}",
+                "--force",
+            )
         except Exception as exc:
-            msg = Exception(f"({type(exc)}) Unhandled exception building collection '{_collection.name}'. Details: {exc}")
+            msg = Exception(
+                f"({type(exc)}) Unhandled exception building collection '{_collection.name}'. Details: {exc}"
+            )
             log.error(msg)
-            
+
             continue
-        
-        
-@nox.session(python=DEFAULT_PYTHON, name="install-ansible-requirements", tags=["ansible", "install"])
+
+
+@nox.session(
+    python=DEFAULT_PYTHON,
+    name="install-ansible-requirements",
+    tags=["ansible", "install"],
+)
 def install_collections(session: nox.Session):
-    assert Path("requirements.yml").exists(), FileNotFoundError("Could not find Ansible project requirements.yml.")
-    
+    assert Path("requirements.yml").exists(), FileNotFoundError(
+        "Could not find Ansible project requirements.yml."
+    )
+
     session.install("ansible-core")
-    
+
     log.info("Installing collections from requirements.yml")
-    
+
     try:
         session.run("ansible-galaxy", "collection", "install", "-r", "requirements.yml")
     except Exception as exc:
-        msg = Exception(f"({type(exc)}) Unhandled exception installing Ansible Galaxy requirements from requirements.yml. Details: {exc}")
+        msg = Exception(
+            f"({type(exc)}) Unhandled exception installing Ansible Galaxy requirements from requirements.yml. Details: {exc}"
+        )
         log.error(msg)
-        
+
         raise exc
-    
+
     log.info("Installing roles from requirements.yml")
-    
+
     try:
         session.run("ansible-galaxy", "role", "install", "-r", "requirements.yml")
     except Exception as exc:
-        msg = Exception(f"({type(exc)}) Unhandled exception installing Ansible Galaxy requirements from requirements.yml. Details: {exc}")
+        msg = Exception(
+            f"({type(exc)}) Unhandled exception installing Ansible Galaxy requirements from requirements.yml. Details: {exc}"
+        )
         log.error(msg)
-        
+
         raise exc
-    
+
     if Path("requirements.private.yml").exists():
-        log.info("Ensuring local collections are installed from requirements.private.yml with --force")
+        log.info(
+            "Ensuring local collections are installed from requirements.private.yml with --force"
+        )
         try:
-            session.run("ansible-galaxy", "collection", "install", "-r", "requirements.private.yml", "--force")
+            session.run(
+                "ansible-galaxy",
+                "collection",
+                "install",
+                "-r",
+                "requirements.private.yml",
+                "--force",
+            )
         except Exception as exc:
-            msg = Exception(f"Unhandled exception installing packages from 'requirements.private.yml'. Details: {exc}")
+            msg = Exception(
+                f"Unhandled exception installing packages from 'requirements.private.yml'. Details: {exc}"
+            )
             log.error(msg)
-            
+
             raise exc
+
 
 @nox.session(python=DEFAULT_PYTHON, name="playbook-debug-all", tags=["debug"])
 def ansible_playbook_debug_all(session: nox.Session):
     session.install("ansible-core")
-    
+
     log.info("Running debug-all.yml playbook on homelab inventory")
-    
+
     try:
-        session.run("ansible-playbook", "-i", "inventories/homelab/inventory.yml", "plays/debug/debug-all.yml")
+        session.run(
+            "ansible-playbook",
+            "-i",
+            "inventories/homelab/inventory.yml",
+            "plays/debug/debug-all.yml",
+        )
     except Exception as exc:
-        msg = Exception(f"({type(exc)}) Unhandled exception running playbook. Details: {exc}")
+        msg = Exception(
+            f"({type(exc)}) Unhandled exception running playbook. Details: {exc}"
+        )
         log.error(msg)
-        
+
         raise exc
-    
+
+
 @nox.session(python=DEFAULT_PYTHON, name="update-systems", tags=["maint"])
 def ansible_playbook_update_systems(session: nox.Session):
     session.install("ansible-core")
-    
-    log.info("Running maint/update-system.yml playbook on homelab inventory, limit 'autoReboot'.")
-    
+
+    log.info(
+        "Running maint/update-system.yml playbook on homelab inventory, limit 'autoReboot'."
+    )
+
     try:
-        session.run("ansible-playbook", "-i", "inventories/homelab/inventory.yml", "--limit", "autoReboot", "plays/maint/update-system.yml")
+        session.run(
+            "ansible-playbook",
+            "-i",
+            "inventories/homelab/inventory.yml",
+            "--limit",
+            "autoReboot",
+            "plays/maint/update-system.yml",
+        )
     except Exception as exc:
-        msg = Exception(f"({type(exc)}) Unhandled exception running system update playbook. Details: {exc}")
+        msg = Exception(
+            f"({type(exc)}) Unhandled exception running system update playbook. Details: {exc}"
+        )
         log.error(msg)
-        
+
         raise exc
-    
+
+
 @nox.session(python=DEFAULT_PYTHON, name="onboard", tags=["ansible", "onboard"])
 def run_ansible_onboarding(session: nox.Session):
     session.install("ansible-core")
-    
+
     log.info("Running Ansible onboarding playbook")
-    
+
     try:
-        session.run("ansible-playbook", "-i", "inventories/onboard/inventory.yml", "--limit", "onboard", "plays/onboard/create-ansible-svc-user.yml")
+        session.run(
+            "ansible-playbook",
+            "-i",
+            "inventories/onboard/inventory.yml",
+            "--limit",
+            "onboard",
+            "plays/onboard/create-ansible-svc-user.yml",
+        )
     except Exception as exc:
-        msg  = Exception(f"Unhandled exception running Ansible onboarding playbook. Details: {exc}")
+        msg = Exception(
+            f"Unhandled exception running Ansible onboarding playbook. Details: {exc}"
+        )
         log.error(msg)
-        
+
         raise exc

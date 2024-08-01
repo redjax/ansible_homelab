@@ -6,19 +6,25 @@ ansible-doctor==6.0.2
 ansible-runner==2.4.0
 anyconfig==0.14.0
 appdirs==1.4.4
+argcomplete==3.4.0
 cffi==1.16.0; platform_python_implementation != "PyPy"
 colorama==0.4.6
+colorlog==6.8.2
 cryptography==43.0.0
+distlib==0.3.8
 docutils==0.21.2
 dynaconf==3.2.5
+filelock==3.15.4
 gitdb==4.0.11
 gitpython==3.1.43
 jinja2==3.1.4
 lockfile==0.12.2
 markupsafe==2.1.5
+nox==2024.4.15
 packaging==24.1
 pathspec==0.12.1
 pexpect==4.9.0
+platformdirs==4.2.2
 ptyprocess==0.7.0
 pycparser==2.22; platform_python_implementation != "PyPy"
 python-daemon==3.0.1
@@ -26,6 +32,10 @@ pyyaml==6.0.1
 resolvelib==1.0.1
 ruamel-yaml==0.18.6
 ruamel-yaml-clib==0.2.8; platform_python_implementation == "CPython"
+ruff==0.5.5
 setuptools==72.1.0
 smmap==5.0.1
 structlog==24.2.0
+uv==0.2.32
+virtualenv==20.26.3
+yamllint==1.35.1
