@@ -1,0 +1,7 @@
+---
+- name: "Install Lynis"
+  ansible.builtin.package:
+    name: lynis
+    state: present
+  when: (not "lynis" in ansible_facts.packages)
+  become: true
