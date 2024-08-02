@@ -203,3 +203,4 @@ site/
 
 !**/*.example.yml
 .ansible
+.vault

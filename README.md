@@ -187,3 +187,42 @@ CUSTOM_COLLECTIONS: t.List[CustomAnsibleCollection] = [
 ## Links
 
 - [Linode: Using fail2ban to secure your server](https://www.linode.com/docs/guides/using-fail2ban-to-secure-your-server-a-tutorial/)
+
+## Using Ansible Vault
+
+- [Ansible Vault documentation](https://docs.ansible.com/ansible/latest/vault_guide/index.html)
+
+Encrypting secret variables with Ansible Vault allows for passing secrets like passwords to playbooks/roles. Your vault is encrypted with a [vault password](https://docs.ansible.com/ansible/latest/vault_guide/vault_managing_passwords.html#storing-and-accessing-vault-passwords), which can be read a number of ways. This project [stores the password in a file](https://docs.ansible.com/ansible/latest/vault_guide/vault_managing_passwords.html#storing-passwords-in-files).
+
+### Vault Setup
+
+#### Password file
+
+This project is relatively small, and with only a single user (me). I've [opted to store my password in a file (option 2, 'configuring vault_password_file' in ansible.cfg)](https://www.golinuxcloud.com/ansible-vault-example-encrypt-string-playbook/#Running_Playbooks_with_Vaulted_Files).
+
+Steps:
+
+- Edit `ansible.cfg` and specify the `vault_password_file` in the `[defaults]` section:
+
+```cfg
+[defaults]
+vault_password_file = /path/to/vault_password_file
+```
+
+- (Optional) You can also set your vault password as an environment variable, and set `vault_password_file` to a Bash script that echoes your Ansible vault password:
+
+```shell
+#!/bin/bash
+#
+# Assumes you have set an env variable $ANSIBLE_VAULT_PASS to a value matching your vault password
+#
+
+echo $ANSIBLE_VAULT_PASS
+
+```
+
+Each time you run your playbook, Ansible will unlock the vault by reading from the `vault_password_file`, or echoing the value from the environment (if you set the value to a Bash script).
+
+## Links
+
+- [DigitalOcean: How to use Ansible vault to protect sensitive data](https://www.digitalocean.com/community/tutorials/how-to-use-vault-to-protect-sensitive-ansible-data)
