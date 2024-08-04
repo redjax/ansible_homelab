@@ -1,0 +1,13 @@
+---
+- name: "Restart crowdsec service after enrolling in console"
+  hosts: all
+
+  tasks:
+    - name: "Gather facts"
+      ansible.builtin.import_role:
+        name: my.homelab.facts
+
+    - name: "Restart crowdsec"
+      ansible.builtin.import_role:
+        name: my.homelab.security.crowdsec
+        tasks_from: restart-crowdsec-service.yml
