@@ -1,0 +1,7 @@
+---
+- name: Install crowdsec package
+  ansible.builtin.package:
+    name: crowdsec
+    state: present
+  become: true
+  when: (not "crowdsec" in ansible_facts.packages)

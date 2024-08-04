@@ -6,7 +6,7 @@
     proto: tcp
   become: true
   with_items: "{{ ufw_allow_tcp_ports }}"
-  when: ansible_facts.os_family == "Debian"
+  when: (ansible_facts.os_family == "Debian") and ("ufw" in ansible_facts.packages)
 
 - name: "UWF allow UDP ports"
   community.general.ufw:
@@ -15,7 +15,7 @@
     proto: udp
   become: true
   with_items: "{{ ufw_allow_udp_ports }}"
-  when: ansible_facts.os_family == "Debian"
+  when: (ansible_facts.os_family == "Debian") and ("ufw" in ansible_facts.packages)
 
 - name: "Firewalld allow ports"
   firewalld:
