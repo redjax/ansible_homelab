@@ -1,7 +1,39 @@
 ---
-- name: Install crowdsec package
+- name: Download CrowdSec install script
+  ansible.builtin.get_url:
+    url: https://install.crowdsec.net
+    dest: /tmp/install_crowdsec.sh
+    mode: "0755"
+  become: true
+
+- name: Ensure script exists
+  ansible.builtin.stat:
+    path: /tmp/install_crowdsec.sh
+  register: crowdsec_install_script
+  become: true
+
+- name: Run CrowdSec install script
+  command: /tmp/install_crowdsec.sh
+  become: true
+  when: crowdsec_install_script.stat.exists
+
+- name: Refresh package repositories
+  ansible.builtin.apt:
+    update_cache: yes
+  when: ansible_os_family == 'Debian'
+  become: true
+  changed_when: false
+
+- name: Refresh package repositories
+  ansible.builtin.dnf:
+    update_cache: true
+  when: ansible_os_family == "RedHat"
+  become: true
+  changed_when: false
+
+- name: Install crowdsec from packages list
   ansible.builtin.package:
     name: crowdsec
     state: present
+  when: ("crowdsec" not in ansible_facts.packages)
   become: true
-  when: (not "crowdsec" in ansible_facts.packages)

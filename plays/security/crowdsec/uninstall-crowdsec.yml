@@ -15,14 +15,9 @@
     - name: "Install crowdsec"
       ansible.builtin.import_role:
         name: my.homelab.security.crowdsec
-        tasks_from: install-crowdsec.yml
+        tasks_from: uninstall-crowdsec.yml
 
-    - name: "Allow crowdsec ports through firewall"
+    - name: "Remove crowdsec ports from firewall"
       ansible.builtin.import_role:
         name: my.homelab.security.firewall
-        tasks_from: allow-ports.yml
-
-    - name: "Enroll crowdsec in console"
-      ansible.builtin.import_role:
-        name: my.homelab.security.crowdsec
-        tasks_from: enroll-crowdsec.yml
+        tasks_from: disallow-ports.yml
