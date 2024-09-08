@@ -10,7 +10,7 @@ argcomplete==3.4.0
 cffi==1.16.0; platform_python_implementation != "PyPy"
 colorama==0.4.6
 colorlog==6.8.2
-cryptography==43.0.0
+cryptography==43.0.1
 distlib==0.3.8
 docutils==0.21.2
 dynaconf==3.2.5

@@ -8,7 +8,7 @@ anyconfig==0.14.0
 appdirs==1.4.4
 cffi==1.16.0; platform_python_implementation != "PyPy"
 colorama==0.4.6
-cryptography==43.0.0
+cryptography==43.0.1
 docutils==0.21.2
 dynaconf==3.2.5
 gitdb==4.0.11
