@@ -1,0 +1,13 @@
+---
+- name: "Install Lynis package"
+  hosts: all
+
+  tasks:
+    - name: "Gather facts"
+      ansible.builtin.import_role:
+        name: my.homelab.facts
+
+    - name: "Install lynis"
+      ansible.builtin.import_role:
+        name: my.homelab.security.lynis
+        tasks_from: install-lynis.yml

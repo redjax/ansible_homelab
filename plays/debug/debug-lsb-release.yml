@@ -1,0 +1,9 @@
+---
+- name: "Ansible debug remote host LSB release"
+  hosts: all
+
+  tasks:
+    - name: "Call homelab collection's debug role"
+      ansible.builtin.import_role:
+        name: my.homelab.debug
+        tasks_from: debug-release.yml

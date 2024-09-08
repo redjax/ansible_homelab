@@ -1,0 +1,13 @@
+---
+- name: "Remove dependency packages that are no longer required"
+  hosts: all
+
+  tasks:
+    - name: "Gather facts"
+      ansible.builtin.import_role:
+        name: my.homelab.facts
+
+    - name: "Call homelab collection's update_system.apt-autoclean tasks"
+      ansible.builtin.include_role:
+        name: my.homelab.update_system
+        tasks_from: apt-autoclean.yml

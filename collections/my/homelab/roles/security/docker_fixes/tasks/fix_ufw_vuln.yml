@@ -1,0 +1,71 @@
+---
+- name: "Check if Docker is installed"
+  ansible.builtin.command: docker --version
+  register: docker_installed
+  ignore_errors: true
+
+- name: "Check if UFW is installed"
+  ansible.builtin.command: ufw --version
+  register: ufw_installed
+  ignore_errors: true
+
+- name: "[DEBUG] Docker is installed"
+  ansible.builtin.debug:
+    msg: "Docker found on system"
+  when: docker_installed.rc == 0
+
+- name: "[DEBUG] Docker is not installed"
+  ansible.builtin.debug:
+    msg: "Docker was not found on system"
+  when: docker_installed.rc != 0
+
+- name: "[DEBUG] UFW is installed"
+  ansible.builtin.debug:
+    msg: "UFW found on system"
+  when: ufw_installed.rc == 0
+
+- name: "[DEBUG] UFW is not installed"
+  ansible.builtin.debug:
+    msg: "UFW was not found on system"
+  when: ufw_installed.rc != 0
+
+- name: "Check if /etc/default/docker exists"
+  ansible.builtin.stat:
+    path: /etc/default/docker
+  register: docker_conf_dir
+  when: ufw_installed.rc == 0 and docker_installed.rc == 0
+
+- name: "Check if the line 'DOCKER_OPTS=--iptables=false' exists"
+  ansible.builtin.command:
+    cmd: grep -q "^DOCKER_OPTS=--iptables=false" /etc/default/docker
+  register: check_line
+  failed_when: false
+  changed_when: false
+  ignore_errors: true
+  when: ufw_installed.rc == 0 and docker_installed.rc == 0 and docker_conf_dir.stat.exists
+
+- name: "[DEBUG] Line found"
+  ansible.builtin.debug:
+    msg: "Found line 'DOCKER_OPTS=--iptables=false' in file /etc/default/docker."
+  when: ufw_installed.rc == 0 and docker_installed.rc == 0 and check_line.rc == 0 and docker_conf_dir.stat.exists
+
+- name: "[DEBUG] Line not found"
+  ansible.builtin.debug:
+    msg: "Did not find line 'DOCKER_OPTS=--iptables=false' in file /etc/default/docker."
+  when: ufw_installed.rc == 0 and docker_installed.rc == 0 and check_line.rc != 0 and docker_conf_dir.stat.exists
+
+- name: "Add the line 'DOCKER_OPTS=--iptables=false' to /etc/default/docker"
+  ansible.builtin.lineinfile:
+    path: /etc/default/docker
+    line: "DOCKER_OPTS=--iptables=false"
+    state: present
+  become: true
+  register: line_added
+  when: ufw_installed.rc == 0 and docker_installed.rc == 0 and check_line.rc != 0 and docker_conf_dir.stat.exists
+
+- name: "Restart Docker daemon"
+  ansible.builtin.systemd:
+    name: docker
+    state: restarted
+  become: true
+  when: ufw_installed.rc == 0 and docker_installed.rc == 0 and line_added.changed

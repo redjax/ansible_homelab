@@ -1,0 +1,13 @@
+---
+- name: "Remediate Docker + UFW vulnerability"
+  hosts: all
+
+  tasks:
+    - name: "Gather facts"
+      ansible.builtin.import_role:
+        name: my.homelab.facts
+
+    - name: "Fix Docker UFW vulnerability"
+      ansible.builtin.import_role:
+        name: my.homelab.security.docker_fixes
+        tasks_from: fix_ufw_vuln.yml

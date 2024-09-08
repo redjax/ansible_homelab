@@ -1,0 +1,16 @@
+---
+# defaults file for zabbix
+zabbix_agent_logfile: "/var/log/zabbix/zabbix_agent2.log"
+## Range: 0-1024, 0=disabled log rotation
+zabbix_agent_logfile_size: 0
+## Range: 0-5, default=3 (warnings).
+#  0=basic, 1=critical, 2=error, 3=warnings, 4=debug, 5=verbose debug
+zabbix_agent_debug_level: 3
+## Range: 1024-32767, default=10050
+zabbix_agent_listen_port: 10050
+## Default: 0.0.0.0
+zabbix_agent_listen_ip: 0.0.0.0
+## Default: unset, use playbook or inventory vars
+zabbix_agent_server_addr: null
+## Default: unset, use playbook or inventory vars
+zabbix_agent_server_active: null

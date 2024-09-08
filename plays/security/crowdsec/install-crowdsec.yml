@@ -1,0 +1,24 @@
+---
+- name: "Install crowdsec package"
+  hosts: all
+
+  vars:
+    ufw_allow_tcp_ports: ["8080", "6060"]
+    ufw_allow_udp_ports: []
+    firwalld_allow_ports: ["8080/tcp", "/tcp"]
+    crowdsec_enroll_token: "{{ crowdsec_enroll_token }}"
+
+  tasks:
+    - name: "Gather facts"
+      ansible.builtin.import_role:
+        name: my.homelab.facts
+
+    - name: "Install crowdsec"
+      ansible.builtin.import_role:
+        name: my.homelab.security.crowdsec
+        tasks_from: install-crowdsec.yml
+
+    - name: "Allow crowdsec ports through firewall"
+      ansible.builtin.import_role:
+        name: my.homelab.security.firewall
+        tasks_from: allow-ports.yml

@@ -1,0 +1,7 @@
+---
+- name: "Install podman"
+  ansible.builtin.package:
+    name: "podman"
+    state: present
+  when: ("podman" not in ansible_facts.packages)
+  become: true

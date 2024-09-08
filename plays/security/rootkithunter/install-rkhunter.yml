@@ -1,0 +1,13 @@
+---
+- name: "Install rootkithunter package"
+  hosts: all
+
+  tasks:
+    - name: "Gather facts"
+      ansible.builtin.import_role:
+        name: my.homelab.facts
+
+    - name: "Install rootkithunter"
+      ansible.builtin.import_role:
+        name: my.homelab.security.rootkithunter
+        tasks_from: install-rkhunter.yml

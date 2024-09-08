@@ -1,0 +1,7 @@
+---
+- name: "Install RootkitHunter"
+  ansible.builtin.package:
+    name: rkhunter
+    state: present
+  become: true
+  when: (not "rkhunter" in ansible_facts.packages)
