@@ -1,6 +1,7 @@
 ---
 - name: "Remediate Docker + UFW vulnerability"
   hosts: all
+  become: true
 
   tasks:
     - name: "Gather facts"
