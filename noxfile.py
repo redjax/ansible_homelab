@@ -94,6 +94,28 @@ def setup_nox_logging(
         logging.getLogger(_logger).setLevel(logging.WARNING)
 
 
+def pdm_export_requirements(session: nox.Session):
+    log.info("Exporting production requirements")
+    session.run(
+        "pdm",
+        "export",
+        "--prod",
+        "-o",
+        "requirements.txt",
+        "--without-hashes",
+    )
+
+    log.info("Exporting development requirements")
+    session.run(
+        "pdm",
+        "export",
+        "-d",
+        "-o",
+        "requirements.dev.txt",
+        "--without-hashes",
+    )
+
+
 setup_nox_logging(level_name="DEBUG", disable_loggers=[])
 log = logging.getLogger("nox")
 
@@ -378,6 +400,22 @@ def export_requirements(session: nox.Session):
         "requirements.dev.txt",
         "--without-hashes",
     )
+
+
+@nox.session(python=DEFAULT_PYTHON, name="pdm-update-all", tags=["requirements"])
+def update_all_pdm_dependencies(session: nox.Session):
+    session.install("pdm")
+
+    log.info("Updating all PDM dependencies")
+    try:
+        session.run("pdm", "update", "--update-all")
+    except Exception as exc:
+        msg = f"({type(exc)}) Unhandled exception updating all PDM requirements. Details: {exc}"
+        log.error(msg)
+
+        raise exc
+
+    pdm_export_requirements(session=session)
 
 
 @nox.session(
