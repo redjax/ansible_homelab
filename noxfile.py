@@ -381,25 +381,7 @@ def run_linter(session: nox.Session, lint_paths: list[Path]):
 def export_requirements(session: nox.Session):
     session.install("pdm")
 
-    log.info("Exporting production requirements")
-    session.run(
-        "pdm",
-        "export",
-        "--prod",
-        "-o",
-        "requirements.txt",
-        "--without-hashes",
-    )
-
-    log.info("Exporting development requirements")
-    session.run(
-        "pdm",
-        "export",
-        "-d",
-        "-o",
-        "requirements.dev.txt",
-        "--without-hashes",
-    )
+    pdm_export_requirements(session=session)
 
 
 @nox.session(python=DEFAULT_PYTHON, name="pdm-update-all", tags=["requirements"])
