@@ -1,0 +1,27 @@
+---
+- name: "UWF allow TCP ports"
+  community.general.ufw:
+    policy: allow
+    port: "{{ item }}"
+    proto: tcp
+  become: true
+  with_items: "{{ ufw_allow_tcp_ports }}"
+  when: (ansible_facts.os_family == "Debian") and ("ufw" in ansible_facts.packages)
+
+- name: "UWF allow UDP ports"
+  community.general.ufw:
+    policy: allow
+    port: "{{ item }}"
+    proto: udp
+  become: true
+  with_items: "{{ ufw_allow_udp_ports }}"
+  when: (ansible_facts.os_family == "Debian") and ("ufw" in ansible_facts.packages)
+
+- name: "Firewalld allow ports"
+  firewalld:
+    port: "{{ item }}"
+    permanent: yes
+    state: enabled
+  with_items: "{{ firewalld_allow_ports }}"
+  become: true
+  when: ansible_facts.os_family == "RedHat"

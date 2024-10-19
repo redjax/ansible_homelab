@@ -1,0 +1,8 @@
+---
+- name: "Install fail2ban package"
+  ansible.builtin.package:
+    name:
+      - fail2ban
+    state: present
+  become: true
+  when: ("fail2ban" not in ansible_facts.packages)

@@ -1,0 +1,21 @@
+---
+- name: "Configure fail2ban package"
+  hosts: all
+
+  tasks:
+    - name: "Backup fail2ban configs"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.security.fail2ban
+        tasks_from: backup-fail2ban-confs.yml
+
+    - name: "Copy templated fail2ban config files"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.security.fail2ban
+        tasks_from: install-fail2ban-confs.yml
+      when: ("fail2ban" in ansible_facts.packages)
+
+    - name: "Enable fail2ban"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.security.fail2ban
+        tasks_from: enable-fail2ban.yml
+      when: ("fail2ban" in ansible_facts.packages)

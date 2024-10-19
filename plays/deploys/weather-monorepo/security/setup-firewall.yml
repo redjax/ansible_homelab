@@ -1,0 +1,73 @@
+---
+- name: "Setup firewall & allowed ports"
+  hosts: all
+  gather_facts: true
+
+  vars:
+    ufw_allow_tcp_ports: [
+        ## SSH
+        22,
+        ## HTTP
+        80,
+        ## HTTPS
+        443,
+        ## Postgres
+        5432,
+        ## pgAdmin web
+        15432,
+        ## RabbitMQ
+        5672,
+        ## RabbitMQ management port
+        15672,
+        ## Redis
+        6379,
+      ]
+    ufw_allow_udp_ports: []
+    firewalld_allow_ports: [
+        ## SSH
+        "22/tcp",
+        ## HTTP
+        "80/tcp",
+        ## HTTPS
+        "443/tcp",
+        ## Postgres
+        "5432/tcp",
+        ## pgAdmin web
+        "15432/tcp",
+        ## RabbitMQ
+        "5672/tcp",
+        ## RabbitMQ management port
+        "15672/tcp",
+        ## Redis
+        "6379/tcp",
+      ]
+    ufw_disallow_tcp_ports: []
+    ufw_disallow_udp_ports: []
+    firewalld_disallow_ports: []
+
+  tasks:
+    - name: "Gather facts"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.facts
+        tasks_from: gather-package-facts.yml
+
+    - name: "Install firewall"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.security.firewall
+        tasks_from: install-firewall.yml
+
+    - name: "Enable firewall"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.security.firewall
+        tasks_from: enable-firewall.yml
+
+    - name: "Allow ports"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.security.firewall
+        tasks_from: allow-ports.yml
+
+    - name: "Fix UFW/Docker vulnerability on Debian-based hosts"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.installs.docker
+        tasks_from: fix-ufw-vuln.yml
+      when: ansible_facts['os_family'] == 'Debian'

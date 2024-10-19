@@ -1,0 +1,84 @@
+## [ MANAGED BY ANSIBLE ]
+#  Modifications here overwrite the /etc/fail2ban/fail2ban.conf file
+#  Default fail2ban.conf: https://github.com/fail2ban/fail2ban/blob/master/config/fail2ban.conf
+
+[DEFAULT]
+
+# Option: loglevel
+# Notes.: Set the log level output.
+#         CRITICAL
+#         ERROR
+#         WARNING
+#         NOTICE
+#         INFO
+#         DEBUG
+# Values: [ LEVEL ]  Default: INFO
+#
+loglevel = {{ fail2ban_default_loglevel }}
+
+# Option: logtarget
+# Notes.: Set the log target. This could be a file, SYSTEMD-JOURNAL, SYSLOG, STDERR or STDOUT.
+#         Only one log target can be specified.
+#         If you change logtarget from the default value and you are
+#         using logrotate -- also adjust or disable rotation in the
+#         corresponding configuration file
+#         (e.g. /etc/logrotate.d/fail2ban on Debian systems)
+# Values: [ STDOUT | STDERR | SYSLOG | SYSOUT | SYSTEMD-JOURNAL | FILE ]  Default: STDERR
+#
+logtarget = {{ fail2ban_default_logtarget }}
+
+# Option: syslogsocket
+# Notes: Set the syslog socket file. Only used when logtarget is SYSLOG
+#        auto uses platform.system() to determine predefined paths
+# Values: [ auto | FILE ]  Default: auto
+syslogsocket = {{ fail2ban_default_syslogsocket }}
+
+# Option: socket
+# Notes.: Set the socket file. This is used to communicate with the daemon. Do
+#         not remove this file when Fail2ban runs. It will not be possible to
+#         communicate with the server afterwards.
+# Values: [ FILE ]  Default: /var/run/fail2ban/fail2ban.sock
+#
+socket = {{ fail2ban_default_socket }}
+
+# Option: pidfile
+# Notes.: Set the PID file. This is used to store the process ID of the
+#         fail2ban server.
+# Values: [ FILE ]  Default: /var/run/fail2ban/fail2ban.pid
+#
+pidfile = {{ fail2ban_default_pidfile }}
+
+# Option: allowipv6
+# Notes.: Allows IPv6 interface:
+#         Default: auto
+# Values: [ auto yes (on, true, 1) no (off, false, 0) ] Default: auto
+allowipv6 = {{ fail2ban_default_allowipv6 }}
+
+# Options: dbfile
+# Notes.: Set the file for the fail2ban persistent data to be stored.
+#         A value of ":memory:" means database is only stored in memory 
+#         and data is lost when fail2ban is stopped.
+#         A value of "None" disables the database.
+# Values: [ None :memory: FILE ] Default: /var/lib/fail2ban/fail2ban.sqlite3
+dbfile = {{ fail2ban_default_dbfile }}
+
+# Options: dbpurgeage
+# Notes.: Sets age at which bans should be purged from the database
+# Values: [ SECONDS ] Default: 86400 (24hours)
+dbpurgeage = {{ fail2ban_default_dbpurgeage }}
+
+# Options: dbmaxmatches
+# Notes.: Number of matches stored in database per ticket (resolvable via 
+#         tags <ipmatches>/<ipjailmatches> in actions)
+# Values: [ INT ] Default: 10
+dbmaxmatches = {{ fail2ban_default_dbmaxmatches }}
+
+[Definition]
+
+[Thread]
+
+# Options: stacksize
+# Notes.: Specifies the stack size (in KiB) to be used for subsequently created threads,
+#         and must be 0 or a positive integer value of at least 32.
+# Values: [ SIZE ] Default: 0 (use platform or configured default)
+#stacksize = {{ fail2ban_default_stacksize }}
