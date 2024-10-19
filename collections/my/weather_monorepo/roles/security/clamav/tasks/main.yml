@@ -1,0 +1,13 @@
+---
+# tasks file for install-clamav
+- name: "Check packages"
+  ansible.builtin.package_facts:
+    manager: auto
+
+- name: "Install ClamAV"
+  ansible.builtin.include_tasks: install_clamav.yml
+  when: ("clamav" not in ansible_facts.packages)
+
+- name: "Restart ClamAV systemd service"
+  ansible.builtin.include_tasks: restart_clamav_systemd.yml
+  when: ("clamav" in ansible_facts.packages)
