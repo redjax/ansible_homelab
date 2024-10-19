@@ -23,6 +23,10 @@
 		{
 			"path": "../collections/my/homelab/roles",
 			"name": "my.homelab Collection Roles"
+		},
+		{
+			"path": "../collections/my/weather_monorepo/roles",
+			"name": "my.weather_monorepo Collection Roles"
 		}
 	],
 	"settings": {

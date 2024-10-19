@@ -1,0 +1,25 @@
+---
+all:
+  hosts:
+    deb-weatherbox:
+      ansible_ssh_host: "192.168.1.xxx"
+
+  vars:
+    ## These vars will be applied to all hosts in this list.
+    #  Values can be overwritten in other groups below
+    ansible_svc_user: "{{ ansible_svc_user | default('ansible_svc')}}"
+    ## Example: "22", "80", "443"
+    ufw_tcp_allowed_ports: ["22", "80", "443"]
+    ufw_udp_allowed_ports: []
+    ## Example: "22/tcp", "80/tcp", "443/tcp"
+    firewalld_allowed_ports: ["22/tcp", "80/tcp", "443/tcp"]
+
+    ## Example: "22", "80", "443"
+    ufw_tcp_disallowed_ports: ["9999"]
+    ufw_udp_disallowed_ports: []
+    ## Example: "22/tcp", "80/tcp", "443/tcp"
+    firewalld_disallowed_ports: ["9999/tcp"]
+## Groups
+# testing:
+#   hosts:
+#     host1:

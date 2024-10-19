@@ -4,3 +4,4 @@
 
   vars:
     debian_pkgs: "{{ common_debian_packages }}"
+    project_pkgs: "{{ project_pkgs }}"

@@ -4,3 +4,7 @@ collections:
   - name: my.homelab
     type: dir
     source: collections/my/homelab
+
+  - name: my.weather_monorepo
+    type: dir
+    source: collections/my/weather_monorepo

@@ -1,0 +1,14 @@
+---
+- name: "Check if .cargo/bin/uv exists"
+  ansible.builtin.stat:
+    path: "{{ ansible_user_dir }}/.cargo/bin/uv"
+  register: uv_bin
+
+- name: "Install Astral 'uv' using official install.sh script"
+  ansible.builtin.shell: |
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+  args:
+    executable: /bin/bash
+  become: true
+  become_user: "{{ remote_host_user }}"
+  when: not uv_bin.stat.exists

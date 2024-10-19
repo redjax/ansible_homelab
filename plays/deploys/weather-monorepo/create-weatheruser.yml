@@ -1,0 +1,16 @@
+---
+- name: "Create user for weather-monorepo"
+  hosts: all
+
+  vars:
+    new_user_name: "weatheruser"
+
+  tasks:
+    - name: "Gather facts"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.facts
+
+    - name: "Call weather_monorepo collection's setup.user creation"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.setup.user
+        tasks_from: create-user.yml

@@ -9,12 +9,15 @@ import platform
 import typing as t
 import shutil
 import secrets
+from contextlib import contextmanager
+
+log = logging.getLogger(__name__)
 
 import nox
 import nox.command
 
 ## https://pdm-project.org/latest/usage/advanced/#use-nox-as-the-runner
-os.environ.update({"PDM_IGNORE_SAVED_PYTHON": "1"})
+# os.environ.update({"PDM_IGNORE_SAVED_PYTHON": "1"})
 
 nox.options.default_venv_backend = "venv"
 nox.options.reuse_existing_virtualenvs = True
@@ -43,6 +46,17 @@ DOCS_REQUIREMENTS_FILE: Path = Path("docs/requirements.txt")
 DOCS_VENV_PATH: Path = Path(".mkdocs-venv")
 MKDOCS_DEV_PORT: int = 8000
 MKDOCS_DEV_ADDR: str = "0.0.0.0"
+
+
+logging.basicConfig(
+    level="DEBUG",
+    format="%(name)s | [%(levelname)s] > %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
+
+## Add logger names to the list to 'silence' them, reducing log noise from 3rd party packages
+for _logger in []:
+    logging.getLogger(_logger).setLevel("WARNING")
 
 
 def setup_nox_logging(
@@ -116,8 +130,48 @@ def pdm_export_requirements(session: nox.Session):
     )
 
 
-setup_nox_logging(level_name="DEBUG", disable_loggers=[])
-log = logging.getLogger("nox")
+@contextmanager
+def cd(newdir):
+    """Context manager to change a directory before executing command."""
+    prevdir = os.getcwd()
+    os.chdir(os.path.expanduser(newdir))
+    try:
+        yield
+    finally:
+        os.chdir(prevdir)
+
+
+def check_path_exists(p: t.Union[str, Path] = None) -> bool:
+    """Check the existence of a path.
+
+    Params:
+        p (str | Path): The path to the directory/file to check.
+
+    Returns:
+        (True): If Path defined in `p` exists.
+        (False): If Path defined in `p` does not exist.
+
+    """
+    p: Path = Path(f"{p}")
+    if "~" in f"{p}":
+        p = p.expanduser()
+
+    _exists: bool = p.exists()
+
+    if not _exists:
+        log.error(FileNotFoundError(f"Could not find path '{p}'."))
+
+    return _exists
+
+
+def install_uv_project(session: nox.Session, external: bool = False) -> None:
+    """Method to install uv and the current project in a nox session."""
+    log.info("Installing uv in session")
+    session.install("uv")
+    log.info("Syncing uv project")
+    session.run("uv", "sync", external=external)
+    log.info("Installing project")
+    session.run("uv", "pip", "install", ".", external=external)
 
 
 @dataclass
@@ -157,7 +211,12 @@ class CustomAnsibleCollection:
 CUSTOM_COLLECTIONS: t.List[CustomAnsibleCollection] = [
     CustomAnsibleCollection(
         name="homelab", fqcn="my.homelab", path=Path(f"{MY_COLLECTIONS_PATH}/homelab")
-    )
+    ),
+    CustomAnsibleCollection(
+        name="weather-monorepo",
+        fqcn="my.weather_monorepo",
+        path=Path(f"{MY_COLLECTIONS_PATH}/weather_monorepo"),
+    ),
 ]
 
 ## Define versions to test
@@ -421,7 +480,8 @@ def build_custom_collections(
 
             raise exc
 
-    session.install("ansible-core")
+    # session.install("ansible-core")
+    install_uv_project(session=session)
 
     for _collection in custom_collections:
         log.info(
@@ -440,6 +500,8 @@ def build_custom_collections(
 
         try:
             session.run(
+                "uv",
+                "run",
                 "ansible-galaxy",
                 "collection",
                 "build",
@@ -457,6 +519,64 @@ def build_custom_collections(
             continue
 
 
+# @nox.session(
+#     python=DEFAULT_PYTHON,
+#     name="install-ansible-requirements",
+#     tags=["ansible", "install"],
+# )
+# def install_collections(session: nox.Session):
+#     assert Path("requirements.yml").exists(), FileNotFoundError(
+#         "Could not find Ansible project requirements.yml."
+#     )
+
+#     session.install("ansible-core")
+
+#     log.info("Installing collections from requirements.yml")
+
+#     try:
+#         session.run("ansible-galaxy", "collection", "install", "-r", "requirements.yml")
+#     except Exception as exc:
+#         msg = Exception(
+#             f"({type(exc)}) Unhandled exception installing Ansible Galaxy requirements from requirements.yml. Details: {exc}"
+#         )
+#         log.error(msg)
+
+#         raise exc
+
+#     log.info("Installing roles from requirements.yml")
+
+#     try:
+#         session.run("ansible-galaxy", "role", "install", "-r", "requirements.yml")
+#     except Exception as exc:
+#         msg = Exception(
+#             f"({type(exc)}) Unhandled exception installing Ansible Galaxy requirements from requirements.yml. Details: {exc}"
+#         )
+#         log.error(msg)
+
+#         raise exc
+
+#     if Path("requirements.private.yml").exists():
+#         log.info(
+#             "Ensuring local collections are installed from requirements.private.yml with --force"
+#         )
+#         try:
+#             session.run(
+#                 "ansible-galaxy",
+#                 "collection",
+#                 "install",
+#                 "-r",
+#                 "requirements.private.yml",
+#                 "--force",
+#             )
+#         except Exception as exc:
+#             msg = Exception(
+#                 f"Unhandled exception installing packages from 'requirements.private.yml'. Details: {exc}"
+#             )
+#             log.error(msg)
+
+#             raise exc
+
+
 @nox.session(
     python=DEFAULT_PYTHON,
     name="install-ansible-requirements",
@@ -467,12 +587,22 @@ def install_collections(session: nox.Session):
         "Could not find Ansible project requirements.yml."
     )
 
-    session.install("ansible-core")
+    install_uv_project(session=session)
 
-    log.info("Installing collections from requirements.yml")
+    # session.install("ansible-core")
+
+    # log.info("Installing collections from requirements.yml")
 
     try:
-        session.run("ansible-galaxy", "collection", "install", "-r", "requirements.yml")
+        session.run(
+            "uv",
+            "run",
+            "ansible-galaxy",
+            "collection",
+            "install",
+            "-r",
+            "requirements.yml",
+        )
     except Exception as exc:
         msg = Exception(
             f"({type(exc)}) Unhandled exception installing Ansible Galaxy requirements from requirements.yml. Details: {exc}"
@@ -484,7 +614,9 @@ def install_collections(session: nox.Session):
     log.info("Installing roles from requirements.yml")
 
     try:
-        session.run("ansible-galaxy", "role", "install", "-r", "requirements.yml")
+        session.run(
+            "uv", "run", "ansible-galaxy", "role", "install", "-r", "requirements.yml"
+        )
     except Exception as exc:
         msg = Exception(
             f"({type(exc)}) Unhandled exception installing Ansible Galaxy requirements from requirements.yml. Details: {exc}"
@@ -499,6 +631,8 @@ def install_collections(session: nox.Session):
         )
         try:
             session.run(
+                "uv",
+                "run",
                 "ansible-galaxy",
                 "collection",
                 "install",

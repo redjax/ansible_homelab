@@ -1,0 +1,13 @@
+---
+- name: "Install astral uv (https://astral.sh/uv)"
+  hosts: all
+
+  tasks:
+    - name: "Gather facts"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.facts
+
+    - name: "Call weather-monorepo collection's python/install-with-pipx.yml task"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.installs.python.astral_uv
+        tasks_from: install-uv.yml
