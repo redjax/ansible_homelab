@@ -8,6 +8,10 @@ ansible_ssh_user: "ansible_svc"
 ## Name of ansible service user account
 ansible_svc_user: "ansible_svc"
 
+## Directory where SSH keys will be output. Defaults to the directory
+#  a playbook was called from, i.e. plays/onboard/ssh_keys
+ansible_ssh_key_dir: "/home/<USER>/ansible_ssh"
+
 ## Path to service account SSH private key
 ansible_ssh_private_key_file: "{{ ansible_ssh_key_dir }}/{{ ansible_svc_user }}"
 ## Path to service account SSH public key
@@ -22,7 +26,7 @@ remote_host_user: "weatheruser"
 #############
 
 ## Generate new keys at: https://login.tailscale.com/admin/settings/keys
-tailscale_preauth_key: "tskey-auth-kL3jsw9QAQ11CNTRL-2NdDdu3YWL2zbtXHgeReD25XPtGuD2MXN"
+tailscale_preauth_key: ""
 
 #######
 # Git #
@@ -30,6 +34,10 @@ tailscale_preauth_key: "tskey-auth-kL3jsw9QAQ11CNTRL-2NdDdu3YWL2zbtXHgeReD25XPtG
 git_default_branch_name: "main"
 git_user_name: "redjax"
 git_user_email: "5534031+redjax@users.noreply.github.com"
+
+git_repo_url: "git@github.com:redjax/weather-monorepo.git"
+git_repo_dest: "/home/{{ remote_host_user }}/weather-monorepo"
+git_ssh_key: "/home/{{ remote_host_user }}/.ssh/github_id_rsa"
 
 ##########
 # System #
