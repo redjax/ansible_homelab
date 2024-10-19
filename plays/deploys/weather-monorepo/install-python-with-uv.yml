@@ -1,0 +1,16 @@
+---
+- name: "Install Astral uv Python project manager (https://astral.sh/uv)"
+  hosts: all
+
+  vars:
+    uv_python_version_str: 3.11 3.12
+
+  tasks:
+    - name: "Gather facts"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.facts
+
+    - name: "Call weather-monorepo collection's python/install-python.yml task"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.installs.python.astral_uv
+        tasks_from: install-python.yml
