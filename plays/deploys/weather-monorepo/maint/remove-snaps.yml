@@ -1,0 +1,12 @@
+---
+- name: "Remove Snaps from Ubuntu"
+  hosts: all
+
+  tasks:
+    - name: "Gather facts"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.facts
+
+    - name: "Call homelab collection's remove-snaps role"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.remove_snaps
