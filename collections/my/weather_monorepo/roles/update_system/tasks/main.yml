@@ -1,0 +1,17 @@
+---
+# tasks file for roles/maint/update_system
+- name: "Run system updates, reboot if necessary (and enabled)"
+  ansible.builtin.package_facts:
+    manager: auto
+
+- name: "Update Debian systems"
+  ansible.builtin.include_tasks: update-debian-family.yml
+  when: (ansible_facts.os_family == "Debian")
+
+- name: "Update Redhat systems"
+  ansible.builtin.include_tasks: update-redhat-family.yml
+  when: ansible_facts.os_family == "RedHat"
+
+- name: "Reboot system after update, if required"
+  ansible.builtin.include_tasks: reboot-for-updates.yml
+  when: reboot_if_necessary
