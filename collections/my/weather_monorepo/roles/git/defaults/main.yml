@@ -1,3 +1,4 @@
 ---
 # defaults file for roles/common/configure-git
 git_default_branch_name: "main"
+repo_checkout_branch: "main"

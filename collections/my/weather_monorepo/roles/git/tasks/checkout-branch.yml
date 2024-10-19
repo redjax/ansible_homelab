@@ -12,20 +12,11 @@
     dest: "{{ repo_dest }}"
     accept_hostkey: true
     key_file: "{{ gh_ssh_key }}"
-  when: ("git" in ansible_facts.packages) and (not repo_dest_dir.stat.exists)
+    refspec: "+refs/pull/*:refs/heads/*"
+    version: "{{ repo_checkout_branch }}"
+  when: ("git" in ansible_facts.packages) and (repo_dest_dir.stat.exists)
   become: true
   become_user: "{{ remote_host_user }}"
   environment:
     ## Avoid hangs when http(s) password is missing
     GIT_TERMINAL_PROMPT: "0"
-
-- name: "Check that repostitory cloned successfully"
-  ansible.builtin.stat:
-    path: "{{ repo_dest }}"
-  register: cloned_repo_dest
-  run_once: true
-  become: true
-
-- name: "[DEBUG] {{ repo_dest }} existence"
-  ansible.builtin.debug:
-    msg: "{{ repo_dest }} exists: {{ cloned_repo_dest.stat.exists }}"
