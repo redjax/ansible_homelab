@@ -1,0 +1,10 @@
+---
+- name: "Gather the package facts"
+  ansible.builtin.package_facts:
+    manager: auto
+
+- name: "Enroll host in crowdsec console"
+  ansible.builtin.command: "cscli console enroll {{ crowdsec_enroll_token }} -n {{ inventory_hostname }}"
+  become: true
+  when: ("crowdsec" in ansible_facts.packages)
+  register: crowdsec_enroll_out
