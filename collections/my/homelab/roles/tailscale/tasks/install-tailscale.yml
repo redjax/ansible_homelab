@@ -1,4 +1,12 @@
 ---
+- name: "Install requirements"
+  apt:
+    name: gnupg2
+    state: present
+    update_cache: true
+  become: true
+  when: ansible_facts['os_family'] == "Debian"
+
 - name: "Install Tailscale"
   apt:
     name: tailscale
