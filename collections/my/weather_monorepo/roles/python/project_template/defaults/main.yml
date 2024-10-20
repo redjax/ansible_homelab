@@ -1,0 +1,39 @@
+---
+## Python project config variables (Dynaconf)
+pyproject_config_app_log_level: "INFO"
+
+pyproject_config_db_type: "postgres"
+pyproject_config_db_drivername: "postgresql+psycopg2"
+pyproject_config_db_username: "postgres"
+pyproject_config_db_host: "127.0.0.1"
+pyproject_config_db_port: 5432
+pyproject_config_db_database: "weather"
+pyproject_config_db_echo: false
+pyproject_config_db_password: "postgres"
+
+pyproject_config_celery_broker_host: "localhost"
+pyproject_config_celery_broker_port: 5672
+pyproject_config_celery_broker_user: "rabbitmq"
+pyproject_config_celery_broker_password: "rabbitmq"
+pyproject_config_celery_backend_host: "localhost"
+pyproject_config_celery_backend_port: 6379
+pyproject_config_celery_worker_log_level: "INFO"
+pyproject_config_celery_beat_log_level: "INFO"
+pyproject_config_celery_tz: "America/New_York"
+
+pyproject_config_weatherapi_location: "London"
+pyproject_config_weatherapi_api_key: ""
+
+## Docker container .env variables
+pyproject_docker_rabbitmq_management_port: 15672
+pyproject_config_celery_data_dir: "rabbitmq_data"
+
+pyproject_docker_postgres_data_dir: "./vols/postgres/data"
+pyproject_docker_postgres_scripts_dir: "./vols/postgres/pgsql_scripts"
+pyproject_docker_postgres_entrypoint_dir: "./vols/postgres/pg_entrypoint"
+pyproject_docker_postgres_database: "weather"
+
+pyproject_docker_pgadmin_email: "admin@example.com"
+pyproject_docker_pgadmin_password: "pgAdmin!"
+pyproject_docker_pgadmin_webui_port: 15432
+pyproject_docker_pgadmin_data_dir: "./vols/pgadmin/data"
