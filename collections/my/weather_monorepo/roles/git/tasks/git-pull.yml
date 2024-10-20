@@ -6,7 +6,7 @@
   run_once: true
   become: true
 
-- name: "Clone repository: {{ repo_url }} to {{ repo_dest }}"
+- name: "Git pull changes"
   ansible.builtin.git:
     repo: "{{ repo_url }}"
     dest: "{{ repo_dest }}"
@@ -14,7 +14,8 @@
     key_file: "{{ gh_ssh_key }}"
     refspec: "+refs/pull/*:refs/heads/*"
     version: "{{ repo_checkout_branch }}"
-    clone: true
+    update: true
+    clone: false
   when: ("git" in ansible_facts.packages) and (repo_dest_dir.stat.exists)
   become: true
   become_user: "{{ remote_host_user }}"
