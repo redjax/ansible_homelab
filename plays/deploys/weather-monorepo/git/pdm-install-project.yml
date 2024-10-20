@@ -1,0 +1,17 @@
+---
+- name: "Install project with pdm"
+  hosts: all
+  gather_facts: true
+
+  vars:
+    repo_dest: "{{ git_repo_dest }}"
+
+  tasks:
+    - name: "Gather the package facts"
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: "Install project"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.installs.python.pdm
+        tasks_from: run-pdm-install.yml
