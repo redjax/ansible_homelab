@@ -12,5 +12,5 @@
 
     - name: "Call weather-monorepo collection's python/install-python.yml task"
       ansible.builtin.import_role:
-        name: my.weather_monorepo.installs.python.astral_uv
+        name: my.weather_monorepo.python.astral_uv
         tasks_from: install-python.yml

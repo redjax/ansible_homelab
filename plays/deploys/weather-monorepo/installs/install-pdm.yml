@@ -9,10 +9,10 @@
 
     - name: "Call weather-monorepo collection's python/pdm/install-pdm.yml task"
       ansible.builtin.import_role:
-        name: my.weather_monorepo.installs.python.pdm
+        name: my.weather_monorepo.python.pdm
         tasks_from: install-pdm.yml
 
     - name: "Call weather-monorepo collection's python/pdm/fix-pdm-dir-permissions.yml"
       ansible.builtin.import_role:
-        name: my.weather_monorepo.installs.python.pdm
+        name: my.weather_monorepo.python.pdm
         tasks_from: fix-pdm-dir-permissions.yml
