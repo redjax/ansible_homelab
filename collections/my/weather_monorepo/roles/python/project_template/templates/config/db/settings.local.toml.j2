@@ -21,7 +21,7 @@ db_username = "{{ pyproject_config_db_username | default('postgres') }}"
 db_host = "{{ pyproject_config_db_host | default('127.0.0.1') }}"
 db_port = {{ pyproject_config_db_port | default(5432) }}
 db_database = "{{ pyproject_config_db_database | default('weather') }}"
-db_echo = {{ pyproject_config_db_echo | default(false) }}
+db_echo = {{ pyproject_config_db_echo | default(false) | lower }}
 
 # db_type = "sqlite"
 # db_drivername = "sqlite+pysqlite"
@@ -31,4 +31,4 @@ db_echo = {{ pyproject_config_db_echo | default(false) }}
 # db_host = ""
 # db_port = ""
 # db_database = "db.sqlite3"
-# db_echo = false
+# db_echo = {{ pyproject_config_db_echo | default(false) | lower }}
