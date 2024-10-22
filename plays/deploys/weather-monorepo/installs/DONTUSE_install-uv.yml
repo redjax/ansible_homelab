@@ -1,4 +1,10 @@
 ---
+##
+# Don't use this playbook in this repo. The project is managed with PDM.
+# I foolishly created this playbook and took longer than I would admit to remember
+# I used pdm for this project, not uv. I want to keep this as a reference
+##
+
 - name: "Install astral uv (https://astral.sh/uv)"
   hosts: all
 
