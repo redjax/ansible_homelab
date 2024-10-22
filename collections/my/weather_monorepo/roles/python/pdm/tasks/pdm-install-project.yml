@@ -17,7 +17,7 @@
   become_user: "{{ remote_host_user }}"
   when: pdm_bin.stat.exists
 
-- name: "Display output of 'pdm install]'"
+- name: "Display output of 'pdm install'"
   ansible.builtin.debug:
     msg: "{{ pdm_install_output.stdout }}"
   when: pdm_bin.stat.exists

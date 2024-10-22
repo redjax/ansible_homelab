@@ -14,4 +14,4 @@
     - name: "Install project"
       ansible.builtin.import_role:
         name: my.weather_monorepo.python.pdm
-        tasks_from: run-pdm-install.yml
+        tasks_from: pdm-install-project.yml
