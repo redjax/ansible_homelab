@@ -1,0 +1,18 @@
+---
+- name: "Stop DB + messaging (rabbitmq) Docker stack"
+  hosts: all
+  gather_facts: true
+
+  vars:
+    repo_dest: "{{ git_repo_dest }}"
+    compose_file: "containers/db-messaging.docker-compose.yml"
+
+  tasks:
+    - name: "Gather package facts"
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: "Bring down docker compose stack"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.docker
+        tasks_from: compose-down.yml

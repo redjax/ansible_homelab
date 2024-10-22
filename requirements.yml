@@ -20,6 +20,11 @@ collections:
   # ## https://galaxy.ansible.com/ui/repo/published/cielito/proxmox/
   # version: 2.1.0
 
+  - name: community.docker
+    source: https://galaxy.ansible.com
+    ## https://galaxy.ansible.com/ui/repo/published/community/docker/
+    version: 4.0.0
+
   - name: my.homelab
     type: dir
     source: collections/my/homelab
