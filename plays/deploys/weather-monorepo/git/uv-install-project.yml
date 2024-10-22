@@ -11,6 +11,11 @@
       ansible.builtin.package_facts:
         manager: auto
 
+    - name: "Create virtualenv"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.python.astral_uv
+        tasks_from: uv-create-venv.yml
+
     - name: "Install project"
       ansible.builtin.import_role:
         name: my.weather_monorepo.python.astral_uv

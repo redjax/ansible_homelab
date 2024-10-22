@@ -4,9 +4,13 @@
     path: "/home/{{ remote_host_user }}/.cargo/bin/uv"
   register: uv_bin
 
+- name: "Debug uv bin existence"
+  ansible.builtin.debug:
+    msg: "/home/{{ remote_host_user }}/.cargo/bin/uv exists: {{ uv_bin.stat.exists }}"
+
 - name: "Run 'uv sync' in project directory: {{ repo_dest }}"
   ansible.builtin.shell: |
-    /home/{{ remote_host_user }}/.cargo/bin/uv sync
+    /home/{{ remote_host_user }}/.cargo/bin/uv sync --all-extras --dev
   args:
     executable: /bin/bash
     chdir: "{{ repo_dest }}"
