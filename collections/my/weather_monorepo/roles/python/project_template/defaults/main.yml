@@ -6,6 +6,7 @@ pyproject_config_db_type: "postgres"
 pyproject_config_db_drivername: "postgresql+psycopg2"
 pyproject_config_db_username: "postgres"
 pyproject_config_db_host: "127.0.0.1"
+
 pyproject_config_db_port: 5432
 pyproject_config_db_database: "weather"
 pyproject_config_db_echo: false

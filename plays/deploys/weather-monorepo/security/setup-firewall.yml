@@ -1,7 +1,7 @@
----
 - name: "Setup firewall & allowed ports"
   hosts: all
   gather_facts: true
+  become: true
 
   vars:
     ufw_allow_tcp_ports: [
