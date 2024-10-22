@@ -12,12 +12,13 @@
       ansible.builtin.package_facts:
         manager: auto
 
-    - name: "Run PDM install-repo script to install the project"
-      ansible.builtin.import_role:
-        name: my.weather_monorepo.python.pdm
-        tasks_from: run-pdm-script.yml
-
-    # - name: "Install PDM project"
+    ## Install with PDM script. May be slower
+    # - name: "Run PDM install-repo script to install the project"
     #   ansible.builtin.import_role:
     #     name: my.weather_monorepo.python.pdm
-    #     tasks_from: pdm-install-project.yml
+    #     tasks_from: pdm-run-script.yml
+
+    - name: "Install PDM project"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.python.pdm
+        tasks_from: pdm-install-project.yml
