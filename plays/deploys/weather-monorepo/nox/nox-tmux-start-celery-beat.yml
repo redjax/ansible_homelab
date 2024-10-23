@@ -1,0 +1,19 @@
+---
+- name: "Run nox script to start celery beat in a tmux session"
+  hosts: all
+  gather_facts: true
+
+  vars:
+    repo_dest: "/home/{{ remote_host_user }}/weather-monorepo"
+    nox_session_name: "start-celery-beat"
+    celery_session_name: "celery-beat"
+
+  tasks:
+    - name: "Gather package facts"
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: "Run celery beat in the background"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.python.pdm
+        tasks_from: tmux-run-nox-session.yml

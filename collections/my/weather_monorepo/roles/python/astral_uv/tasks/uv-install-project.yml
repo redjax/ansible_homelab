@@ -1,0 +1,22 @@
+---
+- name: "Check if ~/.cargo/bin/uv exists"
+  ansible.builtin.stat:
+    path: "/home/{{ remote_host_user }}/.cargo/bin/uv"
+  register: uv_bin
+
+- name: "Run 'uv install' in project directory: {{ repo_dest }}"
+  ansible.builtin.shell: |
+    /home/{{ remote_host_user }}/.cargo/bin/uv pip install .
+  args:
+    executable: /bin/bash
+    chdir: "{{ repo_dest }}"
+  register: uv_install_output
+  changed_when: false
+  become: true
+  become_user: "{{ remote_host_user }}"
+  when: uv_bin.stat.exists
+
+- name: "Display output of 'uv pip install .'"
+  ansible.builtin.debug:
+    msg: "{{ uv_install_output.stdout }}"
+  when: uv_bin.stat.exists

@@ -1,0 +1,34 @@
+[default]
+
+celery_broker_host = "localhost"
+celery_broker_port = 5672
+celery_broker_user = "rabbitmq"
+## Set this value in .secrets.toml
+# celery_broker_password = ""
+
+celery_backend_host = "localhost"
+celery_backend_port = 6379
+
+celery_worker_log_level = "INFO"
+celery_worker_uid = 0
+celery_worker_gid = 0
+
+celery_beat_log_level = "INFO"
+
+celery_tz = "Etc/UTC"
+
+[celery]
+
+# celery_broker_host = "192.168.1.16"
+celery_broker_host = "{{ pyproject_config_celery_broker_host | default('localhost') }}"
+celery_broker_port = {{ pyproject_config_celery_broker_port | default(5672) }}
+celery_broker_user = "{{ pyproject_config_celery_broker_user | default('rabbitmq') }}"
+
+# celery_backend_host = "192.168.1.16"
+celery_backend_host = "{{ pyproject_config_celery_backend_host | default('localhost') }}"
+celery_backend_port = {{ pyproject_config_celery_backend_port | default(6379) }}
+
+celery_worker_log_level = "{{ pyproject_config_celery_worker_log_level | default('INFO') }}"
+celery_beat_log_level = "{{ pyproject_config_celery_beat_log_level | default('INFO') }}"
+
+celery_tz = "{{ pyproject_config_celery_tz | default('America/New_York') }}"

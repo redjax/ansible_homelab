@@ -9,4 +9,8 @@
 
     - ansible.builtin.import_role:
         name: my.homelab.tailscale
+        tasks_from: install-tailscale.yml
+
+    - ansible.builtin.import_role:
+        name: my.homelab.tailscale
         tasks_from: authenticate.yml

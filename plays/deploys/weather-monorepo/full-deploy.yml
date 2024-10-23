@@ -1,0 +1,228 @@
+---
+- name: "Full weather-monorepo deploy on target host"
+  hosts: all
+
+  vars:
+    new_user_name: "weatheruser"
+    remote_host_user: "weatheruser"
+
+    debian_pkgs: "{{ common_debian_packages }}"
+    project_pkgs: "{{ project_pkgs }}"
+
+    git_default_branch: "{{ git_default_branch_name }}"
+    git_user: "{{ git_user_name }}"
+    git_email: "{{ git_user_email }}"
+
+    repo_url: "{{ git_repo_url }}"
+    repo_dest: "{{ git_repo_dest }}"
+    gh_ssh_key: "{{ git_ssh_key }}"
+
+    compose_file: "db-messaging.docker-compose.yml"
+    compose_env_file: ".env"
+
+    ## Python project config variables (Dynaconf)
+    pyproject_config_app_log_level: "{{ log_level | default('INFO')}}"
+
+    pyproject_config_db_type: "postgres"
+    pyproject_config_db_drivername: "postgresql+psycopg2"
+    pyproject_config_db_username: "postgres"
+    pyproject_config_db_host: "localhost"
+    pyproject_config_db_port: 5432
+    pyproject_config_db_database: "weather"
+    pyproject_config_db_echo: false
+    pyproject_config_db_password: "postgres"
+
+    pyproject_config_celery_broker_host: "localhost"
+    pyproject_config_celery_broker_port: 5672
+    pyproject_config_celery_broker_user: "rabbitmq"
+    pyproject_config_celery_broker_password: "rabbitmq"
+    pyproject_config_celery_backend_host: "localhost"
+    pyproject_config_celery_backend_port: 6379
+    pyproject_config_celery_worker_log_level: "INFO"
+    pyproject_config_celery_beat_log_level: "INFO"
+    pyproject_config_celery_tz: "America/New_York"
+
+    pyproject_config_weatherapi_location: "{{ weatherapi_location | default('London') }}"
+    pyproject_config_weatherapi_api_key: "{{ weatherapi_api_key }}"
+
+    ## Docker container .env variables
+    pyproject_docker_rabbitmq_management_port: 15672
+    pyproject_config_celery_data_dir: "rabbitmq_data"
+
+    pyproject_docker_postgres_data_dir: "./vols/postgres/data"
+    pyproject_docker_postgres_scripts_dir: "./vols/postgres/pgsql_scripts"
+    pyproject_docker_postgres_entrypoint_dir: "./vols/postgres/pg_entrypoint"
+    pyproject_docker_postgres_database: "weather"
+
+    pyproject_docker_pgadmin_email: "admin@example.com"
+    pyproject_docker_pgadmin_password: "pgAdmin!"
+    pyproject_docker_pgadmin_webui_port: 15432
+    pyproject_docker_pgadmin_data_dir: "./vols/pgadmin/data"
+
+  tasks:
+    - name: "Gather package facts"
+      ansible.builtin.package_facts:
+        manager: auto
+
+    ## User & SSH setup
+    - name: "Create user account"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.setup.user
+        tasks_from: create-user.yml
+
+    - name: "Generate SSH keys"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.setup.ssh
+        tasks_from: generate-ssh-key.yml
+
+    ## Tailscale
+    - name: "Install Tailscale dependencies"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.tailscale
+        tasks_from: install-dependencies.yml
+
+    - name: "Add Tailscale GPG key"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.tailscale
+        tasks_from: add-gpg-key.yml
+
+    - name: "Add Tailscale repository"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.tailscale
+        tasks_from: add-repository.yml
+
+    - name: "Install Tailscale"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.tailscale
+        tasks_from: install-tailscale.yml
+
+    - name: "Start Tailscale service"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.tailscale
+        tasks_from: start-tailscale-service.yml
+
+    - name: "Authenticate Tailscale with PSK"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.tailscale
+        tasks_from: authenticate.yml
+
+    ## Crontab
+    - name: "Install cron"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.cron
+        tasks_from: install-cron.yml
+
+    ## Python PDM
+    - name: "Install PDM (https://pdm-project.org)"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.python.pdm
+        tasks_from: install-pdm.yml
+
+    - name: "Fix directory permissions after installing PDM"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.python.pdm
+        tasks_from: fix-pdm-dir-permissions.yml
+
+    ## Docker
+    - name: "Install Docker on Debian"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.docker
+        tasks_from: deb_install-docker.yml
+      when: ansible_facts['os_family'] == 'Debian'
+
+    - name: "Fix UFW/Docker vulnerability on Debian-based hosts"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.docker
+        tasks_from: fix-ufw-vuln.yml
+      when: ansible_facts['os_family'] == 'Debian'
+
+    ## Fail2Ban
+    - name: "Install fail2ban"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.security.fail2ban
+        tasks_from: install-fail2ban.yml
+
+    - name: "Backup fail2ban configs"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.security.fail2ban
+        tasks_from: backup-fail2ban-confs.yml
+
+    - name: "Copy templated fail2ban config files"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.security.fail2ban
+        tasks_from: install-fail2ban-confs.yml
+
+    - name: "Enable & start fail2ban"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.security.fail2ban
+        tasks_from: enable-fail2ban.yml
+
+    ## ClamAV
+    - name: "Include homelab collection's clamav role"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.security.clamav
+
+    - name: "Include homelab collection's clamav.configure_clamav role"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.security.clamav
+        tasks_from: configure_clamav.yml
+
+    - name: "Include homelab collection's clamav.configure_scans role"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.security.clamav
+        tasks_from: configure_scans.yml
+
+    - name: "Include homelab collection's clamav.restart_clamav_systemd role"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.security.clamav
+        tasks_from: restart_clamav_systemd.yml
+
+    ## Git
+    - name: "Install git"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.git
+        tasks_from: install-git.yml
+
+    - name: "Configure git"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.git
+        tasks_from: configure-git.yml
+
+    - name: "Clone weather-monorepo project from Github"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.git
+        tasks_from: clone-repo.yml
+
+    - name: "Install PDM project"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.python.pdm
+        tasks_from: pdm-install-project.yml
+
+    ## Nox container data directory
+    - name: "Initialize container volumes"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.python.pdm
+        tasks_from: run-nox-session.yml
+      vars:
+        nox_session_name: "init-container-data"
+
+    ## Python env file setup
+    - name: "Render the project's Dynaconf configuration files"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.python.project_template
+        tasks_from: render-dynaconf-files.yml
+
+    ## Docker env file setup
+    - name: "Render the project's Docker files"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.python.project_template
+        tasks_from: render-docker-files.yml
+
+    ## Docker compose up
+    - name: "Run docker compose stack"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.docker
+        tasks_from: compose-up.yml
+
+    - ansible.builtin.debug:
+        msg: "Finish deploy playbook. Note: the database can take some time to initialize. You should wait a few minutes before running the post-deploy.yml playbook."

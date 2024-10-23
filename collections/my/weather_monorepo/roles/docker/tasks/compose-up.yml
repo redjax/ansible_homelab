@@ -1,0 +1,23 @@
+---
+- name: "Check that compose file exists"
+  ansible.builtin.stat:
+    path: "{{ repo_dest }}/{{ compose_file }}"
+  register: composefile
+  become: true
+
+- name: "Debug compose file existence"
+  ansible.builtin.debug:
+    msg: "Compose file '{{ repo_dest }}/{{ compose_file }}' exists: {{ composefile.stat.exists }}"
+
+- name: "Run docker stack"
+  community.docker.docker_compose_v2:
+    project_src: "{{ repo_dest }}/containers"
+    state: present
+    pull: missing
+    files:
+      - "{{ compose_file }}"
+    env_files:
+      - "{{ compose_env_file }}"
+  become: true
+  become_user: "{{ remote_host_user }}"
+  when: (docker_installed) and (docker_compose_installed)

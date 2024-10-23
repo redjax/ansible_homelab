@@ -1,0 +1,19 @@
+---
+- name: "Run DB + messaging (rabbitmq) Docker stack"
+  hosts: all
+  gather_facts: true
+
+  vars:
+    repo_dest: "{{ git_repo_dest }}"
+    compose_file: "db-messaging.docker-compose.yml"
+    compose_env_file: ".env"
+
+  tasks:
+    - name: "Gather package facts"
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: "Run docker compose stack"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.docker
+        tasks_from: compose-up.yml

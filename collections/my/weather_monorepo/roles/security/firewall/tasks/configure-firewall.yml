@@ -1,0 +1,24 @@
+---
+- name: "Configure ufw rules"
+  community.general.ufw:
+    rule: "allow"
+    port: "{{ item }}"
+    proto: "tcp"
+  with_items:
+    - "22"
+    - "80"
+    - "443"
+  become: true
+  when: ansible_facts.os_family == "Debian"
+
+- name: "firewalld rules"
+  firewalld:
+    port: "{{ item }}"
+    permanent: true
+    state: enabled
+  with_items:
+    - "22/tcp"
+    - "80/tcp"
+    - "443/tcp"
+  become: true
+  when: ansible_facts.os_family == "RedHat"

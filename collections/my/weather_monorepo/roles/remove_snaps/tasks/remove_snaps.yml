@@ -1,0 +1,84 @@
+- name: Remove lxd snap
+  community.general.snap:
+    name: "lxd"
+    state: absent
+  become: true
+  when: ansible_distribution == "Ubuntu"
+  ignore_errors: true
+
+- name: Remove core20 snap
+  community.general.snap:
+    name: "core20"
+    state: absent
+  become: true
+  when: ansible_distribution == "Ubuntu"
+  ignore_errors: true
+
+- name: Remove snapd snap
+  community.general.snap:
+    name: "snapd"
+    state: absent
+  become: true
+  when: ansible_distribution == "Ubuntu"
+  ignore_errors: true
+
+- name: Purge snapd
+  ansible.builtin.apt:
+    name: snapd
+    purge: true
+    state: absent
+  become: true
+  when: ansible_distribution == "Ubuntu"
+  ignore_errors: true
+
+- name: Check if /root/snap dir exists
+  ansible.builtin.stat:
+    path: "/root/snap"
+  become: true
+  register: root_snap_dir
+
+- name: Check if /snap dir exists
+  ansible.builtin.stat:
+    path: "/snap"
+  become: true
+  register: snap_dir
+
+- name: Check if /var/snap dir exists
+  ansible.builtin.stat:
+    path: "/var/snap"
+  become: true
+  register: var_snap_dir
+
+- name: Check if /var/lib/snapd dir exists
+  ansible.builtin.stat:
+    path: "/var/lib/snapd"
+  become: true
+  register: var_lib_snap_dir
+
+- name: Remove /root/snap directory
+  ansible.builtin.file:
+    state: absent
+    path: "/root/snap"
+  become: true
+  when: root_snap_dir.stat.exists
+
+- name: Remove /snap directory
+  ansible.builtin.file:
+    state: absent
+    path: "/snap"
+  become: true
+  when: snap_dir.stat.exists
+
+- name: Remove /var/snap directory
+  ansible.builtin.file:
+    state: absent
+    path: "/var/snap"
+  become: true
+  when: var_snap_dir.stat.exists
+
+- name: Remove /var/lib/snap directory
+  ansible.builtin.file:
+    state: absent
+    path: "/var/lib/snap"
+  become: true
+  when: var_lib_snap_dir.stat.exists

@@ -1,0 +1,24 @@
+---
+##
+# Don't use this playbook in this repo. The project is managed with PDM.
+# I foolishly created this playbook and took longer than I would admit to remember
+# I used pdm for this project, not uv. I want to keep this as a reference
+##
+
+- name: "Install astral uv (https://astral.sh/uv)"
+  hosts: all
+
+  tasks:
+    - name: "Gather facts"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.facts
+
+    - name: "Call weather-monorepo collection's python/astral_uv/install-with-pipx.yml task"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.python.astral_uv
+        tasks_from: install-uv.yml
+
+    - name: "Call weather-monorepo collection's python/astral_uv/fix-uv-dir-permissions.yml"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.python.astral_uv
+        tasks_from: fix-uv-dir-permissions.yml

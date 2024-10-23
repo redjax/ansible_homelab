@@ -1,0 +1,19 @@
+---
+- name: "Clone weather-monorepo project from Github"
+  hosts: all
+  gather_facts: true
+
+  vars:
+    repo_url: "{{ git_repo_url }}"
+    repo_dest: "{{ git_repo_dest }}"
+    gh_ssh_key: "{{ git_ssh_key }}"
+
+  tasks:
+    - name: "Gather the package facts"
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: "Clone weather-monorepo project from Github"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.git
+        tasks_from: clone-repo.yml

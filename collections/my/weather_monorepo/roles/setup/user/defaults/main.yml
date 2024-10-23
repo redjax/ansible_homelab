@@ -1,0 +1,6 @@
+---
+# defaults file for roles/setup/user
+new_user_name: weatheruser
+new_user_comment: "User for the weather-monorepo project"
+## Key to generate when user is created
+new_user_ssh_keypath: ".ssh/weather_id_rsa"

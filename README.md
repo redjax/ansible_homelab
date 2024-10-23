@@ -172,7 +172,7 @@ CUSTOM_COLLECTIONS: t.List[CustomAnsibleCollection] = [
     CustomAnsibleCollection(name="homelab", fqcn="my.homelab", path=Path(f"{MY_COLLECTIONS_PATH}/homelab")),
     ## New collection, we will initialize it on the fly. You could also create a variable for the class and use
     #  CUSTOM_COLLECTIONS.append(custom_collection)
-    CustomAnsibleCollection(name="base_setup", fcqn="my.base_setup", path=Path(f"{MY_COLLECTIONS_PATH}/base_setup"))
+    CustomAnsibleCollection(name="base_setup", fqcn="my.base_setup", path=Path(f"{MY_COLLECTIONS_PATH}/base_setup"))
 ]
 
 ```

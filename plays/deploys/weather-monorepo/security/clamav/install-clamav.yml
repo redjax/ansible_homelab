@@ -1,0 +1,12 @@
+---
+- name: "Install ClamAV & do base setup"
+  hosts: all
+
+  tasks:
+    - name: "Gather facts"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.facts
+
+    - name: "Include homelab collection's clamav role"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.security.clamav

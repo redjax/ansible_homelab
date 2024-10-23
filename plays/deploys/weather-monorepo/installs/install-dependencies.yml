@@ -1,0 +1,7 @@
+---
+- name: "[weather-monorepo] Install common packages"
+  hosts: all
+
+  vars:
+    debian_pkgs: "{{ common_debian_packages }}"
+    project_pkgs: "{{ project_pkgs }}"

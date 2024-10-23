@@ -1,0 +1,25 @@
+---
+- name: "Check if /home/{{ remote_host_user }}/.local/bin/pdm exists"
+  ansible.builtin.stat:
+    path: "{{ ansible_user_dir }}/.local/bin/pdm"
+  register: pdm_bin
+
+- name: "Install pdm using official install-pdm.sh script"
+  ansible.builtin.shell: |
+    curl -sSL https://pdm-project.org/install-pdm.py | python3 -
+  args:
+    executable: /bin/bash
+  become: true
+  become_user: "{{ remote_host_user }}"
+  when: not pdm_bin.stat.exists
+
+- name: "Add ~/.local/bin to $PATH"
+  ansible.builtin.lineinfile:
+    path: "/home/{{ remote_host_user }}/.bashrc"
+    line: |
+      export PATH="$PATH:~/.local/bin"
+    state: present
+    create: true
+    owner: "{{ remote_host_user }}"
+    group: "{{ remote_host_user }}"
+  become: true

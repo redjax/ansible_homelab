@@ -1,0 +1,6 @@
+---
+- name: "Install cron"
+  ansible.builtin.apt:
+    name: cron
+  become: true
+  when: ("cron" not in ansible_facts.packages) and (ansible_facts.os_family == "Debian")

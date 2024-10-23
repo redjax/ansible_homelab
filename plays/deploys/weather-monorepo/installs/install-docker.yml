@@ -1,0 +1,17 @@
+---
+- name: "Install Docker and Docker Compose"
+  hosts: all
+  gather_facts: true
+
+  tasks:
+    - name: "Call weather-monorepo collection's docker/deb_install-docker.yml task"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.docker
+        tasks_from: deb_install-docker.yml
+      when: ansible_facts['os_family'] == 'Debian'
+
+    - name: "Fix UFW/Docker vulnerability on Debian-based hosts"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.docker
+        tasks_from: fix-ufw-vuln.yml
+      when: ansible_facts['os_family'] == 'Debian'

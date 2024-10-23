@@ -1,0 +1,8 @@
+---
+- name: "Remove Crowdsec"
+  ansible.builtin.apt:
+    name: crowdsec
+    state: absent
+    purge: true
+  become: true
+  when: (ansible_facts.os_family == "Debian" and "crowdsec" in ansible_facts.packages)

@@ -1,0 +1,31 @@
+---
+- name: "Check if ~/.local/bin/pdm exists"
+  ansible.builtin.stat:
+    path: "/home/{{ remote_host_user }}/.local/bin/pdm"
+  register: pdm_bin
+  become: true
+
+- name: "Debug repo_dest"
+  ansible.builtin.debug:
+    var: repo_dest
+
+- name: "Debug pdm_cmd"
+  ansible.builtin.debug:
+    var: pdm_cmd
+
+- name: "Run pdm command in project directory:"
+  ansible.builtin.shell: |
+    /home/{{ remote_host_user }}/.local/bin/pdm {{ pdm_cmd }}
+  args:
+    executable: /bin/bash
+    chdir: "{{ repo_dest }}"
+  register: pdm_cmd_output
+  changed_when: false
+  become: true
+  become_user: "{{ remote_host_user }}"
+  when: pdm_bin.stat.exists
+
+- name: "Display output of command"
+  ansible.builtin.debug:
+    msg: "{{ pdm_cmd_output.stdout }}"
+  when: pdm_bin.stat.exists

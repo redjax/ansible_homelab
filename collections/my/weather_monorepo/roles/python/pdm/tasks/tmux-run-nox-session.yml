@@ -1,0 +1,43 @@
+---
+- name: "Check if ~/.local/bin/pdm exists"
+  ansible.builtin.stat:
+    path: "/home/{{ remote_host_user }}/.local/bin/pdm"
+  register: pdm_bin
+  become: true
+
+- name: "Check if {{ repo_dest }} exists"
+  ansible.builtin.stat:
+    path: "{{ repo_dest }}"
+  register: repo_dest_dir
+  become: true
+
+- name: "[DEBUG] repo_dest dir exists"
+  ansible.builtin.debug:
+    msg: "Directory '{{ repo_dest }} exists: {{ repo_dest_dir.stat.exists }}"
+
+- name: "[DEBUG] tmux command"
+  ansible.builtin.debug:
+    msg: tmux new-session -d -s {{ celery_session_name }} /home/{{ remote_host_user }}/.local/bin/pdm run nox -s {{ nox_session_name }}
+
+- name: "Check if tmux session already exists"
+  ansible.builtin.shell: |
+    tmux has-session -t {{ celery_session_name }}
+  register: tmux_session_check
+  ignore_errors: true
+
+- name: "Run nox session in a tmux session"
+  ansible.builtin.shell: |
+    tmux new-session -d -s {{ celery_session_name }} /home/{{ remote_host_user }}/.local/bin/pdm run nox -s {{ nox_session_name }}
+  args:
+    chdir: "{{ repo_dest }}"
+    executable: /bin/bash
+  register: pdm_run_output
+  changed_when: false
+  become: true
+  become_user: "{{ remote_host_user }}"
+  when: (repo_dest_dir.stat.exists) and (pdm_bin.stat.exists) and (tmux_session_check.rc != 0)
+
+- name: "Display output of 'pdm run nox -s {{ nox_session_name }}'"
+  ansible.builtin.debug:
+    msg: "{{ pdm_run_output.stdout }}"
+  when: (repo_dest_dir.stat.exists) and (pdm_bin.stat.exists) and (tmux_session_check.rc != 0)

@@ -1,0 +1,34 @@
+[default]
+
+db_type = "sqlite"
+db_drivername = "sqlite+pysqlite"
+db_username = ""
+# Set in .secrets.toml
+# db_password = ""
+db_host = ""
+db_port = ""
+db_database = "db.sqlite3"
+db_echo = false
+
+[database]
+
+db_type = "{{ pyproject_config_db_type | default('postgres') }}"
+db_drivername = "{{ pyproject_config_db_drivername | default('postgresql+psycopg2') }}"
+db_username = "{{ pyproject_config_db_username | default('postgres') }}"
+# Set in .secrets.toml
+# db_password = ""
+# db_host = "192.168.1.16"
+db_host = "{{ pyproject_config_db_host | default('127.0.0.1') }}"
+db_port = {{ pyproject_config_db_port | default(5432) }}
+db_database = "{{ pyproject_config_db_database | default('weather') }}"
+db_echo = {{ pyproject_config_db_echo | default(false) | lower }}
+
+# db_type = "sqlite"
+# db_drivername = "sqlite+pysqlite"
+# db_username = ""
+# # Set in .secrets.toml
+# # db_password = ""
+# db_host = ""
+# db_port = ""
+# db_database = "db.sqlite3"
+# db_echo = {{ pyproject_config_db_echo | default(false) | lower }}

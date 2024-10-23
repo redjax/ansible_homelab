@@ -1,0 +1,14 @@
+---
+- name: "Run the 'init-container-data' nox session"
+  hosts: all
+  gather_facts: true
+
+  vars:
+    nox_session_name: "init-container-data"
+    repo_dest: "/home/{{ remote_host_user }}/weather-monorepo"
+
+  tasks:
+    - name: "Call the weather_monorepo.python.pdm task run-nox-session.yml"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.python.pdm
+        tasks_from: run-nox-session.yml

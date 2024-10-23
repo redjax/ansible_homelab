@@ -1,0 +1,44 @@
+---
+- name: "Check if .cargo/bin/uv exists"
+  ansible.builtin.stat:
+    path: "{{ ansible_user_dir }}/.cargo/bin/uv"
+  register: uv_bin
+
+- name: "Debug UV binary check"
+  debug:
+    msg: "UV binary exists: {{ uv_bin.stat.exists }}"
+
+- name: "Install Astral 'uv' using the official install.sh script if not present"
+  ansible.builtin.shell: |
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+  args:
+    executable: /bin/bash
+  when: not uv_bin.stat.exists
+
+- name: "Ensure .cargo/bin is in the user's PATH"
+  ansible.builtin.lineinfile:
+    path: "{{ ansible_user_dir }}/.bashrc"
+    line: "export PATH=$PATH:{{ ansible_user_dir }}/.cargo/bin"
+    state: present
+    create: true
+
+- name: "Install specific version of Python using uv"
+  ansible.builtin.command:
+    cmd: "{{ ansible_user_dir }}/.cargo/bin/uv python install {{ uv_python_version_str }}"
+  when: uv_bin.stat.exists
+  register: python_install
+
+- name: "Check if Python was installed successfully"
+  ansible.builtin.command:
+    cmd: "{{ ansible_user_dir }}/.cargo/bin/uv python list --only-installed"
+  register: python_list
+  changed_when: false
+
+- name: "Debug installed Python versions"
+  debug:
+    msg: "Available Python versions: {{ python_list.stdout }}"
+
+- name: "Fail if Python installation failed"
+  ansible.builtin.fail:
+    msg: "Failed to install the specified Python version. Please check the logs."
+  when: python_install.rc != 0

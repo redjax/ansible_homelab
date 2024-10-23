@@ -1,0 +1,22 @@
+---
+- name: "Check if .cargo/bin/uv exists"
+  ansible.builtin.stat:
+    path: "/home/{{ remote_host_user }}/.cargo/bin/uv"
+  register: uv_bin
+
+- name: "Run 'nox -s {{ nox_session_name }}' in a project directory"
+  ansible.builtin.shell: |
+    /home/{{ remote_host_user }}/.cargo/bin/uv run nox -s {{ nox_session_name }}
+  args:
+    executable: /bin/bash
+    chdir: "{{ repo_dest }}"
+  register: uv_run_output
+  changed_when: false
+  become: true
+  become_user: "{{ remote_host_user }}"
+  when: uv_bin.stat.exists
+
+- name: "Display output of 'uv run nox -s {{ nox_session_name }}'"
+  ansible.builtin.debug:
+    msg: "{{ uv_run_output.stdout }}"
+  when: uv_bin.stat.exists

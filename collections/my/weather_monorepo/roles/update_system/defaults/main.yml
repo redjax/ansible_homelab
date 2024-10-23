@@ -1,0 +1,3 @@
+---
+# defaults file for roles/maint/update_system
+reboot_if_necessary: false

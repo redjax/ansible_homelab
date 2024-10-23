@@ -1,0 +1,16 @@
+---
+- name: "Enroll crowdsec host"
+  hosts: all
+
+  # vars:
+  #   crowdsec_enroll_token: "{{ crowdsec_enroll_token }}"
+
+  tasks:
+    - name: "Gather facts"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.facts
+
+    - name: "Enroll in crowdsec"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.security.crowdsec
+        tasks_from: enroll-crowdsec.yml

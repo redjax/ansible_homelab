@@ -1,0 +1,152 @@
+---
+## config/settings.local.toml
+- name: "Render the project's config/settings.local.toml file"
+  ansible.builtin.template:
+    src: "config/settings.local.toml.j2"
+    dest: "{{ repo_dest }}/config/settings.local.toml"
+    owner: "{{ remote_host_user }}"
+    group: "{{ remote_host_user }}"
+  become: true
+
+- name: "Check if rendered file exists"
+  ansible.builtin.stat:
+    path: "{{ repo_dest }}/config/settings.local.toml"
+  register: settings_local_toml
+  become: true
+
+- name: "[DEBUG] Display existence of {{ repo_dest }}/config/settings.local.toml"
+  ansible.builtin.debug:
+    msg: "Rendered template exists at path '{{ repo_dest }}/config/settings.local.toml': {{ settings_local_toml.stat.exists }}"
+
+## config/apis/weatherapi/.secrets.toml
+- name: "Render the project's config/apis/weatherapi/.secrets.toml file"
+  ansible.builtin.template:
+    src: "config/apis/weatherapi/secrets.toml.j2"
+    dest: "{{ repo_dest }}/config/apis/weatherapi/.secrets.toml"
+    owner: "{{ remote_host_user }}"
+    group: "{{ remote_host_user }}"
+  become: true
+
+- name: "Check if rendered file exists"
+  ansible.builtin.stat:
+    path: "{{ repo_dest }}/config/api/weatherapi/.secrets.toml"
+  register: weatherapi_secrets_toml
+  become: true
+
+- name: "[DEBUG] Display existence of {{ repo_dest }}/config/apis/weatherapi/.secrets.toml"
+  ansible.builtin.debug:
+    msg: "Rendered template exists at path '{{ repo_dest }}/config/apis/weatherapi/.secrets.toml': {{ weatherapi_secrets_toml.stat.exists }}"
+
+## config/apis/weatherapi/settings.local.toml
+- name: "Render the project's config/apis/weatherapi/settings.local.toml file"
+  ansible.builtin.template:
+    src: "config/apis/weatherapi/settings.local.toml.j2"
+    dest: "{{ repo_dest }}/config/apis/weatherapi/settings.local.toml"
+    owner: "{{ remote_host_user }}"
+    group: "{{ remote_host_user }}"
+  become: true
+
+- name: "Check if rendered file exists"
+  ansible.builtin.stat:
+    path: "{{ repo_dest }}/config/apis/weatherapi/settings.local.toml"
+  register: weatherapi_settings_local_toml
+  become: true
+
+- name: "[DEBUG] Display existence of {{ repo_dest }}/config/apis/weatherapi/settings.local.toml"
+  ansible.builtin.debug:
+    msg: "Rendered template exists at path '{{ repo_dest }}/config/apis/weatherapi/settings.local.toml': {{ weatherapi_settings_local_toml.stat.exists }}"
+
+## config/celery/.secrets.toml
+- name: "Render the project's config/celery/.secrets.toml file"
+  ansible.builtin.template:
+    src: "config/celery/secrets.toml.j2"
+    dest: "{{ repo_dest }}/config/celery/.secrets.toml"
+    owner: "{{ remote_host_user }}"
+    group: "{{ remote_host_user }}"
+  become: true
+
+- name: "Check if rendered file exists"
+  ansible.builtin.stat:
+    path: "{{ repo_dest }}/config/celery/.secrets.toml"
+  register: celery_secrets_file
+  become: true
+
+- name: "[DEBUG] Display existence of {{ repo_dest }}/config/celery/.secrets.toml"
+  ansible.builtin.debug:
+    msg: "Rendered template exists at path '{{ repo_dest }}/config/celery/.secrets.toml': {{ celery_secrets_file.stat.exists }}"
+
+## config/celery/settings.local.toml
+- name: "Render the project's config/celery/settings.local.toml file"
+  ansible.builtin.template:
+    src: "config/celery/settings.local.toml.j2"
+    dest: "{{ repo_dest }}/config/celery/settings.local.toml"
+    owner: "{{ remote_host_user }}"
+    group: "{{ remote_host_user }}"
+  become: true
+
+- name: "Check if rendered file exists"
+  ansible.builtin.stat:
+    path: "{{ repo_dest }}/config/celery/settings.local.toml"
+  register: celery_settings_file
+  become: true
+
+- name: "[DEBUG] Display existence of {{ repo_dest }}/config/celery/settings.local.toml"
+  ansible.builtin.debug:
+    msg: "Rendered template exists at path '{{ repo_dest }}/config/celery/settings.local.toml': {{ celery_settings_file.stat.exists }}"
+
+## config/db/.secrets.toml
+- name: "Render the project's config/db/.secrets.toml file"
+  ansible.builtin.template:
+    src: "config/db/secrets.toml.j2"
+    dest: "{{ repo_dest }}/config/db/.secrets.toml"
+    owner: "{{ remote_host_user }}"
+    group: "{{ remote_host_user }}"
+  become: true
+
+- name: "Check if rendered file exists"
+  ansible.builtin.stat:
+    path: "{{ repo_dest }}/config/db/.secrets.toml"
+  register: db_secrets_file
+  become: true
+
+- name: "[DEBUG] Display existence of {{ repo_dest }}/config/db/.secrets.toml"
+  ansible.builtin.debug:
+    msg: "Rendered template exists at path '{{ repo_dest }}/config/db/.secrets.toml': {{ db_secrets_file.stat.exists }}"
+
+## config/db/settings.local.toml
+- name: "Render the project's config/db/settings.local.toml file"
+  ansible.builtin.template:
+    src: "config/db/settings.local.toml.j2"
+    dest: "{{ repo_dest }}/config/db/settings.local.toml"
+    owner: "{{ remote_host_user }}"
+    group: "{{ remote_host_user }}"
+  become: true
+
+- name: "Check if rendered file exists"
+  ansible.builtin.stat:
+    path: "{{ repo_dest }}/config/db/settings.local.toml"
+  register: db_settings_file
+  become: true
+
+- name: "[DEBUG] Display existence of {{ repo_dest }}/config/db/settings.local.toml"
+  ansible.builtin.debug:
+    msg: "Rendered template exists at path '{{ repo_dest }}/config/db/settings.local.toml': {{ db_settings_file.stat.exists }}"
+
+## containers/.env
+- name: "Render the project's containers/.env file"
+  ansible.builtin.template:
+    src: "containers/env.j2"
+    dest: "{{ repo_dest }}/containers/.env"
+    owner: "{{ remote_host_user }}"
+    group: "{{ remote_host_user }}"
+  become: true
+
+- name: "Check if rendered file exists"
+  ansible.builtin.stat:
+    path: "{{ repo_dest }}/containers/.env"
+  register: containers_env_file
+  become: true
+
+- name: "[DEBUG] Display existence of {{ repo_dest }}/containers/.env"
+  ansible.builtin.debug:
+    msg: "Rendered template exists at path '{{ repo_dest }}/containers/.env': {{ containers_env_file.stat.exists }}"

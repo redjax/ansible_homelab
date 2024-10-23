@@ -1,0 +1,19 @@
+---
+## containers/.env
+- name: "Render the project's containers/.env file"
+  ansible.builtin.template:
+    src: "containers/env.j2"
+    dest: "{{ repo_dest }}/containers/.env"
+    owner: "{{ remote_host_user }}"
+    group: "{{ remote_host_user }}"
+  become: true
+
+- name: "Check if rendered Docker .env file exists"
+  ansible.builtin.stat:
+    path: "{{ repo_dest }}/containers/.env"
+  register: docker_env_file
+  become: true
+
+- name: "[DEBUG] Display existence of Docker .env file"
+  ansible.builtin.debug:
+    msg: "Rendered template exists at path '{{ repo_dest }}/containers/.env': {{ docker_env_file.stat.exists }}"
