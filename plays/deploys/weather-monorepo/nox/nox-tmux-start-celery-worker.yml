@@ -16,4 +16,4 @@
     - name: "Run celery worker in the background"
       ansible.builtin.import_role:
         name: my.weather_monorepo.python.pdm
-        tasks_from: run-nox-session.yml
+        tasks_from: tmux-run-nox-session.yml

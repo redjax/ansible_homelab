@@ -1,0 +1,39 @@
+---
+- name: "Run post-deploy playbooks to startup services"
+  hosts: all
+
+  vars:
+    repo_dest: "{{ git_repo_dest }}"
+    compose_file: "db-messaging.docker-compose.yml"
+    compose_env_file: ".env"
+
+  tasks:
+    - name: "Gather package facts"
+      ansible.builtin.package_facts:
+        manager: auto
+
+    ## Initialize database
+    - name: "Run database initialization session in nox"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.python.pdm
+        tasks_from: run-nox-session.yml
+      vars:
+        nox_session_name: "init-db"
+
+    ## Start celery worker
+    - name: "Run celery worker in the background"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.python.pdm
+        tasks_from: tmux-run-nox-session.yml
+      vars:
+        nox_session_name: "start-celery-worker"
+        celery_session_name: "celery-worker"
+
+    ## Start celery beat scheduled tasks
+    - name: "Run celery beat in the background"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.python.pdm
+        tasks_from: tmux-run-nox-session.yml
+      vars:
+        nox_session_name: "start-celery-beat"
+        celery_session_name: "celery-beat"

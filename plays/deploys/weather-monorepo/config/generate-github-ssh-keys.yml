@@ -6,7 +6,7 @@
     remote_host_user: "weatheruser"
 
   tasks:
-    - name: "Call weather-monorepo collection's python/ task"
+    - name: "Generate SSH keys"
       ansible.builtin.import_role:
         name: my.weather_monorepo.setup.ssh
         tasks_from: generate-ssh-key.yml
