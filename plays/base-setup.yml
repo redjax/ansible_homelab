@@ -23,6 +23,12 @@
       ansible.builtin.package_facts:
         manager: auto
 
+    - name: Install & configure unattended-upgrades on Debian hosts
+      ansible.builtin.import_role:
+        name: my.homelab.onboard
+        tasks_from: install-unattended-upgrades.yml
+      when: ansible_facts.os_family == "Debian"
+
     ## Install & configure git
     - name: "Install & setup git"
       ansible.builtin.import_role:
