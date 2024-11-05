@@ -1,0 +1,14 @@
+---
+- name: Install unattended-upgrades on Debian-based OS
+  hosts: all
+
+  tasks:
+    - name: Gather Ansible package facts
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: Install & configure unattended-upgrades
+      ansible.builtin.import_role:
+        name: my.homelab.onboard
+        tasks_from: install-unattended-upgrades.yml
+      when: ansible_facts.os_family == "Debian"
