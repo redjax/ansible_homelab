@@ -28,6 +28,12 @@
       ansible.builtin.import_role:
         name: my.homelab.git
 
+    ## Generate github_id_rsa SSH key
+    - name: "Generate SSH keys"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.setup.ssh
+        tasks_from: generate-ssh-key.yml
+
     ## Install common Debian packages
     - name: "Install base packages for Debian-based distributions"
       ansible.builtin.import_role:
