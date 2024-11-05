@@ -1,0 +1,18 @@
+---
+- name: Set up default user account
+  hosts: all
+
+  vars:
+    new_user_name: "{{ setup_user_name }}"
+    new_user_shell: "{{ setup_user_shell | default('/bin/bash') }}"
+    allow_passwordless_sudo: "{{ setup_user_passwordless_sudo | default(false) }}"
+
+  tasks:
+    - name: "Gather facts"
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: Create new user
+      ansible.builtin.import_role:
+        name: my.homelab.user_mgmt
+        tasks_from: create-user.yml

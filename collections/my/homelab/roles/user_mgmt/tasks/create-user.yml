@@ -26,3 +26,4 @@
     group: root
     mode: "0440"
   become: true
+  when: allow_passwordless_sudo

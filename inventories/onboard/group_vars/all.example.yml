@@ -16,6 +16,9 @@ ansible_ssh_service_public_key_file: "{{ ansible_ssh_key_dir }}/{{ ansible_svc_u
 # System #
 ##########
 
+## System user to create
+setup_user_name: "<your-desired-username>"
+
 common_debian_packages:
   [
     "btop",
