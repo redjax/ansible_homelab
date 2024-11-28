@@ -1,0 +1,46 @@
+---
+- name: Gather the package facts
+  ansible.builtin.package_facts:
+    manager: auto
+
+- name: Allow all Tailscale traffic IN via UFW
+  ansible.builtin.ufw:
+    rule: allow
+    direction: in
+    interface: tailscale0
+    from_ip: any
+    to_ip: any
+  when: (ansible_facts.os_family == "Debian") and ( ("ufw" in ansible_facts.packages) and ("tailscale" in ansible_facts.packages) )
+  become: true
+
+- name: Allow all Tailscale traffic OUT via UFW
+  ansible.builtin.ufw:
+    rule: allow
+    direction: in
+    interface: tailscale0
+    from_ip: any
+    to_ip: any
+  when: (ansible_facts.os_family == "Debian") and ( ("ufw" in ansible_facts.packages) and ("tailscale" in ansible_facts.packages) )
+  become: true
+
+- name: Restart UFW
+  ansible.builtin.service:
+    name: ufw
+    state: restarted
+  when: (ansible_facts.os_family == "Debian") and ( ("ufw" in ansible_facts.packages) and ("tailscale" in ansible_facts.packages) )
+  become: true
+
+- name: Add tailscale0 interface to trusted zone
+  ansible.builtin.firewalld:
+    interface: tailscale0
+    zone: trusted
+    state: enabled
+    permanent: true
+  when: (ansible_facts.os_family == "RedHat") and ("tailscale" in ansible_facts.packages)
+  become: true
+
+- name: Reload Firewalld to apply changes
+  ansible.builtin.firewalld:
+    state: reloaded
+  when: (ansible_facts.os_family == "RedHat") and ("tailscale" in ansible_facts.packages)
+  become: true

@@ -26,3 +26,7 @@
     - ansible.builtin.import_role:
         name: my.homelab.tailscale
         tasks_from: authenticate.yml
+
+    - ansible.builtin.import_role:
+        name: my.homelab.tailscale
+        tasks_from: firewall-allow-tailscale.yml
