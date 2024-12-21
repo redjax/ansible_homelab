@@ -37,7 +37,7 @@
     ## Generate github_id_rsa SSH key
     - name: "Generate SSH keys"
       ansible.builtin.import_role:
-        name: my.weather_monorepo.setup.ssh
+        name: my.homelab.ssh
         tasks_from: generate-ssh-key.yml
 
     ## Install common Debian packages

@@ -6,6 +6,7 @@
   ansible.builtin.stat:
     path: "/home/{{ remote_host_user }}/.ssh"
   register: ssh_dir
+  become: true
   run_once: true
 
 - name: "Check if {{ remote_host_user }} Github SSH private key exists"
