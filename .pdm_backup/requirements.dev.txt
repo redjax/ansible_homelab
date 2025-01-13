@@ -38,5 +38,5 @@ setuptools==74.1.2
 smmap==5.0.1
 structlog==24.2.0
 uv==0.4.7
-virtualenv==20.26.4
+virtualenv==20.26.6
 yamllint==1.35.1
