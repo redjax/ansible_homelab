@@ -686,7 +686,7 @@ def ansible_playbook_update_systems(session: nox.Session):
             "inventories/homelab/inventory.yml",
             "--limit",
             "autoReboot",
-            "plays/maint/update-system.yml",
+            "plays/maint/update-reboot-system.yml",
         )
     except Exception as exc:
         msg = Exception(

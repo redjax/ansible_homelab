@@ -1,12 +1,15 @@
 ---
-- name: "Include Tailscale dependency install tasks"
+- name: "Include dependency install tasks"
   ansible.builtin.include_tasks: install-dependencies.yml
 
-- name: "Include add Tailscale GPG key tasks"
+- name: "Include GPG key add tasks"
   ansible.builtin.include_tasks: add-gpg-key.yml
 
-- name: "Include add Tailscale repository tasks"
+- name: "Include repository management tasks"
   ansible.builtin.include_tasks: add-repository.yml
 
-- name: "Include Tailscale install tasks"
+- name: "Include tailscale install tasks"
   ansible.builtin.include_tasks: install-tailscale.yml
+
+- name: "Include firewall management tasks"
+  ansible.builtin.include_tasks: firewall-allow-tailscale.yml

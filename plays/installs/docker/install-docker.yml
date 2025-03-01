@@ -1,0 +1,17 @@
+---
+- name: "Install Docker"
+  hosts: all
+
+  vars:
+    INSTALL_COMPOSE: true
+
+  tasks:
+    - name: "Gather facts"
+      ansible.builtin.import_role:
+        name: my.homelab.facts
+
+    - name: "Install Docker on Debian hosts"
+      ansible.builtin.import_role:
+        name: my.homelab.docker
+        tasks_from: deb_install-docker.yml
+      when: ansible_facts['os_family'] == 'Debian'

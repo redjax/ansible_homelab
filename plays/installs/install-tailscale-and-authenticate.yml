@@ -9,8 +9,24 @@
 
     - ansible.builtin.import_role:
         name: my.homelab.tailscale
+        tasks_from: add-gpg-key.yml
+
+    - ansible.builtin.import_role:
+        name: my.homelab.tailscale
+        tasks_from: add-repository.yml
+
+    - ansible.builtin.import_role:
+        name: my.homelab.tailscale
+        tasks_from: install-dependencies.yml
+
+    - ansible.builtin.import_role:
+        name: my.homelab.tailscale
         tasks_from: install-tailscale.yml
 
     - ansible.builtin.import_role:
         name: my.homelab.tailscale
         tasks_from: authenticate.yml
+
+    - ansible.builtin.import_role:
+        name: my.homelab.tailscale
+        tasks_from: firewall-allow-tailscale.yml

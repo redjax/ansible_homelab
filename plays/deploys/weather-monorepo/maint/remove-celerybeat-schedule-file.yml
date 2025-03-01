@@ -1,0 +1,12 @@
+---
+- name: "Delete a file from the remote if it exists"
+  hosts: all
+
+  vars:
+    del_file_path: "__db.celerybeat-schedule.db"
+
+  tasks:
+    - name: "Delete a file"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.python.project_template
+        tasks_from: remove-file.yml
