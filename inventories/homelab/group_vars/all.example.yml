@@ -78,8 +78,8 @@ common_redhat_packages: []
 # Python #
 ##########
 
-pypi_token: ""
-test_pypi_token: ""
+use_pypi_token: ""
+use_test_pypi_token: ""
 
 ##########
 # Zabbix #
