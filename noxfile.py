@@ -108,27 +108,6 @@ def setup_nox_logging(
         logging.getLogger(_logger).setLevel(logging.WARNING)
 
 
-def pdm_export_requirements(session: nox.Session):
-    log.info("Exporting production requirements")
-    session.run(
-        "pdm",
-        "export",
-        "--prod",
-        "-o",
-        "requirements.txt",
-        "--without-hashes",
-    )
-
-    log.info("Exporting development requirements")
-    session.run(
-        "pdm",
-        "export",
-        "-d",
-        "-o",
-        "requirements.dev.txt",
-        "--without-hashes",
-    )
-
 
 @contextmanager
 def cd(newdir):
@@ -315,68 +294,12 @@ def run_mkdocs_serve(
 
         raise exc
 
-
-@nox.session(
-    python=[DEFAULT_PYTHON],
-    name="update-pip-requirements",
-    tags=["requirements", "update"],
-)
-def run_pip_update_all(session: nox.Session):
-    if not Path("requirements.txt").exists():
-        raise FileNotFoundError(
-            f"Could not find requirements file at path 'requirements.txt'"
-        )
-
-    # session.install("-r", "requirements.txt")
-
-    log.info("Updating all pip requirements")
-    try:
-        session.run(
-            "pip",
-            "install",
-            "--ignore-installed",
-            "--upgrade",
-            "--force-reinstall",
-            "-r",
-            "requirements.txt",
-        )
-    except Exception as exc:
-        msg = Exception(
-            f"({type(exc)}) Unhandled exception upgrading pip requirements with pip-upgrader. Details: {exc}"
-        )
-        log.error(msg)
-
-        raise exc
-
-    log.info("Re-exporting pip requirements")
-    try:
-        ## Capture pip freeze lines
-        updated_requirements = session.run("pip", "freeze", silent=True).splitlines()
-
-        ## Manually write them to requirements.txt file
-        with open("requirements.new.txt", "w") as requirements_file:
-            requirements_file.write("\n".join(updated_requirements))
-    except Exception as exc:
-        msg = Exception(
-            f"({type(exc)}) Unhandled exception saving new pip requirements. Details: {exc}"
-        )
-        log.error(msg)
-
-        raise exc
-
-    log.info(
-        "Replacing existing requirements.txt file with contents of requirements.new.txt"
-    )
-    try:
-        shutil.move("requirements.new.txt", "requirements.txt")
-    except Exception as exc:
-        msg = Exception(
-            f"({type(exc)}) Unhandled exception overwriting requirements.txt file. Details: {exc}"
-        )
-        log.error(msg)
-
-        raise exc
-
+@nox.session(name="update-uv-requirements", tags=["requirements", "update"])
+def update_uv_requirements(session: nox.Session):
+    session.install("uv")
+    
+    log.info("Updating uv requirements")
+    session.run("uv", "sync", "--dev", "--all-extras", "--upgrade")
 
 @nox.session(python=[DEFAULT_PYTHON], name="lint", tags=["style"])
 @nox.parametrize("lint_paths", [LINT_PATHS])
@@ -434,29 +357,6 @@ def run_linter(session: nox.Session, lint_paths: list[Path]):
         "I",
         "--fix",
     )
-
-
-@nox.session(python=DEFAULT_PYTHON, name="export", tags=["requirements", "dev"])
-def export_requirements(session: nox.Session):
-    session.install("pdm")
-
-    pdm_export_requirements(session=session)
-
-
-@nox.session(python=DEFAULT_PYTHON, name="pdm-update-all", tags=["requirements"])
-def update_all_pdm_dependencies(session: nox.Session):
-    session.install("pdm")
-
-    log.info("Updating all PDM dependencies")
-    try:
-        session.run("pdm", "update", "--update-all")
-    except Exception as exc:
-        msg = f"({type(exc)}) Unhandled exception updating all PDM requirements. Details: {exc}"
-        log.error(msg)
-
-        raise exc
-
-    pdm_export_requirements(session=session)
 
 
 @nox.session(
@@ -519,63 +419,6 @@ def build_custom_collections(
             continue
 
 
-# @nox.session(
-#     python=DEFAULT_PYTHON,
-#     name="install-ansible-requirements",
-#     tags=["ansible", "install"],
-# )
-# def install_collections(session: nox.Session):
-#     assert Path("requirements.yml").exists(), FileNotFoundError(
-#         "Could not find Ansible project requirements.yml."
-#     )
-
-#     session.install("ansible-core")
-
-#     log.info("Installing collections from requirements.yml")
-
-#     try:
-#         session.run("ansible-galaxy", "collection", "install", "-r", "requirements.yml")
-#     except Exception as exc:
-#         msg = Exception(
-#             f"({type(exc)}) Unhandled exception installing Ansible Galaxy requirements from requirements.yml. Details: {exc}"
-#         )
-#         log.error(msg)
-
-#         raise exc
-
-#     log.info("Installing roles from requirements.yml")
-
-#     try:
-#         session.run("ansible-galaxy", "role", "install", "-r", "requirements.yml")
-#     except Exception as exc:
-#         msg = Exception(
-#             f"({type(exc)}) Unhandled exception installing Ansible Galaxy requirements from requirements.yml. Details: {exc}"
-#         )
-#         log.error(msg)
-
-#         raise exc
-
-#     if Path("requirements.private.yml").exists():
-#         log.info(
-#             "Ensuring local collections are installed from requirements.private.yml with --force"
-#         )
-#         try:
-#             session.run(
-#                 "ansible-galaxy",
-#                 "collection",
-#                 "install",
-#                 "-r",
-#                 "requirements.private.yml",
-#                 "--force",
-#             )
-#         except Exception as exc:
-#             msg = Exception(
-#                 f"Unhandled exception installing packages from 'requirements.private.yml'. Details: {exc}"
-#             )
-#             log.error(msg)
-
-#             raise exc
-
 
 @nox.session(
     python=DEFAULT_PYTHON,
@@ -588,10 +431,6 @@ def install_collections(session: nox.Session):
     )
 
     install_uv_project(session=session)
-
-    # session.install("ansible-core")
-
-    # log.info("Installing collections from requirements.yml")
 
     try:
         session.run(
