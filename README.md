@@ -201,10 +201,6 @@ CUSTOM_COLLECTIONS: t.List[CustomAnsibleCollection] = [
 - [ ] Document existing sessions & usage
 - [ ] Document adding new sessions
 
-## Links
-
-- [Linode: Using fail2ban to secure your server](https://www.linode.com/docs/guides/using-fail2ban-to-secure-your-server-a-tutorial/)
-
 ## Using Ansible Vault
 
 - [Ansible Vault documentation](https://docs.ansible.com/ansible/latest/vault_guide/index.html)
@@ -243,3 +239,4 @@ Each time you run your playbook, Ansible will unlock the vault by reading from t
 ## Links
 
 - [DigitalOcean: How to use Ansible vault to protect sensitive data](https://www.digitalocean.com/community/tutorials/how-to-use-vault-to-protect-sensitive-ansible-data)
+- [Linode: Using fail2ban to secure your server](https://www.linode.com/docs/guides/using-fail2ban-to-secure-your-server-a-tutorial/)
