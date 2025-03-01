@@ -4,6 +4,7 @@
   ansible.builtin.stat:
     path: "/home/{{ remote_host_user }}/.pypirc"
   register: pypirc_file
+  become: true
 
 - name: "Setup .pypirc"
   ansible.builtin.include_tasks: copy_pypirc.yml
