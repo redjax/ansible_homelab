@@ -1,5 +1,22 @@
 # Homelab
 
+<!-- Repo image -->
+<p align="center">
+  <picture>
+    <source media="(prefer-color-scheme: dark)" srcset="./docs/img/github-header-img.png">
+    <img src="./docs/img/github-header-image.png" height="200">
+  </picture>
+</p>
+
+<!-- Badges -->
+<p align="center">
+  <img alt="GitHub Created At" src="https://img.shields.io/github/created-at/redjax/ansible_homelab">
+  <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/redjax/ansible_homelab">
+  <img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/y/redjax/ansible_homelab">
+  <img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/redjax/ansible_homelab">
+  <img alt="GitHub code size in bytes" src="https://img.shields.io/github/languages/code-size/redjax/ansible_homelab">
+</p>
+
 This repository contains my Ansible code (collections, roles, playbooks, inventories, etc) for setting up/maintaining my homelab. The project is driven by [`nox`](https://nox.thea.codes/)-based session automation.
 
 ## Requirements
