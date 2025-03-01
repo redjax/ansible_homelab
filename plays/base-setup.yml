@@ -1,0 +1,126 @@
+## This playbook is an opinionated "base" setup I use for most/all of my machines. It configures a remote user
+#  for me to connect to, installs a set of packages & configurations, and applies any modifications described
+#  in the playbook.
+---
+- name: Common configurations for Ansible-managed machines
+  hosts: all
+
+  vars:
+    ## Packages to install for Debian/RedHat distros
+    debian_pkgs: "{{ common_debian_packages }}"
+    redhat_pkgs: "{{ common_redhat_packages }}"
+
+    ## Replace 'master' with 'main' (or another branch name)
+    git_default_branch: "{{ git_default_branch_name }}"
+    ## Git username for git config user.name
+    git_user: "{{ git_user_name }}"
+    ## Git email for git config user.email
+    git_email: "{{ git_user_email }}"
+
+  tasks:
+    ## Gather installed package facts on all remotes
+    - name: "Gather facts"
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: Install & configure unattended-upgrades on Debian hosts
+      ansible.builtin.import_role:
+        name: my.homelab.onboard
+        tasks_from: install-unattended-upgrades.yml
+      when: ansible_facts.os_family == "Debian"
+
+    ## Install & configure git
+    - name: "Install & setup git"
+      ansible.builtin.import_role:
+        name: my.homelab.git
+
+    ## Generate github_id_rsa SSH key
+    - name: "Generate SSH keys"
+      ansible.builtin.import_role:
+        name: my.homelab.ssh
+        tasks_from: generate-ssh-key.yml
+
+    ## Install common Debian packages
+    - name: "Install base packages for Debian-based distributions"
+      ansible.builtin.import_role:
+        name: my.homelab.base_setup
+        tasks_from: deb-install-packages.yml
+      when: ansible_facts.os_family == "Debian"
+
+    ## Install common RedHat packages
+    - name: "Install base packages for Redhat-based distributions"
+      ansible.builtin.import_role:
+        name: my.homelab.base_setup
+        tasks_from: rpm-install-packages.yml
+      when: ansible_facts.os_family == "RedHat"
+
+    ## Install crontab on all hosts
+    - name: "Install crontab"
+      ansible.builtin.import_role:
+        name: my.homelab.cron
+        tasks_from: install-cron.yml
+
+    ## Install clamAV antivirus
+    - name: "Install clamAV"
+      ansible.builtin.import_role:
+        name: my.homelab.security.clamav
+
+    ## Apply default clamAV configuration
+    - name: "Configure clamAV"
+      ansible.builtin.import_role:
+        name: my.homelab.security.clamav
+        tasks_from: configure_clamav.yml
+
+    ## Apply default clamAV scan schedule
+    - name: "Configure clamAV scan schedule"
+      ansible.builtin.import_role:
+        name: my.homelab.security.clamav
+        tasks_from: configure_scans.yml
+
+    ## Add clamAV systemd service
+    - name: "Setup clamAV systemd service"
+      ansible.builtin.import_role:
+        name: my.homelab.security.clamav
+        tasks_from: restart_clamav_systemd.yml
+
+    ## Install fail2ban
+    - name: "Install fail2ban"
+      ansible.builtin.import_role:
+        name: my.homelab.security.fail2ban
+        tasks_from: install-fail2ban.yml
+
+    ## Create backup of existing fail2ban configs
+    - name: "Backup fail2ban configs"
+      ansible.builtin.import_role:
+        name: my.homelab.security.fail2ban
+        tasks_from: backup-fail2ban-confs.yml
+
+    ## Copy templated fail2ban files from Ansible to remote
+    - name: "Copy templated fail2ban config files"
+      ansible.builtin.import_role:
+        name: my.homelab.security.fail2ban
+        tasks_from: install-fail2ban-confs.yml
+
+    ## Enable fail2ban systemd service & start
+    - name: "Enable & start fail2ban"
+      ansible.builtin.import_role:
+        name: my.homelab.security.fail2ban
+        tasks_from: enable-fail2ban.yml
+
+    ## Install firewall on remote
+    - name: "Install firewall"
+      ansible.builtin.import_role:
+        name: my.homelab.security.firewall
+        tasks_from: install-firewall.yml
+
+    ## Configure remote firewall
+    - name: "Configure firewall"
+      ansible.builtin.import_role:
+        name: my.homelab.security.firewall
+        tasks_from: configure-firewall.yml
+
+    ## Restart firewall systemd service
+    - name: "Restart firewall"
+      ansible.builtin.import_role:
+        name: my.homelab.security.firewall
+        tasks_from: enable-firewall.yml

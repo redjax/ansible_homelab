@@ -9,19 +9,21 @@ ansible_ssh_user: "ansible_svc"
 ansible_svc_user: "ansible_svc"
 
 ## Path to SSH key (note: you must copy this to the host with ssh-copy-id before using Ansible)
-ansible_ssh_public_key_file: "/home/$USER/.ssh/cybernex_id_rsa.pub"
+# ansible_ssh_private_key_file: "~/.ssh/cybernex_ansible_id_rsa"
+# ansible_ssh_public_key_file: "~/.ssh/cybernex_id_rsa.pub"
 
 ## Directory where SSH keys will be output. Defaults to the directory
 #  a playbook was called from, i.e. plays/onboard/ssh_keys
-ansible_ssh_key_dir: "/home/$USER/ansible_ssh"
+ansible_ssh_key_dir: "/path/to/ansible_ssh/keyfiles"
 
 ## Path to service account SSH private key
 ansible_ssh_private_key_file: "{{ ansible_ssh_key_dir }}/{{ ansible_svc_user }}"
 ## Path to service account SSH public key
 ansible_ssh_service_public_key_file: "{{ ansible_ssh_key_dir }}/{{ ansible_svc_user }}.pub"
+ansible_ssh_public_key_file: "{{ ansible_ssh_key_dir }}/{{ ansible_svc_user }}.pub"
 
 ## For path substitution, i.e. "/home/{{ remote_host_user }}"
-remote_host_user: "$USER"
+remote_host_user: "<your-remote-username>"
 
 #########
 # Pyenv #
@@ -52,7 +54,7 @@ git_user_email: ""
 # System #
 ##########
 
-dns_ns: "xxx.xxx.xxx.xxx"
+dns_ns: "1.1.1.1"
 
 common_debian_packages:
   [
@@ -67,6 +69,7 @@ common_debian_packages:
     "unzip",
     "wget",
     "zip",
+    "gnupg2",
   ]
 
 common_redhat_packages: []
@@ -75,5 +78,16 @@ common_redhat_packages: []
 # Python #
 ##########
 
-pypi_token: ""
-test_pypi_token: ""
+use_pypi_token: ""
+use_test_pypi_token: ""
+
+##########
+# Zabbix #
+##########
+zabbix_agent_server_addr: ""
+zabbix_agent_server_active: ""
+
+############
+# Crowdsec #
+############
+crowdsec_enroll_token: ""

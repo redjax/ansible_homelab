@@ -16,6 +16,14 @@ ansible_ssh_service_public_key_file: "{{ ansible_ssh_key_dir }}/{{ ansible_svc_u
 # System #
 ##########
 
+## System user to create
+setup_user_name: "<your-remote-username>"
+## Do not allow passwordless sudo by default.
+#  Override this variable per-host
+setup_user_passwordless_sudo: false
+## Default shell for new users
+setup_user_shell: "/bin/bash"
+
 common_debian_packages:
   [
     "btop",

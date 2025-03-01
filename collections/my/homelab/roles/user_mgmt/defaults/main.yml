@@ -1,3 +1,4 @@
 ---
 # defaults file for user_mgmt
 new_user_comment: "Created by Ansible"
+allow_passwordless_sudo: false

@@ -1,4 +1,12 @@
 ---
+- name: Update APT cache
+  ansible.builtin.apt:
+    update_cache: yes
+    # Cache valid for 1 hour
+    cache_valid_time: 3600
+  when: (ansible_facts.os_family == "Debian") and ("git" not in ansible_facts.packages)
+  become: true
+
 - name: "Install requirements"
   apt:
     name: gnupg2

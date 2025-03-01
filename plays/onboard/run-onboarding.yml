@@ -1,0 +1,25 @@
+---
+- name: "Run ansible_svc user setup"
+  hosts: all
+
+  vars:
+    new_user_name: "{{ setup_user_name }}"
+    user_passwordless_sudo: "{{ setup_user_passwordless_sudo | default(false) }}"
+    new_user_shell: "{{ setup_user_shell | default('/bin/bash') }}"
+
+    remove_user: false
+
+  tasks:
+    - name: "Gather facts"
+      ansible.builtin.import_role:
+        name: my.homelab.facts
+
+    - name: "Call homelab collection's onboard role"
+      ansible.builtin.import_role:
+        name: my.homelab.onboard
+
+    ## Setup common user account
+    - name: "{{ 'Create new user' if remove_user == false else 'Remove user' }}"
+      ansible.builtin.import_role:
+        name: my.homelab.user_mgmt
+        tasks_from: create-user.yml

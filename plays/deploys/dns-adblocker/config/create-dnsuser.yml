@@ -1,0 +1,16 @@
+---
+- name: "Create user for adblocking DNS"
+  hosts: all
+
+  vars:
+    new_user_name: "dnsuser"
+
+  tasks:
+    - name: "Gather facts"
+      ansible.builtin.import_role:
+        name: my.homelab.facts
+
+    - name: "Call weather_monorepo collection's setup.user creation"
+      ansible.builtin.import_role:
+        name: my.homelab.user_mgmt
+        tasks_from: create-user.yml

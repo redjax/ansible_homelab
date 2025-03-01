@@ -1,0 +1,9 @@
+---
+- name: "Generate SSH keys for Github"
+  hosts: all
+
+  tasks:
+    - name: "Generate SSH keys"
+      ansible.builtin.import_role:
+        name: my.weather_monorepo.setup.ssh
+        tasks_from: generate-ssh-key.yml
