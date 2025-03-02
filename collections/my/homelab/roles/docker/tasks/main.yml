@@ -1,2 +1,14 @@
 ---
 # tasks file for docker
+## Check if Docker is installed using Ansible facts
+- name: "Check packages"
+  ansible.builtin.package_facts:
+    manager: auto
+
+- name: "Include Docker installation tasks"
+  ansible.builtin.include_tasks: deb_install-docker.yml
+  when: ("docker" not in ansible_facts.packages)
+
+- name: "Include UFW configuration tasks"
+  ansible.builtin.include_tasks: fix-ufw-vuln.yml
+  when: ("docker" in ansible_facts.packages)
