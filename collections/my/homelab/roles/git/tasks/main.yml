@@ -1,7 +1,7 @@
 ---
 # tasks file for roles/common/configure-git
 
-## Check if Docker is installed using Ansible facts
+## Check if git is installed using Ansible facts
 - name: "Check packages"
   ansible.builtin.package_facts:
     manager: auto
