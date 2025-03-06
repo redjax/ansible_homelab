@@ -6,7 +6,7 @@ colorama==0.4.6
 ghp-import==2.1.0
 griffe==0.47.0
 idna==3.7
-Jinja2==3.1.4
+Jinja2==3.1.6
 Markdown==3.6
 markdown-include==0.8.1
 MarkupSafe==2.1.5
