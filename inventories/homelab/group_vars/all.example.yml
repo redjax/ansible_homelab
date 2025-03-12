@@ -91,3 +91,9 @@ zabbix_agent_server_active: ""
 # Crowdsec #
 ############
 crowdsec_enroll_token: ""
+
+#########
+# Kopia #
+#########
+kopia_username: admin
+kopia_password: <your-secure-password>

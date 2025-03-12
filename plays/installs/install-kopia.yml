@@ -2,6 +2,10 @@
 - name: "Install Kopia"
   hosts: all
 
+  vars:
+    kopia_webui_username: "{{ kopia_username }}"
+    kopia_webui_password: "{{ kopia_password }}"
+
   tasks:
     - name: "Gather facts"
       ansible.builtin.import_role:

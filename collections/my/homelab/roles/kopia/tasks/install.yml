@@ -1,7 +1,6 @@
 - name: Install kopia & fuse
   apt:
     pkg:
-      - fuse
       - kopia
     state: present
   become: true

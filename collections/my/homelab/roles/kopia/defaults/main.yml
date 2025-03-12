@@ -11,3 +11,5 @@ kopia_keep_log_days: 3
 kopia_webui_address: 0.0.0.0
 kopia_webui_port: 51515
 kopia_webui_insecure: true
+kopia_webui_username: admin
+kopia_webui_password: kopia
