@@ -1,0 +1,7 @@
+- name: Add environment variables
+  lineinfile:
+    path: /etc/environment
+    line: "{{ item.key | upper }}={{ item.value }}"
+    create: yes
+  with_dict: "{{ kopia_environment_vars }}"
+  become: true

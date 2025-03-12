@@ -1,0 +1,15 @@
+#SPDX-License-Identifier: MIT-0
+---
+# defaults file for kopia
+kopia_environment_vars:
+  KOPIA_LOG_DIR_MAX_FILES: 1000
+  KOPIA_LOG_DIR_MAX_AGE: 720h
+  KOPIA_CONTENT_LOG_DIR_MAX_FILES: 5000
+  KOPIA_CONTENT_LOG_DIR_MAX_AGE: 720h
+
+kopia_keep_log_days: 3
+kopia_webui_address: 0.0.0.0
+kopia_webui_port: 51515
+kopia_webui_insecure: true
+kopia_webui_username: admin
+kopia_webui_password: kopia

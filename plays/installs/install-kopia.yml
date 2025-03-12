@@ -1,0 +1,36 @@
+---
+- name: "Install Kopia"
+  hosts: all
+
+  vars:
+    kopia_webui_username: "{{ kopia_username }}"
+    kopia_webui_password: "{{ kopia_password }}"
+
+  tasks:
+    - name: "Gather facts"
+      ansible.builtin.import_role:
+        name: my.homelab.facts
+
+    - ansible.builtin.import_role:
+        name: my.homelab.kopia
+        tasks_from: add_repo.yml
+
+    - ansible.builtin.import_role:
+        name: my.homelab.kopia
+        tasks_from: install.yml
+
+    - ansible.builtin.import_role:
+        name: my.homelab.kopia
+        tasks_from: env_vars.yml
+
+    - ansible.builtin.import_role:
+        name: my.homelab.kopia
+        tasks_from: log_rotate.yml
+
+    - ansible.builtin.import_role:
+        name: my.homelab.kopia
+        tasks_from: systemd_service.yml
+    
+    - ansible.builtin.import_role:
+        name: my.homelab.kopia
+        tasks_from: ufw_allow.yml
