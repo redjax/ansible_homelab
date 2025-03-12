@@ -1,0 +1,12 @@
+---
+- name: "Gather the package facts"
+  ansible.builtin.package_facts:
+    manager: auto
+
+- name: "Allow Kopia webUI port"
+  community.general.ufw:
+    rule: "allow"
+    port: "{{ kopia_webui_port }}"
+    proto: "tcp"
+  become: true
+  when: (ansible_facts.os_family == "Debian") and ("kopia" in ansible_facts.packages)

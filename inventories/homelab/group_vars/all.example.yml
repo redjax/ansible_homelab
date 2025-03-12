@@ -91,3 +91,11 @@ zabbix_agent_server_active: ""
 # Crowdsec #
 ############
 crowdsec_enroll_token: ""
+
+#########
+# Kopia #
+#########
+kopia_username: admin
+## You should set this variable on each host in your inventory.yml file.
+#  Using the same password for all your hosts is insecure.
+#  kopia_password: <your-secure-password>
