@@ -1,0 +1,15 @@
+- name: Adds deb repository
+  apt_key:
+    url: https://kopia.io/signing-key
+    state: present
+  become: true
+  when: ansible_os_family == "Debian"
+
+- name: Adds apt source
+  apt_repository:
+    repo: "deb http://packages.kopia.io/apt/ stable main"
+    state: present
+    filename: kopia
+    update_cache: yes
+  become: true
+  when: ansible_os_family == "Debian"

@@ -1,0 +1,28 @@
+#SPDX-License-Identifier: MIT-0
+---
+# tasks file for kopia
+- import_tasks: add_repo.yml
+  tags:
+    - kopia
+    - kopia:install
+
+- import_tasks: install.yml
+  tags:
+    - kopia
+    - kopia:install
+
+- import_tasks: env_vars.yml
+  tags:
+    - kopia
+    - kopia:configure
+
+- import_tasks: log_rotate.yml
+  tags:
+    - kopia
+    - kopia:configure
+
+- import_tasks: systemd_service.yml
+  tags:
+    - kopia
+    - kopia:configure
+  

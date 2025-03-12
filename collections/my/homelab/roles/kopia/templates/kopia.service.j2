@@ -1,0 +1,13 @@
+[Unit]
+Description=Kopia repository server
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/kopia server start --address {{ kopia_webui_address }}:{{ kopia_webui_port }} --ui{% if kopia_webui_insecure %} --insecure{% endif %}
+
+Restart=always
+User=root
+EnvironmentFile=/etc/environment
+
+[Install]
+WantedBy=multi-user.target
