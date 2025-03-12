@@ -1,4 +1,4 @@
-- name: Install kopia & fuse
+- name: Install kopia
   apt:
     pkg:
       - kopia

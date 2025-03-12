@@ -25,4 +25,8 @@
   tags:
     - kopia
     - kopia:configure
-  
+
+- import_tasks: ufw_allow.yml
+  tags:
+    - kopia
+    - kopia:configure

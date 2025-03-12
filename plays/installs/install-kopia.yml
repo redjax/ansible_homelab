@@ -30,3 +30,7 @@
     - ansible.builtin.import_role:
         name: my.homelab.kopia
         tasks_from: systemd_service.yml
+    
+    - ansible.builtin.import_role:
+        name: my.homelab.kopia
+        tasks_from: ufw_allow.yml

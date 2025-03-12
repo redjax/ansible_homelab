@@ -1,3 +1,12 @@
+---
+- name: "Add Kopia GPG key"
+  apt_key:
+    url: "https://kopia.io/signing-key"
+    state: present
+    keyring: "/etc/apt/keyrings/kopia-keyring.gpg"
+  become: true
+  when: ansible_facts['os_family'] == "Debian"
+
 - name: Adds deb repository
   apt_key:
     url: https://kopia.io/signing-key
@@ -7,7 +16,7 @@
 
 - name: Adds apt source
   apt_repository:
-    repo: "deb http://packages.kopia.io/apt/ stable main"
+    repo: "deb [signed-by=/etc/apt/keyrings/kopia-keyring.gpg] http://packages.kopia.io/apt/ stable main"
     state: present
     filename: kopia
     update_cache: yes
