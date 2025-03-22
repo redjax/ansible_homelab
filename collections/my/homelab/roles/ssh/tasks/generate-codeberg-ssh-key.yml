@@ -64,4 +64,17 @@
 
 - name: "Echo public key"
   debug:
-    msg: "Public key for GitHub: {{ public_key.stdout }}"
+    msg: "Public key for Codeberg: {{ public_key.stdout }}"
+
+- name: "Ensure .ssh/config exists and configure Codeberg"
+  ansible.builtin.lineinfile:
+    path: "/home/{{ remote_host_user }}/.ssh/config"
+    line: |
+      Host codeberg.org
+        User git
+        IdentityFile ~/.ssh/codeberg_id_rsa
+    state: present
+    create: true
+    owner: "{{ remote_host_user }}"
+    group: "{{ remote_host_user }}"
+  become: true

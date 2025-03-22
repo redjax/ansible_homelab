@@ -65,3 +65,16 @@
 - name: "Echo public key"
   debug:
     msg: "Public key for GitHub: {{ public_key.stdout }}"
+
+- name: "Ensure .ssh/config exists and configure GitHub"
+  ansible.builtin.lineinfile:
+    path: "/home/{{ remote_host_user }}/.ssh/config"
+    line: |
+      Host github.com
+        User git
+        IdentityFile ~/.ssh/github_id_rsa
+    state: present
+    create: true
+    owner: "{{ remote_host_user }}"
+    group: "{{ remote_host_user }}"
+  become: true
