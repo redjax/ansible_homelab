@@ -1,36 +1,36 @@
 ---
-- name: "Check if {{ remote_host_user }} Github SSH private key exists"
+- name: "Check if {{ remote_host_user }} Codeberg SSH private key exists"
   ansible.builtin.stat:
-    path: "/home/{{ remote_host_user }}/.ssh/github_id_rsa"
+    path: "/home/{{ remote_host_user }}/.ssh/codeberg_id_rsa"
   # delegate_to: localhost
   register: ssh_key_status
   run_once: true
   become: true
 
-- name: "[DEBUG] /home{{ remote_host_user }}/.ssh/github_id_rsa existence"
+- name: "[DEBUG] /home{{ remote_host_user }}/.ssh/codeberg_id_rsa existence"
   ansible.builtin.debug:
-    msg: "/home/{{ remote_host_user }}/.ssh/github_id_rsa exists: {{ ssh_key_status.stat.exists }}"
+    msg: "/home/{{ remote_host_user }}/.ssh/codeberg_id_rsa exists: {{ ssh_key_status.stat.exists }}"
 
 - name: Generate SSH key pair
   ansible.builtin.openssh_keypair:
-    path: "/home/{{ remote_host_user }}/.ssh/github_id_rsa"
+    path: "/home/{{ remote_host_user }}/.ssh/codeberg_id_rsa"
     type: rsa
     size: 4096
   run_once: true
   when: ssh_key_status.stat.exists == false
   become: true
 
-- name: "Check if {{ remote_host_user }} Github SSH private key exists"
+- name: "Check if {{ remote_host_user }} Codeberg SSH private key exists"
   ansible.builtin.stat:
-    path: "/home/{{ remote_host_user }}/.ssh/github_id_rsa"
+    path: "/home/{{ remote_host_user }}/.ssh/codeberg_id_rsa"
   # delegate_to: localhost
   register: ssh_key_status
   run_once: true
   become: true
 
-- name: "Check if {{ remote_host_user }} Github SSH public key exists"
+- name: "Check if {{ remote_host_user }} Codeberg SSH public key exists"
   ansible.builtin.stat:
-    path: "/home/{{ remote_host_user }}/.ssh/github_id_rsa.pub"
+    path: "/home/{{ remote_host_user }}/.ssh/codeberg_id_rsa.pub"
   # delegate_to: localhost
   register: ssh_pubkey_status
   run_once: true
@@ -38,7 +38,7 @@
 
 - name: "Set permissions on the private key"
   ansible.builtin.file:
-    path: "/home/{{ remote_host_user }}/.ssh/github_id_rsa"
+    path: "/home/{{ remote_host_user }}/.ssh/codeberg_id_rsa"
     state: file
     mode: "0600"
     owner: "{{ remote_host_user }}"
@@ -48,7 +48,7 @@
 
 - name: "Set permissions on the public key"
   ansible.builtin.file:
-    path: "/home/{{ remote_host_user }}/.ssh/github_id_rsa.pub"
+    path: "/home/{{ remote_host_user }}/.ssh/codeberg_id_rsa.pub"
     state: file
     mode: "0644"
     owner: "{{ remote_host_user }}"
@@ -58,7 +58,7 @@
 
 - name: "Debug public key"
   ansible.builtin.command:
-    cmd: cat /home/{{ remote_host_user }}/.ssh/github_id_rsa.pub
+    cmd: cat /home/{{ remote_host_user }}/.ssh/codeberg_id_rsa.pub
   register: public_key
   become: true
 
