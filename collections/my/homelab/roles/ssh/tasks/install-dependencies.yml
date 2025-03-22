@@ -1,0 +1,10 @@
+---
+- name: "Gather package facts"
+  ansible.builtin.package_facts:
+
+- name: "Ensure openssh-server is installed"
+  ansible.builtin.package:
+    name: openssh-server
+    state: present
+  become: true
+  when: not 'openssh-server' in ansible_facts.packages
