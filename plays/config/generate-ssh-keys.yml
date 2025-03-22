@@ -1,5 +1,5 @@
 ---
-- name: "Generate SSH keys for Github"
+- name: "Generate SSH keys"
   hosts: all
 
   tasks:
@@ -13,7 +13,7 @@
         name: my.homelab.ssh
         tasks_from: create-ssh-dir.yml
 
-    - name: "Generate Github SSH keys"
+    - name: "Generate SSH keys"
       ansible.builtin.import_role:
         name: my.homelab.ssh
-        tasks_from: generate-github-ssh-key.yml
+        tasks_from: generate-ssh-key.yml
