@@ -1,2 +1,15 @@
 ---
-# tasks file for setup/ssh
+# tasks file for roles/security/install-firewall
+- name: "Gather the package facts"
+  ansible.builtin.package_facts:
+    manager: auto
+
+- name: "Install OpenSSH server & dependencies"
+  ansible.builtin.include_tasks: install-dependencies.yml
+
+- name: "Create .ssh directory"
+  ansible.builtin.include_tasks: create-ssh-dir.yml
+
+- name: "Generate SSH keypair"
+  ansible.builtin.include_tasks: generate-ssh-key.yml
+

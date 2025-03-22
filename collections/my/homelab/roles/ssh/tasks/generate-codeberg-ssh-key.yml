@@ -1,0 +1,80 @@
+---
+- name: "Check if {{ remote_host_user }} Codeberg SSH private key exists"
+  ansible.builtin.stat:
+    path: "/home/{{ remote_host_user }}/.ssh/codeberg_id_rsa"
+  # delegate_to: localhost
+  register: ssh_key_status
+  run_once: true
+  become: true
+
+- name: "[DEBUG] /home{{ remote_host_user }}/.ssh/codeberg_id_rsa existence"
+  ansible.builtin.debug:
+    msg: "/home/{{ remote_host_user }}/.ssh/codeberg_id_rsa exists: {{ ssh_key_status.stat.exists }}"
+
+- name: Generate SSH key pair
+  ansible.builtin.openssh_keypair:
+    path: "/home/{{ remote_host_user }}/.ssh/codeberg_id_rsa"
+    type: rsa
+    size: 4096
+  run_once: true
+  when: ssh_key_status.stat.exists == false
+  become: true
+
+- name: "Check if {{ remote_host_user }} Codeberg SSH private key exists"
+  ansible.builtin.stat:
+    path: "/home/{{ remote_host_user }}/.ssh/codeberg_id_rsa"
+  # delegate_to: localhost
+  register: ssh_key_status
+  run_once: true
+  become: true
+
+- name: "Check if {{ remote_host_user }} Codeberg SSH public key exists"
+  ansible.builtin.stat:
+    path: "/home/{{ remote_host_user }}/.ssh/codeberg_id_rsa.pub"
+  # delegate_to: localhost
+  register: ssh_pubkey_status
+  run_once: true
+  become: true
+
+- name: "Set permissions on the private key"
+  ansible.builtin.file:
+    path: "/home/{{ remote_host_user }}/.ssh/codeberg_id_rsa"
+    state: file
+    mode: "0600"
+    owner: "{{ remote_host_user }}"
+    group: "{{ remote_host_user }}"
+  become: true
+  when: ssh_key_status.stat.exists == true
+
+- name: "Set permissions on the public key"
+  ansible.builtin.file:
+    path: "/home/{{ remote_host_user }}/.ssh/codeberg_id_rsa.pub"
+    state: file
+    mode: "0644"
+    owner: "{{ remote_host_user }}"
+    group: "{{ remote_host_user }}"
+  become: true
+  when: ssh_pubkey_status.stat.exists == true
+
+- name: "Debug public key"
+  ansible.builtin.command:
+    cmd: cat /home/{{ remote_host_user }}/.ssh/codeberg_id_rsa.pub
+  register: public_key
+  become: true
+
+- name: "Echo public key"
+  debug:
+    msg: "Public key for Codeberg: {{ public_key.stdout }}"
+
+- name: "Ensure .ssh/config exists and configure Codeberg"
+  ansible.builtin.lineinfile:
+    path: "/home/{{ remote_host_user }}/.ssh/config"
+    line: |
+      Host codeberg.org
+        User git
+        IdentityFile ~/.ssh/codeberg_id_rsa
+    state: present
+    create: true
+    owner: "{{ remote_host_user }}"
+    group: "{{ remote_host_user }}"
+  become: true

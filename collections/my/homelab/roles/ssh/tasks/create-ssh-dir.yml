@@ -1,0 +1,21 @@
+---
+- name: "Check if /home/{{ remote_host_user }}/.ssh directory exists"
+  ansible.builtin.stat:
+    path: "/home/{{ remote_host_user }}/.ssh"
+  register: ssh_dir
+  become: true
+  run_once: true
+
+- name: "[DEBUG] /home/{{ remote_host_user }}/.ssh existence"
+  ansible.builtin.debug:
+    msg: "/home/{{ remote_host_user }}/.ssh exists: {{ ssh_dir.stat.exists }}"
+
+- name: Ensure remote SSH directory exists
+  file:
+    path: "/home/{{ remote_host_user }}/.ssh"
+    state: directory
+    mode: "0700"
+    owner: "{{ remote_host_user }}"
+    group: "{{ remote_host_user }}"
+  become: true
+  when: not ssh_dir.stat.exists
