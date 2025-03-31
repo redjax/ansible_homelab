@@ -1,0 +1,9 @@
+---
+- name: "Install Docker Compose plugin"
+  ansible.builtin.apt:
+    name:
+      - docker-compose
+    state: present
+    # update_cache: true
+  become: true
+  when: (ansible_facts['os_family'] == 'Debian')

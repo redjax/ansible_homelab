@@ -1,0 +1,8 @@
+---
+- name: "Enable and start Docker service"
+  ansible.builtin.systemd:
+    name: docker
+    enabled: true
+    state: started
+  become: true
+  when: ansible_facts['os_family'] == 'Debian'

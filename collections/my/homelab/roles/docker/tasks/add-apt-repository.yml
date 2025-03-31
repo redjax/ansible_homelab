@@ -1,0 +1,25 @@
+---
+- name: "Add Docker's GPG key"
+  ansible.builtin.get_url:
+    url: https://download.docker.com/linux/debian/gpg
+    dest: /etc/apt/keyrings/docker.asc
+    mode: '0644'
+  become: true
+  when: ansible_facts['os_family'] == 'Debian'
+
+- name: "Add Docker APT repository"
+  ansible.builtin.apt_repository:
+    repo: "deb [arch={{ dpkg_architecture }} signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian {{ ansible_distribution_release }} stable"
+    state: present
+    filename: docker
+    update_cache: yes
+  vars:
+    dpkg_architecture: "{{ ansible_facts['architecture'] | default(ansible_architecture, true) | lower | replace('x86_64', 'amd64') }}"
+  become: true
+  when: ansible_facts['os_family'] == 'Debian'
+
+- name: "Update apt cache"
+  ansible.builtin.apt:
+    update_cache: true
+  become: true
+  when: ansible_facts['os_family'] == 'Debian'

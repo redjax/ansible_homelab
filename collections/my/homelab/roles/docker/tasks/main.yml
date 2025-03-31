@@ -1,14 +1,31 @@
 ---
 # tasks file for docker
 ## Check if Docker is installed using Ansible facts
-- name: "Check packages"
+- name: "Re-check packages"
   ansible.builtin.package_facts:
     manager: auto
 
-- name: "Include Docker installation tasks"
-  ansible.builtin.include_tasks: deb_install-docker.yml
-  when: ("docker" not in ansible_facts.packages)
+- name: "Add apt repository"
+  ansible.builtin.include_tasks: add-apt-repository.yml
+  when: ansible_facts['os_family'] == 'Debian'
+
+- name: "Install Docker packages"
+  ansible.builtin.include_tasks: install-docker-depends.yml
+
+- name: "Install Docker Compose"
+  ansible.builtin.include_tasks: install-docker-compose.yml
+
+- name: "Add user to Docker group"
+  ansible.builtin.include_tasks: add-user-to-docker-group.yml
+
+- name: "Enable Docker systemd service"
+  ansible.builtin.include_tasks: enable-systemd-service.yml
 
 - name: "Include UFW configuration tasks"
   ansible.builtin.include_tasks: fix-ufw-vuln.yml
-  when: ("docker" in ansible_facts.packages)
+
+- name: "Enable Docker Bash completions"
+  ansible.builtin.include_tasks: enable-bash-completions.sh
+
+- name: "Debug Docker version"
+  ansible.builtin.include_tasks: debug-docker-version.yml
