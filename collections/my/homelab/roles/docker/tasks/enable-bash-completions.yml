@@ -1,0 +1,32 @@
+---
+- name: "Ensure bash-completion package is installed"
+  ansible.builtin.apt:
+    name: bash-completion
+    state: present
+    update_cache: true
+  become: true
+  when: ansible_facts['os_family'] == 'Debian'
+
+- name: "Download Docker bash completion script"
+  ansible.builtin.get_url:
+    url: https://raw.githubusercontent.com/docker/cli/master/contrib/completion/bash/docker
+    dest: /etc/bash_completion.d/docker
+    mode: '0644'
+  become: true
+  when: ansible_facts['os_family'] == 'Debian'
+
+- name: "Download Docker Compose bash completion script"
+  ansible.builtin.get_url:
+    url: https://raw.githubusercontent.com/docker/compose/master/contrib/completion/bash/docker-compose
+    dest: /etc/bash_completion.d/docker-compose
+    mode: '0644'
+  become: true
+  when: ansible_facts['os_family'] == 'Debian'
+
+- name: "Ensure shell completions are loaded"
+  ansible.builtin.lineinfile:
+    path: /etc/profile.d/bash_completion.sh
+    line: ". /etc/bash_completion"
+    create: true
+  become: true
+  when: ansible_facts['os_family'] == 'Debian'

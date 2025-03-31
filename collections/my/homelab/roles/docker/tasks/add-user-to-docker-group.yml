@@ -1,0 +1,10 @@
+---
+- name: "Add user {{ remote_host_user }} to Docker group"
+  ansible.builtin.user:
+    name: "{{ remote_host_user }}"
+    group: docker
+  become: true
+
+- name: "Run newgrp docker to apply group change"
+  ansible.builtin.shell: "newgrp docker"
+  become: true
