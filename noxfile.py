@@ -30,6 +30,10 @@ nox.options.error_on_missing_interpreters = False
 
 nox.options.sessions = ["build-my-collections", "install-ansible-requirements"]
 
+########
+# Vars #
+########
+
 ## Detect container env, or default to False
 if "CONTAINER_ENV" in os.environ:
     CONTAINER_ENV: bool = os.environ["CONTAINER_ENV"]
@@ -62,6 +66,58 @@ DOCS_VENV_PATH: Path = Path(".mkdocs-venv")
 MKDOCS_DEV_PORT: int = 8000
 MKDOCS_DEV_ADDR: str = "0.0.0.0"
 
+###########
+# Classes #
+###########
+
+@dataclass
+class CustomAnsibleCollection:
+    """Define a custom Ansible collection for Nox sessions.
+
+    Params:
+        name (str): The simple name of the role, mainly used for logging messages.
+        fqcn (str): The fully-qualified collection name, i.e. `my.collection`
+        path (Path): The local file path to the Ansible collection.
+
+    """
+
+    name: str = field(default=None)
+    fqcn: str = field(default=None)
+    path: Path | None = field(default=None)
+
+    @property
+    def path_exists(self) -> bool:
+        if self.path:
+            return self.path.exists()
+        else:
+            return False
+
+    def __post_init__(self):
+        if self.path:
+            _path: Path = Path(f"{self.path}")
+
+            self.path = _path
+
+        _log = logging.getLogger("nox.CustomAnsibleCollection")
+        self.logger = _log
+
+
+## Define custom Ansible collection objects. The build-my-collections session iterates over this list, building
+#  the distribution package for each collection in the list.
+CUSTOM_COLLECTIONS: t.List[CustomAnsibleCollection] = [
+    CustomAnsibleCollection(
+        name="homelab", fqcn="my.homelab", path=Path(f"{MY_COLLECTIONS_PATH}/homelab")
+    ),
+    CustomAnsibleCollection(
+        name="weather-monorepo",
+        fqcn="my.weather_monorepo",
+        path=Path(f"{MY_COLLECTIONS_PATH}/weather_monorepo"),
+    ),
+]
+
+###########
+# Methods #
+###########
 
 def install_uv_project(session: nox.Session, external: bool = False) -> None:
     """Method to install uv and the current project in a nox session."""
@@ -117,57 +173,49 @@ def install_uv_project(session: nox.Session, external: bool = False) -> None:
     session.run("uv", "pip", "install", ".", external=external)
 
 
-@dataclass
-class CustomAnsibleCollection:
-    """Define a custom Ansible collection for Nox sessions.
+############
+# Sessions #
+############
 
-    Params:
-        name (str): The simple name of the role, mainly used for logging messages.
-        fqcn (str): The fully-qualified collection name, i.e. `my.collection`
-        path (Path): The local file path to the Ansible collection.
+@nox.session(python=[DEFAULT_PYTHON], name="vulture-check", tags=["quality"])
+def run_vulture_check(session: nox.Session):
+    session.install(f"vulture")
 
-    """
+    log.info("Checking for dead code with vulture")
+    session.run("vulture", "scripts/", "--min-confidence", "100")
+    session.run("vulture", "./noxfile.py", "--min-confidence", "100")
+    
 
-    name: str = field(default=None)
-    fqcn: str = field(default=None)
-    path: Path | None = field(default=None)
+@nox.session(python=[DEFAULT_PYTHON], name="uv-export")
+def export_requirements(session: nox.Session):
+    ## Ensure REQUIREMENTS_OUTPUT_DIR path exists
+    session.install(f"uv")
 
-    @property
-    def path_exists(self) -> bool:
-        if self.path:
-            return self.path.exists()
-        else:
-            return False
+    log.info("Exporting production requirements")
+    # session.run(
+    #     "uv",
+    #     "pip",
+    #     "compile",
+    #     "pyproject.toml",
+    #     "-o",
+    #     "requirements.txt",
+    # )
+    session.run(
+        "uv",
+        "export",
+        "--no-dev",
+        "-o",
+        "requirements.txt"
+    )
 
-    def __post_init__(self):
-        if self.path:
-            _path: Path = Path(f"{self.path}")
-
-            self.path = _path
-
-        _log = logging.getLogger("nox.CustomAnsibleCollection")
-        self.logger = _log
-
-
-## Define custom Ansible collection objects. The build-my-collections session iterates over this list, building
-#  the distribution package for each collection in the list.
-CUSTOM_COLLECTIONS: t.List[CustomAnsibleCollection] = [
-    CustomAnsibleCollection(
-        name="homelab", fqcn="my.homelab", path=Path(f"{MY_COLLECTIONS_PATH}/homelab")
-    ),
-    CustomAnsibleCollection(
-        name="weather-monorepo",
-        fqcn="my.weather_monorepo",
-        path=Path(f"{MY_COLLECTIONS_PATH}/weather_monorepo"),
-    ),
-]
-
-## Define versions to test
-PY_VERSIONS: list[str] = ["3.12", "3.11"]
-## Get tuple of Python ver ('maj', 'min', 'mic')
-PY_VER_TUPLE = platform.python_version_tuple()
-## Dynamically set Python version
-DEFAULT_PYTHON: str = f"{PY_VER_TUPLE[0]}.{PY_VER_TUPLE[1]}"
+    
+    log.info("Exporting development requirements")
+    session.run(
+        "uv",
+        "export",
+        "-o",
+        "requirements.dev.txt"   
+    )
 
 
 @nox.session(name="update-uv-requirements", tags=["requirements", "update"])
@@ -244,6 +292,30 @@ def upgrade_pkgs(session: nox.Session):
     session.run("uv", "lock", "--upgrade")
     log.info("Synchronizing packages after upgrade")
     session.run("uv", "sync", "--all-extras", "--dev")
+    
+    
+@nox.session(name="init-clone-setup")
+def run_init_clone_setup(session: nox.Session):
+    install_uv_project(session)
+
+    copy_paths = [
+        {
+            "src": "./inventories/homelab/inventory.example.yml",
+            "dest": "./inventories/homelab/inventory.yml"
+        },
+        {
+            "src": "./inventories/homelab/group_vars/all.example.yml",
+            "dest": "./inventories/homelab/group_vars/all.yml"
+        }
+    ]
+    
+    for p in copy_paths:
+        if not Path(p["dest"]).exists():
+            log.info(f"Copying {p['src']} to {p['dest']}")
+            shutil.copyfile(p["src"], p["dest"])
+
+        else:
+            log.info(f"{p['dest']} already exists, skipping copy")
 
 ###########
 # Ansible #
