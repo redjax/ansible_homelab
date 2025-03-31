@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from contextlib import contextmanager
 from dataclasses import dataclass, field
+import importlib.util
 import logging
 import logging.config
 import os
@@ -11,15 +12,17 @@ import secrets
 import shutil
 import typing as t
 
-log = logging.getLogger(__name__)
-
 import nox
 import nox.command
 
-## https://pdm-project.org/latest/usage/advanced/#use-nox-as-the-runner
-# os.environ.update({"PDM_IGNORE_SAVED_PYTHON": "1"})
+## Create logger for this module
+log: logging.Logger = logging.getLogger("nox")
 
-nox.options.default_venv_backend = "venv"
+## Set nox options
+if importlib.util.find_spec("uv"):
+    nox.options.default_venv_backend = "uv|virtualenv"
+else:
+    nox.options.default_venv_backend = "virtualenv"
 nox.options.reuse_existing_virtualenvs = True
 nox.options.error_on_external_run = False
 nox.options.error_on_missing_interpreters = False
@@ -33,13 +36,25 @@ if "CONTAINER_ENV" in os.environ:
 else:
     CONTAINER_ENV: bool = False
 
+## Define versions to test
+PY_VERSIONS: list[str] = ["3.12", "3.11"]
+## Get tuple of Python ver ('maj', 'min', 'mic')
+PY_VER_TUPLE: tuple[str, str, str] = platform.python_version_tuple()
+## Dynamically set Python version
+DEFAULT_PYTHON: str = f"{PY_VER_TUPLE[0]}.{PY_VER_TUPLE[1]}"
+
+# this VENV_DIR constant specifies the name of the dir that the `dev`
+# session will create, containing the virtualenv;
+# the `resolve()` makes it portable
+VENV_DIR = Path("./.venv").resolve()
+
 COLLECTIONS_PATH: Path = Path("./collections")
 ANSIBLE_COLLECTIONS_PATH: Path = Path(f"{COLLECTIONS_PATH}/ansible_collections")
 MY_COLLECTIONS_PATH: Path = Path(f"{COLLECTIONS_PATH}/my")
 COLLECTION_BUILD_OUTPUT_PATH: Path = Path("./build")
 
 ## Set paths to lint with the lint session
-LINT_PATHS: list[str] = []
+LINT_PATHS: list[str] = ["scripts"]
 
 ## MKDocs
 DOCS_REQUIREMENTS_FILE: Path = Path("docs/requirements.txt")
@@ -48,65 +63,14 @@ MKDOCS_DEV_PORT: int = 8000
 MKDOCS_DEV_ADDR: str = "0.0.0.0"
 
 
-logging.basicConfig(
-    level="DEBUG",
-    format="%(name)s | [%(levelname)s] > %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S",
-)
-
-## Add logger names to the list to 'silence' them, reducing log noise from 3rd party packages
-for _logger in []:
-    logging.getLogger(_logger).setLevel("WARNING")
-
-
-def setup_nox_logging(
-    level_name: str = "DEBUG", disable_loggers: list[str] | None = []
-) -> None:
-    """Configure a logger for the Nox module.
-
-    Params:
-        level_name (str): The uppercase string repesenting a logging logLevel.
-        disable_loggers (list[str] | None): A list of logger names to disable, i.e. for 3rd party apps.
-            Note: Disabling means setting the logLevel to `WARNING`, so you can still see errors.
-
-    """
-    ## If container environment detected, default to logging.DEBUG
-    if CONTAINER_ENV:
-        level_name: str = "DEBUG"
-
-    logging_config: dict = {
-        "version": 1,
-        "disable_existing_loggers": False,
-        "loggers": {
-            "nox": {
-                "level": level_name.upper(),
-                "handlers": ["console"],
-                "propagate": False,
-            }
-        },
-        "handlers": {
-            "console": {
-                "class": "logging.StreamHandler",
-                "formatter": "nox",
-                "level": "DEBUG",
-                "stream": "ext://sys.stdout",
-            }
-        },
-        "formatters": {
-            "nox": {
-                "format": "[NOX] [%(asctime)s] [%(levelname)s] [%(name)s]: %(message)s",
-                "datefmt": "%Y-%m-%D %H:%M:%S",
-            }
-        },
-    }
-
-    ## Configure logging. Only run this once in an application
-    logging.config.dictConfig(config=logging_config)
-
-    ## Disable loggers by name. Sets logLevel to logging.WARNING to suppress all but warnings & errors
-    for _logger in disable_loggers:
-        logging.getLogger(_logger).setLevel(logging.WARNING)
-
+def install_uv_project(session: nox.Session, external: bool = False) -> None:
+    """Method to install uv and the current project in a nox session."""
+    log.info("Installing uv in session")
+    session.install("uv")
+    log.info("Syncing uv project")
+    session.run("uv", "sync", external=external)
+    log.info("Installing project")
+    session.run("uv", "pip", "install", ".", external=external)
 
 
 @contextmanager
@@ -206,100 +170,13 @@ PY_VER_TUPLE = platform.python_version_tuple()
 DEFAULT_PYTHON: str = f"{PY_VER_TUPLE[0]}.{PY_VER_TUPLE[1]}"
 
 
-@nox.session(python=DEFAULT_PYTHON, name="setup-mkdocs", tags=["mkdocs", "docs"])
-@nox.parametrize("docs_requirements_file", [DOCS_REQUIREMENTS_FILE])
-@nox.parametrize("docs_venv_path", [DOCS_VENV_PATH])
-def run_mkdocs_venv_setup(
-    session: nox.Session,
-    docs_requirements_file: t.Union[str, Path],
-    docs_venv_path: t.Union[str, Path],
-):
-    if not docs_requirements_file.exists():
-        raise FileNotFoundError(
-            f"Could not find mkdocs requirements file at '{docs_requirements_file}'."
-        )
-
-    # session.install("-r", f"{DOCS_REQUIREMENTS_FILE}")
-    session.install("virtualenv")
-
-    log.info(f"Creating MKDocs virtual environment at path: {docs_venv_path}")
-    try:
-        session.run("virtualenv", f"{docs_venv_path}")
-    except Exception as exc:
-        msg = Exception(
-            f"({type(exc)}) Unhandled exception creating mkdocs virtual environment. Details: {exc}"
-        )
-        log.error(msg)
-
-        raise exc
-
-    log.warning(
-        f"!!! [MANUAL STEP REQUIRED]\nMKDocs virtual environment created at path '{docs_venv_path}'. Activate with '. {docs_venv_path}/bin/activate', then install requirements  with 'pip install -r docs/requirements.txt'."
-    )
-
-
-@nox.session(
-    python=[DEFAULT_PYTHON], name="build-mkdocs", tags=["mkdocs", "docs", "build"]
-)
-@nox.parametrize("docs_requirements_file", [DOCS_REQUIREMENTS_FILE])
-def run_mkdocs_build(session: nox.Session, docs_requirements_file: t.Union[str, Path]):
-    if not docs_requirements_file.exists():
-        raise FileNotFoundError(
-            f"Could not find mkdocs requirements file at path: '{docs_requirements_file}'"
-        )
-
-    session.install("-r", f"{docs_requirements_file}")
-
-    log.info("Building MKDocs site")
-    try:
-        session.run("mkdocs", "build")
-    except Exception as exc:
-        msg = Exception(
-            f"({type(exc)}) Unhandled exception building MKDocs site. Details: {exc}"
-        )
-        log.error(msg)
-
-        raise exc
-
-
-@nox.session(
-    python=[DEFAULT_PYTHON], name="serve-mkdocs", tags=["mkdocs", "docs", "serve"]
-)
-@nox.parametrize("docs_requirements_file", [DOCS_REQUIREMENTS_FILE])
-@nox.parametrize("mkdocs_dev_port", [MKDOCS_DEV_PORT])
-@nox.parametrize("mkdocs_dev_addr", [MKDOCS_DEV_ADDR])
-def run_mkdocs_serve(
-    session: nox.Session,
-    docs_requirements_file: t.Union[str, Path],
-    mkdocs_dev_addr: str,
-    mkdocs_dev_port: int,
-):
-    if not docs_requirements_file.exists():
-        raise FileNotFoundError(
-            f"Could not find mkdocs requirements file at path: '{docs_requirements_file}'"
-        )
-
-    session.install("-r", f"{docs_requirements_file}")
-
-    log.info("Serving MKDocs site")
-    try:
-        session.run(
-            "mkdocs", "serve", "--dev-addr", f"{mkdocs_dev_addr}:{mkdocs_dev_port}"
-        )
-    except Exception as exc:
-        msg = Exception(
-            f"({type(exc)}) Unhandled exception serving MKDocs site. Details: {exc}"
-        )
-        log.error(msg)
-
-        raise exc
-
 @nox.session(name="update-uv-requirements", tags=["requirements", "update"])
 def update_uv_requirements(session: nox.Session):
     session.install("uv")
     
     log.info("Updating uv requirements")
     session.run("uv", "sync", "--dev", "--all-extras", "--upgrade")
+
 
 @nox.session(python=[DEFAULT_PYTHON], name="lint", tags=["style"])
 @nox.parametrize("lint_paths", [LINT_PATHS])
@@ -358,6 +235,19 @@ def run_linter(session: nox.Session, lint_paths: list[Path]):
         "--fix",
     )
 
+
+@nox.session(name="upgrade-packages", tags=["update", "security"])
+def upgrade_pkgs(session: nox.Session):
+    install_uv_project(session, external=True)
+    
+    log.info("Synchronizing packages")
+    session.run("uv", "lock", "--upgrade")
+    log.info("Synchronizing packages after upgrade")
+    session.run("uv", "sync", "--all-extras", "--dev")
+
+###########
+# Ansible #
+###########
 
 @nox.session(
     python=DEFAULT_PYTHON, name="build-my-collections", tags=["ansible", "build"]
@@ -664,3 +554,96 @@ def initialize_ansible_vault(
             raise
 
     init_ansible_vault()
+
+
+##########
+# MkDocs #
+##########
+
+@nox.session(python=DEFAULT_PYTHON, name="setup-mkdocs", tags=["mkdocs", "docs"])
+@nox.parametrize("docs_requirements_file", [DOCS_REQUIREMENTS_FILE])
+@nox.parametrize("docs_venv_path", [DOCS_VENV_PATH])
+def run_mkdocs_venv_setup(
+    session: nox.Session,
+    docs_requirements_file: t.Union[str, Path],
+    docs_venv_path: t.Union[str, Path],
+):
+    if not docs_requirements_file.exists():
+        raise FileNotFoundError(
+            f"Could not find mkdocs requirements file at '{docs_requirements_file}'."
+        )
+
+    # session.install("-r", f"{DOCS_REQUIREMENTS_FILE}")
+    session.install("virtualenv")
+
+    log.info(f"Creating MKDocs virtual environment at path: {docs_venv_path}")
+    try:
+        session.run("virtualenv", f"{docs_venv_path}")
+    except Exception as exc:
+        msg = Exception(
+            f"({type(exc)}) Unhandled exception creating mkdocs virtual environment. Details: {exc}"
+        )
+        log.error(msg)
+
+        raise exc
+
+    log.warning(
+        f"!!! [MANUAL STEP REQUIRED]\nMKDocs virtual environment created at path '{docs_venv_path}'. Activate with '. {docs_venv_path}/bin/activate', then install requirements  with 'pip install -r docs/requirements.txt'."
+    )
+
+
+@nox.session(
+    python=[DEFAULT_PYTHON], name="build-mkdocs", tags=["mkdocs", "docs", "build"]
+)
+@nox.parametrize("docs_requirements_file", [DOCS_REQUIREMENTS_FILE])
+def run_mkdocs_build(session: nox.Session, docs_requirements_file: t.Union[str, Path]):
+    if not docs_requirements_file.exists():
+        raise FileNotFoundError(
+            f"Could not find mkdocs requirements file at path: '{docs_requirements_file}'"
+        )
+
+    session.install("-r", f"{docs_requirements_file}")
+
+    log.info("Building MKDocs site")
+    try:
+        session.run("mkdocs", "build")
+    except Exception as exc:
+        msg = Exception(
+            f"({type(exc)}) Unhandled exception building MKDocs site. Details: {exc}"
+        )
+        log.error(msg)
+
+        raise exc
+
+
+@nox.session(
+    python=[DEFAULT_PYTHON], name="serve-mkdocs", tags=["mkdocs", "docs", "serve"]
+)
+@nox.parametrize("docs_requirements_file", [DOCS_REQUIREMENTS_FILE])
+@nox.parametrize("mkdocs_dev_port", [MKDOCS_DEV_PORT])
+@nox.parametrize("mkdocs_dev_addr", [MKDOCS_DEV_ADDR])
+def run_mkdocs_serve(
+    session: nox.Session,
+    docs_requirements_file: t.Union[str, Path],
+    mkdocs_dev_addr: str,
+    mkdocs_dev_port: int,
+):
+    if not docs_requirements_file.exists():
+        raise FileNotFoundError(
+            f"Could not find mkdocs requirements file at path: '{docs_requirements_file}'"
+        )
+
+    session.install("-r", f"{docs_requirements_file}")
+
+    log.info("Serving MKDocs site")
+    try:
+        session.run(
+            "mkdocs", "serve", "--dev-addr", f"{mkdocs_dev_addr}:{mkdocs_dev_port}"
+        )
+    except Exception as exc:
+        msg = Exception(
+            f"({type(exc)}) Unhandled exception serving MKDocs site. Details: {exc}"
+        )
+        log.error(msg)
+
+        raise exc
