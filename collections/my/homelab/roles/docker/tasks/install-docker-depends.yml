@@ -1,0 +1,13 @@
+---
+- name: "Ensure required packages for Docker installation are installed"
+  ansible.builtin.apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg2
+      - software-properties-common
+    state: present
+    update_cache: true
+  become: true
+  when: ansible_facts['os_family'] == 'Debian'

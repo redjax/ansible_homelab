@@ -3,15 +3,50 @@
   hosts: all
 
   vars:
-    INSTALL_COMPOSE: true
+    install_docker_compose: true
 
   tasks:
     - name: "Gather facts"
       ansible.builtin.import_role:
         name: my.homelab.facts
 
-    - name: "Install Docker on Debian hosts"
+    - name: "Add Docker APT repository"
       ansible.builtin.import_role:
         name: my.homelab.docker
-        tasks_from: deb_install-docker.yml
-      when: ansible_facts['os_family'] == 'Debian'
+        tasks_from: add-apt-repository.yml
+
+    - name: "Install Docker packages"
+      ansible.builtin.import_role:
+        name: my.homelab.docker
+        tasks_from: install-docker-depends.yml
+    
+    - name: "Install Docker Compose"
+      ansible.builtin.import_role:
+        name: my.homelab.docker
+        tasks_from: install-docker-compose.yml
+      when: install_docker_compose
+
+    - name: "Add user to Docker group"
+      ansible.builtin.import_role:
+        name: my.homelab.docker
+        tasks_from: add-user-to-docker-group.yml
+
+    - name: "Enable Docker systemd service"
+      ansible.builtin.import_role:
+        name: my.homelab.docker
+        tasks_from: enable-systemd-service.yml
+
+    - name: "Fix UFW Docker vulnerability"
+      ansible.builtin.import_role:
+        name: my.homelab.docker
+        tasks_from: fix-ufw-vuln.yml
+
+    - name: "Enable Docker Bash completions"
+      ansible.builtin.import_role:
+        name: my.homelab.docker
+        tasks_from: enable-bash-completions.yml
+
+    - name: "Debug Docker version"
+      ansible.builtin.import_role:
+        name: my.homelab.docker
+        tasks_from: debug-docker-version.yml
