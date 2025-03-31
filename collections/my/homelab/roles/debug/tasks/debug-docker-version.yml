@@ -1,0 +1,13 @@
+---
+- name: "Verify Docker installation and show Docker version"
+  ansible.builtin.command: docker version
+  register: docker_version
+  ignore_errors: true
+  become: true
+  when: ansible_facts['os_family'] == 'Debian'
+
+- name: "Show Docker version output"
+  ansible.builtin.debug:
+    msg: >-
+      Docker version installed: {{ docker_version.stdout | default('Docker is not installed or not available') }}
+  when: ansible_facts['os_family'] == 'Debian'
