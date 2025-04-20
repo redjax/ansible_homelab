@@ -1,0 +1,89 @@
+---
+- name: Install Homebrew on Linux
+  hosts: all
+  gather_facts: true
+  become: false
+
+  vars:
+    brew_prefix: /home/linuxbrew/.linuxbrew
+    brew_bin: "{{ brew_prefix }}/bin/brew"
+    ## List of packages to install with brew
+    brew_packages:
+      - lazygit
+
+  pre_tasks:
+    - name: Fail if architecture is not supported
+      ansible.builtin.meta: end_play
+      when: ansible_facts['architecture'] not in ['x86_64', 'amd64']
+      vars:
+        msg: "Unsupported architecture: {{ ansible_facts['architecture'] }}. Skipping playbook."
+
+    - name: Check if Homebrew is already installed
+      ansible.builtin.stat:
+        path: "{{ brew_bin }}"
+      register: homebrew_installed_check
+
+    - name: Install dependencies for Homebrew (Debian/Ubuntu)
+      become: true
+      ansible.builtin.apt:
+        name:
+          - build-essential
+          - procps
+          - curl
+          - file
+          - git
+        state: present
+        update_cache: true
+      when:
+        - ansible_os_family == "Debian"
+        - not homebrew_installed_check.stat.exists
+
+    - name: Install dependencies for Homebrew (RedHat/CentOS/Fedora)
+      become: true
+      ansible.builtin.dnf:
+        name:
+          - curl
+          - file
+          - git
+          - procps-ng
+        state: present
+      when: ansible_os_family == "RedHat"
+
+    - name: Install development tools group (RedHat/CentOS/Fedora)
+      become: true
+      ansible.builtin.dnf:
+        name: "@Development Tools"
+        state: present
+      when: ansible_os_family == "RedHat"
+
+    - name: Install Homebrew on Linux if not present
+      ansible.builtin.shell: |
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+      args:
+        creates: "{{ brew_bin }}"
+      when: not homebrew_installed_check.stat.exists
+
+    - name: Ensure Homebrew is in PATH for this session
+      ansible.builtin.set_fact:
+        ansible_env:
+          PATH: "{{ brew_prefix }}/bin:{{ ansible_env.PATH }}"
+
+    - name: Ensure custom PATH in .bashrc for remote user
+      ansible.builtin.lineinfile:
+        path: "/home/{{ remote_host_user }}/.bashrc"
+        line: 'export PATH="{{ brew_prefix }}/bin:$PATH"'
+        state: present
+        create: true
+        mode: '0644'
+        owner: "{{ remote_host_user }}"
+        group: "{{ remote_host_user }}"
+      become: true
+
+  tasks:
+    - name: Install Homebrew packages
+      community.general.homebrew:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ brew_packages }}"
+      environment:
+        PATH: "{{ brew_prefix }}/bin:{{ ansible_env.PATH }}"
