@@ -46,3 +46,9 @@
       become: true
       register: remove_user_result
       failed_when: remove_user_result.failed and ('does not exist' not in (remove_user_result.msg | default('')))
+
+    - name: Remove /home/linuxbrew directory if it exists
+      ansible.builtin.file:
+        path: /home/linuxbrew
+        state: absent
+      become: true
