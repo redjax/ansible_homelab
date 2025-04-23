@@ -1,0 +1,54 @@
+---
+- name: Uninstall Homebrew on Linux
+  hosts: all
+  gather_facts: true
+  become: false
+
+  vars:
+    brew_prefix: /home/linuxbrew/.linuxbrew
+    brew_bin: "{{ brew_prefix }}/bin/brew"
+    brew_path_line: 'export PATH="{{ brew_prefix }}/bin:$PATH"'
+
+  tasks:
+    - name: Check if .bashrc exists for remote user
+      ansible.builtin.stat:
+        path: "/home/{{ remote_host_user }}/.bashrc"
+      register: bashrc_stat
+      become: true
+
+    - name: Remove Homebrew PATH from .bashrc for remote user
+      ansible.builtin.lineinfile:
+        path: "/home/{{ remote_host_user }}/.bashrc"
+        line: 'export PATH="{{ brew_prefix }}/bin:$PATH"'
+        state: absent
+      become: true
+      when: bashrc_stat.stat.exists
+
+    - name: Remove Homebrew directory
+      ansible.builtin.file:
+        path: "{{ brew_prefix }}"
+        state: absent
+      become: true
+
+    - name: Remove Homebrew group (if exists)
+      ansible.builtin.group:
+        name: linuxbrew
+        state: absent
+      become: true
+      register: remove_group_result
+      failed_when: remove_group_result.failed and ('does not exist' not in (remove_group_result.msg | default('')))
+
+    - name: Remove Homebrew user (if exists)
+      ansible.builtin.user:
+        name: linuxbrew
+        state: absent
+        remove: true
+      become: true
+      register: remove_user_result
+      failed_when: remove_user_result.failed and ('does not exist' not in (remove_user_result.msg | default('')))
+
+    - name: Remove /home/linuxbrew directory if it exists
+      ansible.builtin.file:
+        path: /home/linuxbrew
+        state: absent
+      become: true
