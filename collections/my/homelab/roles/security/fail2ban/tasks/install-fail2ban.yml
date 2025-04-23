@@ -2,6 +2,7 @@
 - name: "Install fail2ban package"
   ansible.builtin.package:
     name:
+      - python3-systemd
       - fail2ban
     state: present
   become: true
