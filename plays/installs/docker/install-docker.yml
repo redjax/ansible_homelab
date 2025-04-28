@@ -19,6 +19,11 @@
       ansible.builtin.import_role:
         name: my.homelab.docker
         tasks_from: install-docker-depends.yml
+
+    - name: "Install Docker"
+      ansible.builtin.import_role:
+        name: my.homelab.docker
+        tasks_from: install-docker.yml
     
     - name: "Install Docker Compose"
       ansible.builtin.import_role:
