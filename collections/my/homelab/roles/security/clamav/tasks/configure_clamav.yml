@@ -1,4 +1,11 @@
 ---
+- name: "[ClamAV Setup] Ensure /etc/clamav directory exists"
+  ansible.builtin.file:
+    path: /etc/clamav
+    state: directory
+    mode: "0755"
+  become: true
+
 # https://raw.githubusercontent.com/aosm/clamav/master/clamav.Conf/clamd.conf.default
 - name: "[ClamAV Setup] Check if /etc/clamav/clamd.conf exists"
   stat:
