@@ -12,3 +12,16 @@
     name: "git"
   become: true
   when: (ansible_facts.os_family == "Debian") and ("git" not in ansible_facts.packages)
+
+- name: Update DNF cache
+  ansible.builtin.dnf:
+    update_cache: yes
+  become: true
+  when: (ansible_facts.os_family == "RedHat") and ("git" not in ansible_facts.packages)
+
+- name: Install git package
+  ansible.builtin.dnf:
+    name: git
+    state: present
+  become: true
+  when: (ansible_facts.os_family == "RedHat") and ("git" not in ansible_facts.packages)
