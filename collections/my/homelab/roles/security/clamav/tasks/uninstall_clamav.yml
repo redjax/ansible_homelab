@@ -12,3 +12,17 @@
     - clamdscan
   state: present
   when: (ansible_facts["os_family"] == "Debian")
+
+- name: "[RedHat Family] [Uninstall ClamAV] Uninstall ClamAV dependencies"
+  ansible.builtin.dnf:
+    name:
+      - clamav
+      - clamav-server
+      - clamav-update
+      - clamav-data
+      - clamav-filesystem
+      - clamav-lib
+      - clamav-devel
+    state: absent
+  become: true
+  when: (ansible_facts["os_family"] == "RedHat")
