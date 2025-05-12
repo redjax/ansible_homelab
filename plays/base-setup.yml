@@ -64,24 +64,28 @@
     - name: "Install clamAV"
       ansible.builtin.import_role:
         name: my.homelab.security.clamav
+      when: ansible_facts.os_family == "Debian"
 
     ## Apply default clamAV configuration
     - name: "Configure clamAV"
       ansible.builtin.import_role:
         name: my.homelab.security.clamav
         tasks_from: configure_clamav.yml
+      when: ansible_facts.os_family == "Debian"
 
     ## Apply default clamAV scan schedule
     - name: "Configure clamAV scan schedule"
       ansible.builtin.import_role:
         name: my.homelab.security.clamav
         tasks_from: configure_scans.yml
+      when: ansible_facts.os_family == "Debian"
 
     ## Add clamAV systemd service
     - name: "Setup clamAV systemd service"
       ansible.builtin.import_role:
         name: my.homelab.security.clamav
         tasks_from: restart_clamav_systemd.yml
+      when: ansible_facts.os_family == "Debian"
 
     ## Install fail2ban
     - name: "Install fail2ban"

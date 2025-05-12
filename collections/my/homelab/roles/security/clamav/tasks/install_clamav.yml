@@ -21,3 +21,22 @@
     - clamdscan
   when: (ansible_facts["os_family"] == "Debian")
 
+- name: "[ClamAV Setup] Update dnf repo and cache"
+  ansible.builtin.dnf:
+    update_cache: true
+  become: true
+  when: (ansible_facts['os_family'] == "RedHat")
+
+- name: "[ClamAV Setup] Install ClamAV dependencies"
+  ansible.builtin.dnf:
+    name:
+      - clamav
+      - clamav-server
+      - clamav-update
+      - clamav-data
+      - clamav-filesystem
+      - clamav-lib
+      - clamav-devel
+    state: present
+  become: true
+  when: (ansible_facts['os_family'] == "RedHat")

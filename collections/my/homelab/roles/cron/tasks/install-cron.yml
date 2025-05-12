@@ -4,3 +4,10 @@
     name: cron
   become: true
   when: ("cron" not in ansible_facts.packages) and (ansible_facts.os_family == "Debian")
+
+- name: "Install cronie (cron) on RedHat family"
+  ansible.builtin.dnf:
+    name: cronie
+    state: present
+  become: true
+  when: ("cronie" not in ansible_facts.packages) and (ansible_facts.os_family == "RedHat")

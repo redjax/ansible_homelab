@@ -1,3 +1,4 @@
+---
 - name: Install kopia
   apt:
     pkg:
@@ -5,3 +6,11 @@
     state: present
   become: true
   when: ansible_os_family == "Debian"
+
+- name: Install kopia
+  ansible.builtin.dnf:
+    name:
+      - kopia
+    state: present
+  become: true
+  when: ansible_os_family == "RedHat"
