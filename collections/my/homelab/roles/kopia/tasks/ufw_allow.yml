@@ -10,3 +10,12 @@
     proto: "tcp"
   become: true
   when: (ansible_facts.os_family == "Debian") and ("kopia" in ansible_facts.packages)
+
+- name: "Allow Kopia webUI port"
+  ansible.posix.firewalld:
+    port: "{{ kopia_webui_port }}/tcp"
+    permanent: true
+    state: enabled
+    immediate: true
+  become: true
+  when: (ansible_facts.os_family == "RedHat") and ("kopia" in ansible_facts.packages)

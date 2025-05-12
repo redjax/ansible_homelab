@@ -22,3 +22,22 @@
     update_cache: yes
   become: true
   when: ansible_os_family == "Debian"
+
+- name: Import Kopia GPG key
+  ansible.builtin.rpm_key:
+    key: https://kopia.io/signing-key
+    state: present
+  become: true
+  when: ansible_os_family == "RedHat"
+
+- name: Add Kopia repository
+  ansible.builtin.yum_repository:
+    name: kopia
+    description: Kopia
+    baseurl: http://packages.kopia.io/rpm/stable/$basearch/
+    gpgcheck: yes
+    enabled: yes
+    gpgkey: https://kopia.io/signing-key
+    state: present
+  become: true
+  when: ansible_os_family == "RedHat"
