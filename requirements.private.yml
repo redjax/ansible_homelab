@@ -1,0 +1,6 @@
+## For collections/roles on the localhost, not uploaded to Ansible Galaxy
+---
+collections:
+  - name: my.homelab
+    type: dir
+    source: collections/my/homelab
