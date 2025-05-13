@@ -59,6 +59,7 @@ This repository contains my Ansible code (collections, roles, playbooks, invento
 - [ ] Document using `ansible-galaxy build` to build collections.
 - [ ] Document running [`nox`](https://nox.thea.codes/) sessions defined in `noxfile.py`
   - [ ] Document adding new sesions
+- [ ] Document using `ansible-navigator`
 
 ## Project directories
 
