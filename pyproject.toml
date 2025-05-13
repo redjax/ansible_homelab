@@ -7,6 +7,7 @@ requires-python = ">=3.11"
 dependencies = [
     "ansible-core>=2.17.5",
     "ansible-doctor>=6.0.2",
+    "ansible-navigator[ansible-core]>=25.4.1",
     "ansible-runner>=2.4.0",
 ]
 
