@@ -1,0 +1,97 @@
+---
+- name: "Install & configure security tools"
+  hosts: all
+
+  vars:
+    ## Crowdsec
+    ufw_allow_tcp_ports: ["8080", "6060"]
+    ufw_allow_udp_ports: []
+    firwalld_allow_ports: ["8080/tcp", "/tcp"]
+    crowdsec_enroll_token: "{{ crowdsec_enroll_token }}"
+
+  tasks:
+    - name: "Gather facts"
+      ansible.builtin.import_role:
+        name: my.homelab.facts
+
+    ## Firewall
+    - name: "Include homelab collection's firewall install role"
+      ansible.builtin.import_role:
+        name: my.homelab.security.firewall
+        tasks_from: install-firewall.yml
+
+    - name: "Include homelab collection's firewall install role"
+      ansible.builtin.import_role:
+        name: my.homelab.security.firewall
+        tasks_from: configure-firewall.yml
+
+    - name: "Include homelab collection's firewall service restart role"
+      ansible.builtin.import_role:
+        name: my.homelab.security.firewall
+        tasks_from: enable-firewall.yml
+
+    - name: "Fix Docker UFW vulnerability"
+      ansible.builtin.import_role:
+        name: my.homelab.security.docker_fixes
+        tasks_from: fix_ufw_vuln.yml
+
+    ## Fail2Ban
+    - name: "Install fail2ban"
+      ansible.builtin.import_role:
+        name: my.homelab.security.fail2ban
+        tasks_from: install-fail2ban.yml
+
+    - name: "Backup fail2ban configs"
+      ansible.builtin.import_role:
+        name: my.homelab.security.fail2ban
+        tasks_from: backup-fail2ban-confs.yml
+
+    - name: "Copy templated fail2ban config files"
+      ansible.builtin.import_role:
+        name: my.homelab.security.fail2ban
+        tasks_from: install-fail2ban-confs.yml
+
+    - name: "Enable & start fail2ban"
+      ansible.builtin.import_role:
+        name: my.homelab.security.fail2ban
+        tasks_from: enable-fail2ban.yml
+
+    ## Crowdsec
+    - name: "Install crowdsec"
+      ansible.builtin.import_role:
+        name: my.homelab.security.crowdsec
+        tasks_from: install-crowdsec.yml
+
+    - name: "Allow crowdsec ports through firewall"
+      ansible.builtin.import_role:
+        name: my.homelab.security.firewall
+        tasks_from: allow-ports.yml
+
+    ## ClamAV
+    - name: "Include homelab collection's clamav role"
+      ansible.builtin.import_role:
+        name: my.homelab.security.clamav
+
+    - name: "Include homelab collection's clamav.configure_clamav role"
+      ansible.builtin.import_role:
+        name: my.homelab.security.clamav
+        tasks_from: configure_clamav.yml
+
+    - name: "Include homelab collection's clamav.configure_scans role"
+      ansible.builtin.import_role:
+        name: my.homelab.security.clamav
+        tasks_from: configure_scans.yml
+
+    - name: "Include homelab collection's clamav.restart_clamav_systemd role"
+      ansible.builtin.import_role:
+        name: my.homelab.security.clamav
+        tasks_from: restart_clamav_systemd.yml
+
+    ## Print message detailing tasks user still needs to do
+    - name: "Post-install tasks"
+      debug:
+        msg: |
+          "Security setup finished, but there are some tasks you still need to do manually."
+          ""
+          "* Log into Crowdsec and approve the new device(s): https://app.crowdsec.net/security-engines"
+        
