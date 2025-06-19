@@ -1,0 +1,12 @@
+---
+- name: Add required repositories
+  include_tasks: add_repo.yml
+
+- name: Install dependencies
+  include_tasks: install_dependencies.yml
+
+- name: Install pgAdmin
+  include_tasks: install_pgadmin.yml
+
+- name: Configure pgAdmin web (if needed)
+  include_tasks: configure_web.yml

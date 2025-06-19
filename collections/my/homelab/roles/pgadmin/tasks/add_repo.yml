@@ -1,0 +1,37 @@
+---
+- name: Download pgAdmin public key (Debian)
+  ansible.builtin.get_url:
+    url: https://www.pgadmin.org/static/packages_pgadmin_org.pub
+    dest: /tmp/packages-pgadmin-org.pub
+    mode: '0644'
+  when: ansible_os_family == 'Debian'
+
+- name: Add pgAdmin public key to keyring (Debian)
+  ansible.builtin.shell: |
+    gpg --dearmor -o /usr/share/keyrings/packages-pgadmin-org.gpg /tmp/packages-pgadmin-org.pub
+  args:
+    creates: /usr/share/keyrings/packages-pgadmin-org.gpg
+  become: true
+  when: ansible_os_family == 'Debian'
+
+- name: Add pgAdmin APT repository (Debian)
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/usr/share/keyrings/packages-pgadmin-org.gpg] https://ftp.postgresql.org/pub/pgadmin/pgadmin4/apt/{{ ansible_lsb.codename }} pgadmin4 main"
+    filename: pgadmin4
+    state: present
+  become: true
+  when: ansible_os_family == 'Debian'
+
+- name: Add pgAdmin YUM repository (Fedora, CentOS Stream)
+  ansible.builtin.yum:
+    name: https://ftp.postgresql.org/pub/pgadmin/pgadmin4/yum/pgadmin4-fedora-repo-2-1.noarch.rpm
+    state: present
+  become: true
+  when: ansible_os_family == "RedHat"
+
+- name: Add pgAdmin YUM repository (RHEL)
+  ansible.builtin.yum:
+    name: https://ftp.postgresql.org/pub/pgadmin/pgadmin4/yum/pgadmin4-redhat-repo-2-1.noarch.rpm
+    state: present
+  become: true
+  when: ansible_distribution == 'RedHat'

@@ -1,0 +1,31 @@
+---
+- name: "Install pgAdmin4"
+  hosts: all
+
+  vars:
+    pgadmin_web_setup: "{{ include_pgadmin_web | default(false) }}"
+  
+  tasks:
+    - name: "Gather facts"
+      ansible.builtin.import_role:
+        name: my.homelab.facts
+
+    - name: "Install pgadmin4 dependencies"
+      ansible.builtin.import_role:
+        name: my.homelab.pgadmin
+        tasks_from: install_dependencies.yml
+
+    - name: "Call pgadmin4 setup role"
+      ansible.builtin.import_role:
+        name: my.homelab.pgadmin
+        tasks_from: add_repo.yml
+
+    - name: "Install pgadmin4"
+      ansible.builtin.import_role:
+        name: my.homelab.pgadmin
+        tasks_from: install_pgadmin.yml
+
+    - name: "Install pgadmin4 webadmin (if enabled)"
+      ansible.builtin.import_role:
+        name: my.homelab.pgadmin
+        tasks_from: configure_web.yml
