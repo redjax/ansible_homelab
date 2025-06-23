@@ -22,3 +22,10 @@
     update_cache: true
   become: true
   when: ansible_facts['os_family'] == "Debian" and ("tailscale" not in ansible_facts.packages)
+
+- name: Install Tailscale on Fedora
+  ansible.builtin.dnf:
+    name: tailscale
+    state: present
+  become: true
+  when: ansible_os_family == 'RedHat' and ansible_distribution == 'Fedora' and ("tailscale" not in ansible_facts.packages)
