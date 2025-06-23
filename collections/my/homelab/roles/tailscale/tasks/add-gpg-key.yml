@@ -5,3 +5,10 @@
     state: present
   become: true
   when: ansible_facts['os_family'] == "Debian"
+
+- name: Import Tailscale RPM GPG key
+  ansible.builtin.rpm_key:
+    state: present
+    key: https://pkgs.tailscale.com/stable/fedora/repo.gpg
+  become: true
+  when: ansible_os_family == 'RedHat' and ansible_distribution == 'Fedora'
