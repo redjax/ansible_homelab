@@ -1,6 +1,10 @@
 ---
 all:
   hosts:
+    ## Add localhost to allow running plays against self
+    localhost:
+      ansible_connection: local
+      kopia_password: "<your-Super-s3cure-password>"
     host1:
       ansible_ssh_host: "192.168.1.54"
       vars:
