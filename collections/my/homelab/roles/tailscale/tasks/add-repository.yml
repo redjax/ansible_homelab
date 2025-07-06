@@ -7,3 +7,21 @@
     update_cache: yes
   become: true
   when: ansible_facts['os_family'] == "Debian"
+
+- name: Add Tailscale repository for Fedora
+  ansible.builtin.dnf:
+    name: dnf-plugins-core
+    state: present
+  become: true
+  when: ansible_os_family == 'RedHat' and ansible_distribution == 'Fedora'
+  register: install_dnf_plugins
+
+- name: Add Tailscale repo file for Fedora
+  ansible.builtin.get_url:
+    url: https://pkgs.tailscale.com/stable/fedora/tailscale.repo
+    dest: /etc/yum.repos.d/tailscale.repo
+    owner: root
+    group: root
+    mode: '0644'
+  become: true
+  when: ansible_os_family == 'RedHat' and ansible_distribution == 'Fedora'

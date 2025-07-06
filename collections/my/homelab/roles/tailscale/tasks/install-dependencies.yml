@@ -1,8 +1,11 @@
----
-- name: "Install dependencies"
+- name: Set OS-specific dependency list
+  set_fact:
+    ## Fallback to Debian list if OS family not explicitly listed
+    os_deps: "{{ tailscale_dependencies[ansible_facts.os_family] | default(tailscale_dependencies['Debian']) }}"
+
+- name: Install dependencies
   become: true
-  apt:
+  ansible.builtin.package:
     name: "{{ item }}"
     state: present
-  with_items: "{{ tailscale_dependencies }}"
-  when: ansible_facts['os_family'] == "Debian"
+  with_items: "{{ os_deps }}"

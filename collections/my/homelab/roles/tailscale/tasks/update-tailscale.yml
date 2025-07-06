@@ -13,3 +13,10 @@
     state: latest
   become: true
   when: ansible_facts.os_family == "Debian"
+
+- name: Update Tailscale package (Fedora)
+  ansible.builtin.dnf:
+    name: tailscale
+    state: latest
+  become: true
+  when: ansible_facts.os_family == "RedHat"

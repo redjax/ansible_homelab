@@ -1,4 +1,11 @@
 ---
 # defaults file for tailscale
-tailscale_dependencies: ["curl", "apt-transport-https", "gnupg2"]
+# tailscale_dependencies: ["curl", "apt-transport-https", "gnupg2"]
+
+# tailscale_dependencies_deb: ["curl", "apt-transport-https", "gnupg2"]
+# tailscale_dependencies_rpm: ["curl", "gnupg2"]
+
+tailscale_dependencies:
+  Debian: ["curl", "apt-transport-https", "gnupg2"]
+  RedHat: ["curl", "gnupg2"]
 tailscale_preauth_key: ""
