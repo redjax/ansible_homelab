@@ -1,0 +1,3 @@
+---
+# defaults file for pgadmin
+pgadmin_web_setup: false

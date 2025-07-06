@@ -1,0 +1,7 @@
+---
+- name: Run pgAdmin4 web setup script
+  ansible.builtin.command: /usr/pgadmin4/bin/setup-web.sh
+  args:
+    creates: /var/lib/pgadmin/pgadmin4.db
+  become: true
+  when: pgadmin_web_setup | default(false)

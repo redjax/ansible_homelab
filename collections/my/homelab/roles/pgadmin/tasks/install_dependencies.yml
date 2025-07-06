@@ -1,0 +1,19 @@
+---
+- name: Install dependencies on Debian
+  ansible.builtin.apt:
+    name:
+      - curl
+      - gnupg
+      - lsb-release
+    state: present
+    update_cache: yes
+  become: true
+  when: ansible_os_family == 'Debian'
+
+- name: Install dependencies on RedHat
+  ansible.builtin.yum:
+    name:
+      - dnf-plugins-core
+    state: present
+  become: true
+  when: ansible_os_family == 'RedHat'

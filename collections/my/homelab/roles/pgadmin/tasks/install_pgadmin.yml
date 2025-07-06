@@ -1,0 +1,20 @@
+---
+- name: Update apt cache (Debian)
+  ansible.builtin.apt:
+    update_cache: yes
+  become: true
+  when: ansible_os_family == 'Debian'
+
+- name: Install pgAdmin4 (Debian)
+  ansible.builtin.apt:
+    name: pgadmin4
+    state: present
+  become: true
+  when: ansible_os_family == 'Debian'
+
+- name: Install pgAdmin4 (RedHat)
+  ansible.builtin.dnf:
+    name: pgadmin4
+    state: present
+  become: true
+  when: ansible_os_family == 'RedHat'
