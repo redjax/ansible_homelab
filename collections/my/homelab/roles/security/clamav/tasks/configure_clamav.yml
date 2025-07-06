@@ -29,6 +29,7 @@
   copy:
     src: "/etc/clamav/clamd.conf"
     dest: "/etc/clamav/clamd.conf.orig"
+    remote_src: true
   become: true
   when: (clamd_conf_file.stat.exists == true) and (clamd_conf_orig_file.stat.exists != true)
 
@@ -36,6 +37,7 @@
   copy:
     src: "/etc/clamav/clamd.conf"
     dest: "/etc/clamav/clamd.conf.bak"
+    remote_src: true
   become: true
   when: (clamd_conf_file.stat.exists == true)
 
