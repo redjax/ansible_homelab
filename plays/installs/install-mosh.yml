@@ -1,0 +1,22 @@
+---
+- name: "Install mosh for better SSH tunneling"
+  hosts: all
+
+  vars:
+    mosh_ufw_range: "{{ mosh_ufw_port_range | default('60000:61000') }}"
+    mosh_firewalld_range: "{{ mosh_firewalld_port_range | default('60000-61000/udp')"
+
+  tasks:
+    - name: "Gather facts"
+      ansible.builtin.import_role:
+        name: my.homelab.facts
+
+    - name: "Install mosh"
+      ansible.builtin.import_role:
+        name: my.homelab.mosh
+        tasks_from: install.yml
+
+    - name: "Allow mosh ports"
+      ansible.builtin.import_role:
+        name: my.homelab.mosh
+        tasks_from: firewall-allow.yml

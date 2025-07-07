@@ -1,0 +1,21 @@
+---
+- name: "Gather the package facts"
+  ansible.builtin.package_facts:
+    manager: auto
+
+- name: "[Debian Family] Allow mosh ports"
+  community.general.ufw:
+    rule: "allow"
+    port: "{{ mosh_ufw_range | default('60000:61000') }}"
+    proto: "udp"
+  become: true
+  when: (ansible_facts.os_family == "Debian") and ("kopia" in ansible_facts.packages)
+
+- name: "[RedHat Family] Allow mosh ports"
+  ansible.posix.firewalld:
+    port: "{{ mosh_firewalld_range | default('60000:61000/udp') }}"
+    permanent: true
+    state: enabled
+    immediate: true
+  become: true
+  when: (ansible_facts.os_family == "RedHat") and ("kopia" in ansible_facts.packages)
