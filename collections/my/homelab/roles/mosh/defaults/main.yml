@@ -1,0 +1,4 @@
+---
+# defaults file for mosh
+mosh_ufw_range: "60000:61000"
+mosh_firewalld_range: "60000-61000/udp"

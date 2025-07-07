@@ -1,0 +1,16 @@
+---
+- name: Install mosh
+  apt:
+    pkg:
+      - mosh
+    state: present
+  become: true
+  when: ansible_os_family == "Debian"
+
+- name: Install mosh
+  ansible.builtin.dnf:
+    name:
+      - mosh
+    state: present
+  become: true
+  when: ansible_os_family == "RedHat"
