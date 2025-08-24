@@ -5,6 +5,6 @@
     group: docker
   become: true
 
-- name: "Run newgrp docker to apply group change"
-  ansible.builtin.shell: "newgrp docker"
-  become: true
+# - name: "Run newgrp docker to apply group change"
+#   ansible.builtin.shell: "newgrp docker"
+#   become: true
