@@ -4,7 +4,7 @@
 
   vars:
     mosh_ufw_range: "{{ mosh_ufw_port_range | default('60000:61000') }}"
-    mosh_firewalld_range: "{{ mosh_firewalld_port_range | default('60000-61000/udp')"
+    mosh_firewalld_range: "{{ mosh_firewalld_port_range | default('60000-61000/udp') }}"
 
   tasks:
     - name: "Gather facts"
