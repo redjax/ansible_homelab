@@ -1,0 +1,29 @@
+---
+- name: Verify zram device exists with zramctl # noqa no-changed-when
+  ansible.builtin.command: zramctl
+  register: zramctl_output
+  changed_when: false
+  failed_when: false
+
+- name: Show zramctl output
+  ansible.builtin.debug:
+    var: zramctl_output.stdout_lines
+
+- name: Verify zram swap device active with swapon # noqa no-changed-when
+  ansible.builtin.command: swapon --show
+  register: swapon_output
+  ignore_errors: true
+  changed_when: false
+  failed_when: false
+
+- name: Show swapon output
+  ansible.builtin.debug:
+    var: swapon_output.stdout_lines
+
+- name: Assert zram device is active in swapon output
+  ansible.builtin.assert:
+    that:
+      - "'zram0' in swapon_output.stdout"
+    fail_msg: "ZRAM swap device /dev/zram0 NOT active!"
+    success_msg: "ZRAM swap device /dev/zram0 is active."
+  when: swapon_output.rc == 0
