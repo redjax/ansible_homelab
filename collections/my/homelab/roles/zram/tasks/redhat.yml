@@ -1,8 +1,8 @@
----
 - name: Install zram package on RedHat
   ansible.builtin.yum:
     name: dracut-zram
     state: present
+    update_cache: yes
 
 - name: Configure zram-generator on RedHat
   ansible.builtin.template:
@@ -12,14 +12,20 @@
     group: root
     mode: '0644'
 
-- name: Enable and start zram-generator service (RedHat)
-  ansible.builtin.systemd:
-    name: systemd-zram-setup@zram0.service
-    enabled: true
-    state: started
+- name: Reload systemd daemon to recognize zram-generator config
+  ansible.builtin.command:
+    cmd: systemctl daemon-reload
+  become: true
 
-- name: Set vm.swappiness sysctl (RedHat)
-  ansible.posix.sysctl:
-    name: vm.swappiness
-    value: 100
-    reload: true
+- name: Start zram swap device unit on RedHat
+  ansible.builtin.systemd:
+    name: dev-zram0.swap
+    state: started
+  become: true
+
+# Optionally reboot to ensure dynamic unit activation
+- name: Reboot system after zram config update
+  ansible.builtin.reboot:
+    reboot_timeout: 600
+  become: true
+  when: reboot_required | default(true)

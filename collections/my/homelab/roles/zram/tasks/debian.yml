@@ -1,11 +1,19 @@
 ---
-- name: Install zram package (Debian, arch specific)
+- name: Install zram package on Debian
   ansible.builtin.apt:
-    name: "{{ 'zram-config' if ansible_architecture in ['x86_64', 'amd64'] else 'zram-tools' }}"
+    name: zram-tools
     state: present
     update_cache: true
+  when: ansible_distribution == "Debian"
 
-- name: Configure zram-generator on Debian
+- name: Install zram package on Ubuntu
+  ansible.builtin.apt:
+    name: zram-config
+    state: present
+    update_cache: true
+  when: ansible_distribution == "Ubuntu"
+
+- name: Configure zram-generator service
   ansible.builtin.template:
     src: zram-generator.conf.j2
     dest: /etc/systemd/zram-generator.conf
@@ -13,14 +21,24 @@
     group: root
     mode: '0644'
 
-- name: Enable and start zram-generator service (Debian)
-  ansible.builtin.systemd:
-    name: systemd-zram-setup@zram0.service
-    enabled: true
-    state: started
+- name: Reload systemd daemon to recognize zram-generator config
+  ansible.builtin.command: systemctl daemon-reload
+  become: true
 
-- name: Set vm.swappiness sysctl (Debian)
+- name: Start zram device swap unit
+  ansible.builtin.systemd:
+    name: dev-zram0.swap
+    state: started
+  become: true
+
+- name: Set vm.swappiness sysctl
   ansible.posix.sysctl:
     name: vm.swappiness
     value: 100
     reload: true
+
+- name: Reboot system after zram-generator config change
+  ansible.builtin.reboot:
+    reboot_timeout: 600
+  become: true
+  when: reboot_required | default(true)
