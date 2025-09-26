@@ -1,0 +1,25 @@
+---
+- name: Install zram package on RedHat
+  ansible.builtin.yum:
+    name: dracut-zram
+    state: present
+
+- name: Configure zram-generator on RedHat
+  ansible.builtin.template:
+    src: zram-generator.conf.j2
+    dest: /etc/systemd/zram-generator.conf
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Enable and start zram-generator service (RedHat)
+  ansible.builtin.systemd:
+    name: systemd-zram-setup@zram0.service
+    enabled: true
+    state: started
+
+- name: Set vm.swappiness sysctl (RedHat)
+  ansible.posix.sysctl:
+    name: vm.swappiness
+    value: 100
+    reload: true

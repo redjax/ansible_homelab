@@ -1,0 +1,10 @@
+---
+# tasks file for collections/my/homelab/zram
+
+- name: Detect OS and run appropriate tasks
+  ansible.builtin.include_tasks: debian.yml
+  when: ansible_os_family == "Debian"
+
+- name: Detect OS and run appropriate tasks
+  ansible.builtin.include_tasks: redhat.yml
+  when: ansible_os_family == "RedHat"

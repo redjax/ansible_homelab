@@ -1,0 +1,3 @@
+---
+zram_fraction: 0.5
+zram_swappiness: 100

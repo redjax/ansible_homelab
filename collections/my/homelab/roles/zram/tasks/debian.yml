@@ -1,0 +1,26 @@
+---
+- name: Install zram package (Debian, arch specific)
+  ansible.builtin.apt:
+    name: "{{ 'zram-config' if ansible_architecture in ['x86_64', 'amd64'] else 'zram-tools' }}"
+    state: present
+    update_cache: true
+
+- name: Configure zram-generator on Debian
+  ansible.builtin.template:
+    src: zram-generator.conf.j2
+    dest: /etc/systemd/zram-generator.conf
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Enable and start zram-generator service (Debian)
+  ansible.builtin.systemd:
+    name: systemd-zram-setup@zram0.service
+    enabled: true
+    state: started
+
+- name: Set vm.swappiness sysctl (Debian)
+  ansible.posix.sysctl:
+    name: vm.swappiness
+    value: 100
+    reload: true
