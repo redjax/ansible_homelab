@@ -1,4 +1,7 @@
 deployments/*
+deployments/**/*
 
 !deployments/
 !deployments/_example_deploy.sh
+!deployments/**/
+!deployments/**/.gitkeep
