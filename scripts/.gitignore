@@ -1,0 +1,4 @@
+deployments/*
+
+!deployments/
+!deployments/_example_deploy.sh
