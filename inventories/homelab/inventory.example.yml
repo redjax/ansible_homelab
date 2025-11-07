@@ -13,6 +13,8 @@ all:
         kopia_password: "<your-Super-s3cure-password>"
     host2:
       ansible_host: "192.168.1.34"
+      ## Set path to SSH private key
+      ansible_ssh_private_key_file: "{{ ansible_ssh_key_dir }}/ansible_id_rsa"
     host3:
       ansible_host: "192.168.1.61"
       ## If SSH is running on another port
