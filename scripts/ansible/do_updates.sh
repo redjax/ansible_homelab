@@ -24,6 +24,17 @@ fi
 echo "[DEBUG] uv is installed"
 echo "[DEBUG] Parsing arguments"
 
+function usage() {
+    echo ""
+    echo "Usage: $0 [OPTIONS]"
+    echo ""
+    echo "Options:"
+    echo "  --dry-run   Enable dry run mode. Describe actions without taking any."
+    echo "  -l|--limit  Set ansible-playbook --limit <string>"
+    echo "  -h|--help   Show this menu"
+    echo ""
+}
+
 while [[ $# -gt 0 ]]; do
     case "$1" in
     --dry-run)
@@ -33,14 +44,23 @@ while [[ $# -gt 0 ]]; do
     -l | --limit)
         if [[ -z "$2" ]]; then
             echo "[ERROR] --limit provided, but no limit string granted"
+
+            usage
             exit 1
         fi
 
         ANSIBLE_LIMIT="$2"
         shift 2
         ;;
+    -h | --help)
+        usage
+
+        exit 0
+        ;;
     *)
         echo "invalid argument: $1"
+
+        usage
         exit 1
         ;;
     esac
