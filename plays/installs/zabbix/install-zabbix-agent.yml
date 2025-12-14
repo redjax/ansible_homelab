@@ -14,3 +14,8 @@
       ansible.builtin.import_role:
         name: my.homelab.zabbix
         tasks_from: install-zabbix-agent.yml
+
+    - name: Allow Zabbix Agent firewall port
+      ansible.builtin.import_role:
+        name: my.homelab.zabbix
+        tasks_from: allow-zabbix-firewall-ports.yml

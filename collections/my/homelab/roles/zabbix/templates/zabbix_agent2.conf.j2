@@ -4,9 +4,10 @@ Hostname={{ zabbix_agent_hostname }}
 Server={{ zabbix_agent_server_addr }}
 ServerActive={{ zabbix_agent_server_addr }}:{{ zabbix_agent_server_port }}
 ListenIP={{ zabbix_agent_listen_ip }}
+ListenPort={{ zabbix_agent_listen_port }}
 HostMetadata={{ zabbix_metadata }}
 
-LogFile={{ zabbix_agent_logfile }}
+LogFile={{ zabbix_agent_logfile | default('autoregister') }}
 PidFile=/run/zabbix/zabbix_agent2.pid
 Timeout=30
 DebugLevel={{ zabbix_agent_debug_level }}

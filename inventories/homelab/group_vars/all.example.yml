@@ -86,6 +86,7 @@ use_test_pypi_token: ""
 ##########
 zabbix_agent_server_addr: ""
 zabbix_agent_server_active: ""
+zabbix_agent_listen_port: 10050
 zabbix_metadata: "autoregister os=linux"
 
 ############

@@ -1,0 +1,94 @@
+---
+- name: Stop Zabbix agent services
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    state: stopped
+    enabled: false
+    daemon_reload: true
+  loop:
+    - zabbix-agent
+    - zabbix-agent2
+  become: true
+  ignore_errors: true
+
+- name: Remove Zabbix packages (Debian/Ubuntu)
+  ansible.builtin.apt:
+    name:
+      - zabbix-agent
+      - zabbix-agent2
+    state: absent
+    purge: true
+    autoremove: true
+  become: true
+  when: ansible_facts.os_family == "Debian"
+
+- name: Remove Zabbix packages (RHEL family)
+  ansible.builtin.dnf:
+    name:
+      - zabbix-agent
+      - zabbix-agent2
+    state: absent
+  become: true
+  when: ansible_facts.os_family == "RedHat"
+
+## Remove config and logs
+- name: Remove Zabbix config directory
+  ansible.builtin.file:
+    path: /etc/zabbix
+    state: absent
+  become: true
+
+- name: Remove Zabbix log directory
+  ansible.builtin.file:
+    path: /var/log/zabbix
+    state: absent
+  become: true
+
+## User and group removal
+- name: Kill zabbix processes
+  ansible.builtin.command: pkill -u zabbix
+  become: true
+  ignore_errors: true
+  changed_when: false
+
+- name: Remove zabbix user home
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /var/lib/zabbix
+    - /home/zabbix
+  become: true
+  ignore_errors: true
+
+- name: Remove zabbix user
+  ansible.builtin.user:
+    name: zabbix
+    state: absent
+    remove: true
+    force: true
+  become: true
+  ignore_errors: true
+
+- name: Remove zabbix group
+  ansible.builtin.group:
+    name: zabbix
+    state: absent
+  become: true
+  ignore_errors: true
+
+## Cleanup
+- name: Remove systemd service files
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /etc/systemd/system/zabbix-agent.service
+    - /etc/systemd/system/zabbix-agent2.service
+  become: true
+  ignore_errors: true
+
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+  become: true
