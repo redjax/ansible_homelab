@@ -14,3 +14,5 @@ zabbix_agent_listen_ip: 0.0.0.0
 zabbix_agent_server_addr: null
 ## Default: unset, use playbook or inventory vars
 zabbix_agent_server_active: null
+## Default: unset, use playbook or inventory vars
+zabbix_metadata: null
