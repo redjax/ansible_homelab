@@ -1,0 +1,14 @@
+---
+- name: Uninstall Zabbix agent from remote hosts
+  hosts: all
+
+  tasks:
+    - name: Import Zabbix agent uninstall role tasks
+      ansible.builtin.import_role:
+        name: my.homelab.zabbix
+        tasks_from: uninstall-zabbix-agent.yml
+
+    - name: Deny Zabbix Agent firewall port
+      ansible.builtin.import_role:
+        name: my.homelab.zabbix
+        tasks_from: deny-zabbix-firewall-ports.yml

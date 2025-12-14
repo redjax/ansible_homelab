@@ -1,47 +1,86 @@
 ---
-- name: Check existence of Zabbix agent installer
+- name: Check existence of Zabbix agent installer (Debian)
   ansible.builtin.stat:
     path: /tmp/zabbix-agent-installer.deb
-  register: zabbix_agent_installer
+  register: zabbix_agent_installer_deb
   become: true
+  when: ansible_facts.os_family == "Debian"
 
-- name: Download Zabbix agent installer for Debian
+- name: Check existence of Zabbix agent installer (RHEL)
+  ansible.builtin.stat:
+    path: /tmp/zabbix-agent-installer.rpm
+  register: zabbix_agent_installer_rpm
+  become: true
+  when: ansible_facts.os_family == "RedHat"
+
+## DEBIAN
+- name: Download Zabbix repo package (Debian)
   ansible.builtin.get_url:
-    url: https://repo.zabbix.com/zabbix/{{ zabbix_agent_ver }}/{{ ansible_distribution | lower }}/pool/main/z/zabbix-release/zabbix-release_{{ zabbix_agent_install_ver }}+{{ ansible_distribution | lower }}{{ ansible_distribution_major_version }}_all.deb
+    url: "https://repo.zabbix.com/zabbix/{{ zabbix_agent_ver }}/release/debian/pool/main/z/zabbix-release/zabbix-release_latest+debian{{ ansible_distribution_major_version }}_all.deb"
     dest: /tmp/zabbix-agent-installer.deb
     mode: "0755"
   become: true
-  when: (ansible_distribution == "Debian") and (not zabbix_agent_installer.stat.exists)
+  when:
+    - ansible_distribution == "Debian"
+    - not zabbix_agent_installer_deb.stat.exists | default(true)
 
-- name: Download Zabbix agent installer for Ubuntu
+## UBUNTU  
+- name: Download Zabbix repo package (Ubuntu)
   ansible.builtin.get_url:
-    url: https://repo.zabbix.com/zabbix/{{ zabbix_agent_ver }}/{{ ansible_distribution | lower }}/pool/main/z/zabbix-release/zabbix-release_{{ zabbix_agent_install_ver }}+{{ ansible_distribution | lower }}{{ ansible_facts.lsb.release }}_all.deb
+    url: "https://repo.zabbix.com/zabbix/{{ zabbix_agent_ver }}/release/ubuntu/pool/main/z/zabbix-release/zabbix-release_latest+ubuntu{{ ansible_distribution_release | lower }}_all.deb"
     dest: /tmp/zabbix-agent-installer.deb
     mode: "0755"
   become: true
-  when: (ansible_distribution == "Ubuntu") and (not zabbix_agent_installer.stat.exists)
+  when:
+    - ansible_distribution == "Ubuntu"
+    - not zabbix_agent_installer_deb.stat.exists | default(true)
 
-- name: "[DEBUG] Zabbix agent installer presence"
-  ansible.builtin.debug:
-    msg: "Found Zabbix agent installer: {{ zabbix_agent_installer.stat.exists }}"
-  become: true
-
-- name: Install Zabbix agent from package
+- name: Install Zabbix repo package (Debian/Ubuntu)
   ansible.builtin.apt:
     deb: /tmp/zabbix-agent-installer.deb
   become: true
-  when: (ansible_facts.os_family == "Debian") and (zabbix_agent_installer.stat.exists) and ('zabbix-agent2' not in ansible_facts.packages)
+  when: ansible_facts.os_family == "Debian"
 
 - name: Update APT cache
-  apt:
+  ansible.builtin.apt:
     update_cache: true
     cache_valid_time: 3600
   become: true
   when: ansible_facts.os_family == "Debian"
 
-- name: Install Zabbix agent
+- name: Install Zabbix agent2 (Debian/Ubuntu)
   ansible.builtin.apt:
     name: zabbix-agent2
     state: present
   become: true
-  when: ('zabbix-agent2' not in ansible_facts.packages)
+  when: ansible_facts.os_family == "Debian"
+
+## RHEL/CENTOS/ROCKY/FEDORA
+- name: Set RHEL major version
+  ansible.builtin.set_fact:
+    zbx_rhel_major: "{{ ansible_distribution_major_version }}"
+  when: ansible_facts.os_family == "RedHat"
+
+- name: Download Zabbix repo package (RHEL family)
+  ansible.builtin.get_url:
+    url: "https://repo.zabbix.com/zabbix/{{ zabbix_agent_ver }}/rhel/{{ zbx_rhel_major }}/x86_64/zabbix-release-latest-{{ zabbix_agent_ver }}.el{{ zbx_rhel_major }}.noarch.rpm"
+    dest: /tmp/zabbix-agent-installer.rpm
+    mode: "0755"
+  become: true
+  when:
+    - ansible_facts.os_family == "RedHat"
+    - not zabbix_agent_installer_rpm.stat.exists | default(true)
+
+- name: Install Zabbix repo package (RHEL family)
+  ansible.builtin.dnf:
+    name: /tmp/zabbix-agent-installer.rpm
+    state: present
+  become: true
+  when: ansible_facts.os_family == "RedHat"
+
+- name: Install Zabbix agent2 (RHEL family)
+  ansible.builtin.dnf:
+    name: zabbix-agent2
+    state: present
+  become: true
+  when: ansible_facts.os_family == "RedHat"

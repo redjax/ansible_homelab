@@ -1,0 +1,27 @@
+---
+- name: Gather firewall package facts
+  ansible.builtin.package_facts:
+    manager: auto
+  become: true
+
+- name: Allow Zabbix agent port (UFW)
+  community.general.ufw:
+    rule: allow
+    port: "{{ zabbix_agent_listen_port }}"
+  become: true
+  when: "'ufw' in ansible_facts.packages"
+
+- name: Allow Zabbix agent port (firewalld)
+  ansible.posix.firewalld:
+    port: "{{ zabbix_agent_listen_port }}/tcp"
+    permanent: true
+    state: enabled
+  become: true
+  when: "'firewalld' in ansible_facts.packages"
+
+- name: Reload firewalld
+  ansible.builtin.service:
+    name: firewalld
+    state: reloaded
+  become: true
+  when: "'firewalld' in ansible_facts.packages"
