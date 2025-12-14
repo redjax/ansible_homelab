@@ -1,18 +1,24 @@
 ---
-# defaults file for zabbix
-zabbix_agent_logfile: "/var/log/zabbix/zabbix_agent2.log"
-## Range: 0-1024, 0=disabled log rotation
-zabbix_agent_logfile_size: 0
-## Range: 0-5, default=3 (warnings).
-#  0=basic, 1=critical, 2=error, 3=warnings, 4=debug, 5=verbose debug
-zabbix_agent_debug_level: 3
-## Range: 1024-32767, default=10050
-zabbix_agent_listen_port: 10050
-## Default: 0.0.0.0
-zabbix_agent_listen_ip: 0.0.0.0
-## Default: unset, use playbook or inventory vars
+## Zabbix agent package / repo
+zabbix_agent_ver: "7.4"
+zabbix_agent_release_channel: "release"
+
+## Connection
 zabbix_agent_server_addr: null
-## Default: unset, use playbook or inventory vars
-zabbix_agent_server_active: null
-## Default: unset, use playbook or inventory vars
-zabbix_metadata: null
+zabbix_agent_server_port: 10051
+zabbix_agent_listen_ip: "0.0.0.0"
+
+## Identity and metadata
+zabbix_agent_hostname: "{{ inventory_hostname }}"
+zabbix_metadata: "autoregister os=linux"
+
+## TLS (PSK)
+zabbix_agent_enable_tls: false
+zabbix_agent_tls_psk_identity: ""
+zabbix_agent_tls_psk: ""
+zabbix_agent_tls_psk_file: "/etc/zabbix/zabbix_agent.psk"
+
+## Logging
+zabbix_agent_logfile: "/var/log/zabbix/zabbix_agent2.log"
+zabbix_agent_debug_level: 3
+zabbix_agent_logfile_size: 0

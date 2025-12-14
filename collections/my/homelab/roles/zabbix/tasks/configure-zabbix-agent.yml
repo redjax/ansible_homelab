@@ -1,50 +1,52 @@
 ---
-- name: Check Zabbix agent config
-  ansible.builtin.stat:
-    path: /etc/zabbix/zabbix_agent2.conf
+- name: Ensure zabbix user and dirs
+  ansible.builtin.user:
+    name: zabbix
+    system: true
+    shell: /usr/sbin/nologin
+    home: /var/lib/zabbix
   become: true
-  register: zabbix_agent_conf_file
+  failed_when: false
+  ignore_errors: true
 
-- name: Check Zabbix agent config .orig backup
-  ansible.builtin.stat:
-    path: /etc/zabbix/zabbix_agent2.conf.orig
+- name: Ensure logging and runtime dirs
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: zabbix
+    group: zabbix
+    mode: "0755"
+  loop:
+    - /var/log/zabbix
+    - /run/zabbix
   become: true
-  register: zabbix_agent_conf_orig_file
+  failed_when: false
+  ignore_errors: true
 
-- name: Check /etc/zabbix directory exists
-  ansible.builtin.stat:
-    path: /etc/zabbix
+- name: Backup existing Zabbix agent2 config if present
+  ansible.builtin.copy:
+    src: /etc/zabbix/zabbix_agent2.conf
+    dest: "/etc/zabbix/zabbix_agent2.conf.bak.{{ ansible_date_time.epoch }}"
+    remote_src: true
+  ignore_errors: true
   become: true
-  register: zabbix_conf_dir
 
-- name: "[DEBUG] Zabbix agent config file presence"
-  ansible.builtin.debug:
-    msg: "Found Zabbix agent configuration file at /etc/zabbix/zabbix_agent2.conf: {{ zabbix_agent_conf_file.stat.exists }}"
-
-- name: "[DEBUG] Zabbix agent config .orig backup file presence"
-  ansible.builtin.debug:
-    msg: "Found Zabbix agent configuration .orig file at /etc/zabbix/zabbix_agent2.conf.orig: {{ zabbix_agent_conf_file.stat.exists }}"
-
-- name: "[DEBUG] Zabbix config dir presence"
-  ansible.builtin.debug:
-    msg: "Found Zabbix configuration directory at /etc/zabbix: {{ zabbix_conf_dir.stat.exists }}"
-
-- name: Create zabbix_agent2.conf.orig backup, if backup does not exist
-  ansible.builtin.template:
-    src: zabbix_agent2.conf.orig.j2
-    dest: /etc/zabbix/zabbix_agent2.conf.orig
-    owner: root
-    group: root
-    mode: "0644"
+- name: Create TLS PSK file when enabled
+  ansible.builtin.copy:
+    dest: "{{ zabbix_agent_tls_psk_file }}"
+    content: "{{ zabbix_agent_tls_psk }}"
+    owner: zabbix
+    group: zabbix
+    mode: "0600"
   become: true
-  when: ('zabbix-agent2' in ansible_facts.packages) and (not zabbix_agent_conf_orig_file.stat.exists)
+  when: zabbix_agent_enable_tls | bool
 
-- name: Create Zabbix agent config if it does not exist
+- name: Deploy generated Zabbix agent2 config
   ansible.builtin.template:
     src: zabbix_agent2.conf.j2
     dest: /etc/zabbix/zabbix_agent2.conf
-    owner: root
-    group: root
+    owner: zabbix
+    group: zabbix
     mode: "0644"
   become: true
-  when: ('zabbix-agent2' in ansible_facts.packages)
+  notify: Restart zabbix agent2
