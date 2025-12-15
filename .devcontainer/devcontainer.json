@@ -1,0 +1,28 @@
+{
+  "name": "devpod-ansible",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "workspaceFolder": "/workspace",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+
+  "mounts": [
+    "source=${env:HOME}/.ssh,target=/home/dev/.ssh,type=bind,consistency=cached"
+  ],
+
+  "containerUser": "dev",
+
+  "remoteUser": "dev",
+
+  "features": {},
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "redhat.ansible",
+        "redhat.vscode-yaml"
+      ]
+    }
+  }
+}
