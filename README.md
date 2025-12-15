@@ -35,6 +35,7 @@ This repository contains my Ansible code (collections, roles, playbooks, invento
 - [Using Ansible Vault](#using-ansible-vault)
   - [Vault Setup](#vault-setup)
     - [Password file](#password-file)
+- [Devpod/Devcontainer](#devpoddevcontainer)
 - [Links](#links)
 
 ## Requirements
@@ -253,6 +254,18 @@ echo $ANSIBLE_VAULT_PASS
 ```
 
 Each time you run your playbook, Ansible will unlock the vault by reading from the `vault_password_file`, or echoing the value from the environment (if you set the value to a Bash script).
+
+## Devpod/Devcontainer
+
+This repository includes a [`devcontainer.json`](./.devcontainer/devcontainer.json). This file is compatible with [VSCode Devcontainers](https://code.visualstudio.com/docs/devcontainers/create-dev-container) and [Devpod](https://devpod.sh). The devcontainer builds an environment from [the included Dockerfile](./.devcontainer/Dockerfile), then runs it in an isolated environment.
+
+If you're using Devpod, you can setup the environment with the following steps:
+
+- Add the Docker provider: `devpod provider add docker`
+- Build/run the workspace: `devpod up . --id devpod-ansible`
+  - To build the workspace & open in VSCode: `devpod up . --id devpod-ansible --ide vscode`
+
+You can also open the repository in the Devpod GUI, if you've installed that.
 
 ## Links
 
