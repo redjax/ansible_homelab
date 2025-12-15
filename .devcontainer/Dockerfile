@@ -30,6 +30,7 @@ FROM user AS uv
 
 ## Install uv
 RUN curl -Ls https://astral.sh/uv/install.sh | bash
+ENV PATH="/home/coder/.local/bin:${PATH}"
 
 FROM uv AS tooling
 
