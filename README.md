@@ -1,4 +1,4 @@
-# Homelab
+# Homelab <!-- omit in toc -->
 
 <!-- Repo image -->
 <p align="center">
@@ -18,6 +18,24 @@
 </p>
 
 This repository contains my Ansible code (collections, roles, playbooks, inventories, etc) for setting up/maintaining my homelab. The project is driven by [`nox`](https://nox.thea.codes/)-based session automation.
+
+## Table of Contents <!-- omit in toc -->
+
+- [Requirements](#requirements)
+- [Setup](#setup)
+  - [SSH setup](#ssh-setup)
+- [Usage](#usage)
+- [Project directories](#project-directories)
+  - [Inventories](#inventories)
+  - [Plays](#plays)
+  - [Collections](#collections)
+- [Nox automation](#nox-automation)
+  - [Add new collections to build automation](#add-new-collections-to-build-automation)
+  - [Sessions](#sessions)
+- [Using Ansible Vault](#using-ansible-vault)
+  - [Vault Setup](#vault-setup)
+    - [Password file](#password-file)
+- [Links](#links)
 
 ## Requirements
 
