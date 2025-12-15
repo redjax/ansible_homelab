@@ -3,7 +3,11 @@
 Hostname={{ zabbix_agent_hostname }}
 Server={{ zabbix_agent_server_addr }}
 ServerActive={{ zabbix_agent_server_addr }}:{{ zabbix_agent_server_port }}
-ListenIP={{ zabbix_agent_listen_ip }}
+ListenIP={% if zabbix_agent_listen_ip == 'auto' %}
+{{ ansible_default_ipv4.address }}
+{% else %}
+{{ zabbix_agent_listen_ip }}
+{% endif %}
 ListenPort={{ zabbix_agent_listen_port }}
 HostMetadata={{ zabbix_metadata }}
 
