@@ -6,7 +6,7 @@ zabbix_agent_release_channel: "release"
 ## Connection
 zabbix_agent_server_addr: null
 zabbix_agent_server_port: 10051
-zabbix_agent_listen_ip: "0.0.0.0"
+zabbix_agent_listen_ip: "auto"
 
 ## Identity and metadata
 zabbix_agent_hostname: "{{ inventory_hostname }}"
