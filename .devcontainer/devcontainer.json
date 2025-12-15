@@ -1,0 +1,65 @@
+{
+  "name": "devpod-ansible",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "args": {
+        "UV_VER": "0.9.17",
+        "PYTHON_VER": "3.14"
+    }
+  },
+  "workspaceFolder": "/workspace",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+
+  "mounts": [
+    "source=${env:HOME}/.ssh,target=/home/coder/.ssh,type=bind,consistency=cached"
+  ],
+
+  "containerUser": "coder",
+  "remoteUser": "coder",
+
+  "features": {},
+  "postStartCommand": "uv sync --dev --all-extras",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "rogalmic.bash-debug",
+        "mads-hartmann.bash-ide-vscode",
+        "jomeinaster.bracket-peek",
+        "formulahendry.auto-close-tag",
+        "formulahendry.auto-complete-tag",
+        "formulahendry.auto-rename-tag",
+        "donjayamanne.githistory",
+        "lamartire.git-indicators",
+        "shyykoserhiy.git-autoconfig",
+        "maattdd.gitless",
+        "waderyan.gitblame",
+        "mhutchie.git-graph",
+        "vincaslt.highlight-matching-tag",
+        "wholroyd.jinja",
+        "samuelcolvin.jinjahtml",
+        "oderwat.indent-rainbow",
+        "hyesun.py-paste-indent",
+        "charliermarsh.ruff",
+        "mutantdino.resourcemonitor",
+        "christian-kohler.path-intellisense",
+        "ms-python.black-formatter",
+        "ms-python.debugpy",
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-python.vscode-python-envs",
+        "donjayamanne.python-extension-pack",
+        "teticio.python-envy",
+        "redhat.ansible",
+        "redhat.vscode-yaml",
+        "foxundermoon.shell-format",
+        "KevinRose.vsc-python-indent",
+        "njqdev.vscode-python-typehint",
+        "pflannery.vscode-versionlens",
+        "Wattenberger.footsteps",
+        "usernamehw.errorlens",
+        "yzhang.markdown-all-in-one"
+      ]
+    }
+  }
+}
