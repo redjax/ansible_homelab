@@ -23,7 +23,7 @@ FROM system AS user
 RUN useradd -m -s /bin/bash coder \
     && echo "coder ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/coder
 
-USER dev
+USER coder
 WORKDIR /workspace
 
 FROM user AS uv
