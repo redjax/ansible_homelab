@@ -10,15 +10,15 @@
       ansible.builtin.import_role:
         name: my.homelab.facts
 
+    - name: "Install Docker dependencies"
+      ansible.builtin.import_role:
+        name: my.homelab.docker
+        tasks_from: install-docker-depends.yml
+
     - name: "Add Docker APT repository"
       ansible.builtin.import_role:
         name: my.homelab.docker
         tasks_from: add-apt-repository.yml
-
-    - name: "Install Docker packages"
-      ansible.builtin.import_role:
-        name: my.homelab.docker
-        tasks_from: install-docker-depends.yml
 
     - name: "Install Docker"
       ansible.builtin.import_role:

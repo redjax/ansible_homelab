@@ -1,9 +1,24 @@
 ---
-- name: "Install Docker Compose plugin"
+- name: "Install Docker Compose V2 plugin (official)"
   ansible.builtin.apt:
     name:
-      - docker-compose
+      - docker-compose-plugin
     state: present
-    # update_cache: true
   become: true
-  when: (ansible_facts['os_family'] == 'Debian')
+  when: ansible_facts['os_family'] == 'Debian'
+
+- name: "Ensure docker-compose V2 binary exists"
+  ansible.builtin.stat:
+    path: /usr/libexec/docker/cli-plugins/docker-compose
+  register: docker_compose_plugin
+
+- name: "Create docker-compose symlink (for legacy compatibility)"
+  ansible.builtin.file:
+    src: /usr/libexec/docker/cli-plugins/docker-compose
+    dest: /usr/local/bin/docker-compose
+    state: link
+    force: yes
+  become: true
+  when: 
+    - ansible_facts['os_family'] == 'Debian'
+    - docker_compose_plugin.stat.exists
