@@ -14,7 +14,7 @@ ansible_svc_user: "ansible_svc"
 
 ## Directory where SSH keys will be output. Defaults to the directory
 #  a playbook was called from, i.e. plays/onboard/ssh_keys
-ansible_ssh_key_dir: "/path/to/ansible_ssh/keyfiles"
+ansible_ssh_key_dir: "/path/to/.ansible_ssh/keyfiles"
 
 ## Path to service account SSH private key
 ansible_ssh_private_key_file: "{{ ansible_ssh_key_dir }}/{{ ansible_svc_user }}"
