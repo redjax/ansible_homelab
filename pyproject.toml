@@ -10,8 +10,8 @@ dependencies = [
     "ansible-runner>=2.4.0",
 ]
 
-[tool.uv]
-dev-dependencies = [
+[dependency-groups]
+dev = [
     "nox>=2024.10.9",
     "passlib>=1.7.4",
     "pyyaml>=6.0.2",
