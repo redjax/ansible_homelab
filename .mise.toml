@@ -1,6 +1,6 @@
 [tools]
 ## https://mise-tools.jdx.dev/tools/python
-python = "3.13"
+python = "3.12"
 ## https://mise-tools.jdx.dev/tools/uv
 uv = "latest"
 
