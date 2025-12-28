@@ -3,26 +3,28 @@
 version: "3"
 
 vars:
-  ANSIBLE_REQUIREMENTS: requirements.yml
+  ANSIBLE_REQUIREMENTS: '.config/ansible/requirements.yml'
+  ANSIBLE_REQUIREMENTS_PRIVATE: '.config/ansible/requirements.private.yml'
   ANSIBLE_PING_HOST: '{{default "all" .CLI_ARGS}}'
   ANSIBLE_UPDATE_HOST: '{{default "autoReboot" .CLI_ARGS}}'
   ANSIBLE_INVENTORY: 'inventories/homelab/inventory.yml'
 
 tasks:
   galaxy-requirements:
-    desc: Install Ansible requirements with ansible-galaxy
+    desc: Install Ansible collections
     cmds:
       - cmd: ansible-galaxy collection install -r {{.ANSIBLE_REQUIREMENTS}}
+      - cmd: |
+          if [[ -f "{{.ANSIBLE_REQUIREMENTS_PRIVATE}}" ]]; then
+            ansible-galaxy collection install -r {{.ANSIBLE_REQUIREMENTS_PRIVATE}}
+          fi
 
   ping:
-    desc: "Ping Ansible hosts (default: all). Usage: task ping -- <host|group>"
+    desc: "Ping Ansible hosts (default: all)"
     cmds:
-      - cmd: ansible {{.ANSIBLE_PING_HOST}} -m ansible.builtin.ping
+      - cmd: ansible {{.ANSIBLE_PING_HOST}} -i {{.ANSIBLE_INVENTORY}} -m ansible.builtin.ping
 
   update:
-    desc: >
-      Run update/reboot playbook
-      (default limit: autoReboot).
-      Usage: task ansible:update -- <host|group>
+    desc: "Run update/reboot playbook (default limit: autoReboot)"
     cmds:
-      - ansible-playbook -i {{.ANSIBLE_INVENTORY}} --limit {{.ANSIBLE_UPDATE_HOST}} plays/maint/update-reboot-system.yml
+      - cmd: ansible-playbook -i {{.ANSIBLE_INVENTORY}} --limit {{.ANSIBLE_UPDATE_HOST}} plays/maint/update-reboot-system.yml

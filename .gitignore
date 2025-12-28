@@ -2,6 +2,7 @@
 .ansible/*
 .ssh/*
 .vault/*
+*.private.yml
 
 ## Environments
 env_files/

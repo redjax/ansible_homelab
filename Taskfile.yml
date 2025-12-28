@@ -7,8 +7,8 @@ includes:
   ansible: .tasks/ansible.yml
   
 vars:
-  ANSIBLE_REQUIREMENTS: requirements.yml
-  ANSIBLE_PING_HOST: "all"
+  ANSIBLE_REQUIREMENTS: '.config/ansible/requirements.yml'
+  ANSIBLE_PING_HOST: 'all'
   ANSIBLE_INVENTORY: 'inventories/homelab/inventory.yml'
 
 tasks:
