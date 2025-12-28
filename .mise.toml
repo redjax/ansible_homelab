@@ -1,6 +1,8 @@
 [tools]
 ## https://mise-tools.jdx.dev/tools/python
 python = "3.12"
+## https://mise-tools.jdx.dev/tools/pipx
+"aqua:pypa/pipx" = "latest"
 ## https://mise-tools.jdx.dev/tools/uv
 uv = "latest"
 
