@@ -39,6 +39,8 @@ This repository contains my Ansible code (collections, roles, playbooks, invento
   - [Vault Setup](#vault-setup)
     - [Password file](#password-file)
 - [Devpod/Devcontainer](#devpoddevcontainer)
+- [Mise](#mise)
+  - [Fix Failed to install pipx:ansible](#fix-failed-to-install-pipxansible)
 - [Links](#links)
 
 ## Requirements
@@ -269,6 +271,38 @@ If you're using Devpod, you can setup the environment with the following steps:
   - To build the workspace & open in VSCode: `devpod up . --id devpod-ansible --ide vscode`
 
 You can also open the repository in the Devpod GUI, if you've installed that.
+
+## Mise
+
+> [!WARNING]
+> This section is incomplete.
+
+### Fix Failed to install pipx:ansible
+
+On some machines you might see the following error when you attempt to run `mise install` after cloning:
+
+```text
+Failed to install pipx:ansible[uvx=false,pipx_args=--include-deps]@13.1.0: pipx exited with non-zero status: exit code 1
+```
+
+You can resolve this by temporarily setting the `MISE_PYTHON_COMPILE=1` env var:
+
+```shell
+## Linux/macOS
+export MISE_PYTHON_COMPILE=1 mise install
+
+## Windows
+$env:MISE_PYTHON_COMPILE=1 mise install
+```
+
+Unfortunately, on machines where this is required, you will need to have that environment variable set at all times. Add it to a `.envrc.local`, then run `direnv allow`:
+
+```env
+## Set if you get 'Failed to install pipx:ansible' error when running mise install
+export MISE_PYTHON_COMPILE=1
+```
+
+Then you can just run `mise install` as normal.
 
 ## Links
 
