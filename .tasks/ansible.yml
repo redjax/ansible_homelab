@@ -1,0 +1,12 @@
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+---
+version: "3"
+
+vars:
+  ANSIBLE_REQUIREMENTS: requirements.yml
+
+tasks:
+  galaxy-requirements:
+    desc: Install Ansible requirements with ansible-galaxy
+    cmds:
+      - cmd: ansible-galaxy collection install -r {{.ANSIBLE_REQUIREMENTS}}
