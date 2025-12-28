@@ -1,0 +1,11 @@
+[tools]
+## https://mise-tools.jdx.dev/tools/python
+python = "3.13"
+## https://mise-tools.jdx.dev/tools/uv
+uv = "latest"
+
+## https://mise-tools.jdx.dev/tools/ansible
+ansible = "13.1.0"
+
+## https://mise-tools.jdx.dev/tools/direnv
+direnv = "latest"
