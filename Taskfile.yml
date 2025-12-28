@@ -56,8 +56,16 @@ tasks:
 
   mkdocs-serve:
     desc: "Serve MkDocs site locally"
+    vars:
+      ## You can set/override these in .envrc.local, or pass as CLI args, i.e.
+      #    MKDOCS_HOST=x.x.x.x MKDOCS_PORT=8080 task mkdocs-serve
+      MKDOCS_HOST: "{{ env `MKDOCS_HOST` | default `0.0.0.0` }}"
+      MKDOCS_PORT: "{{ env `MKDOCS_PORT` | default `8000` }}"
     cmds:
       - task: mkdocs:serve
+        vars:
+          HOST: "{{.MKDOCS_HOST}}"
+          PORT: "{{.MKDOCS_PORT}}"
 
   mkdocs-publish:
     desc: "Publish MkDocs site"

@@ -56,7 +56,7 @@ tasks:
     deps: ["doctor"]
     cmds:
       - cmd: |
-          {{.VENV_DIR}}/bin/mkdocs serve -f mkdocs.yml
+          {{.VENV_DIR}}/bin/mkdocs serve -f mkdocs.yml -a "{{.HOST}}:{{.PORT}}"
 
   publish:
     desc: "Publish the site (push the built site to remote / deploy)"
