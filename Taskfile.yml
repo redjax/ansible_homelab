@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+---
+version: "3"
+
+includes:
+  debug: .tasks/debug.yml
+  ansible: .tasks/ansible.yml
+  
+vars:
+  ANSIBLE_REQUIREMENTS: requirements.yml
+  ANSIBLE_PING_HOST: "all"
+  ANSIBLE_INVENTORY: 'inventories/homelab/inventory.yml'
+
+tasks:
+  debug-host:
+    desc: Debug host parameters
+    cmds:
+      - task: debug:info
+
+  ansible-requirements:
+    desc: Install Ansible requirements with ansible-galaxy
+    cmds:
+      - cmd: |
+          task ansible:galaxy-requirements ANSIBLE_REQUIREMENTS="{{.ANSIBLE_REQUIREMENTS}}"
+
+  ping:
+    desc: "Ping Ansible hosts (default: all)"
+    cmds:
+      - task: ansible:ping
+
+  update:
+    desc: "Update & reboot systems (default: autoReboot). Usage: task update -- <host|group>"
+    cmds:
+      - task: ansible:update

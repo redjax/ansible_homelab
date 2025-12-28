@@ -1,0 +1,56 @@
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+---
+version: "3"
+
+vars:
+  OS_TYPE:
+    sh: |
+      if [[ "{{.OS}}" == "windows" ]]; then
+        echo "Windows"
+      elif [[ "{{.OS}}" == "darwin" ]]; then
+        echo "macOS"
+      else
+        echo "Linux"
+      fi
+
+tasks:
+  info:
+    cmds:
+      ## Hostname (all platforms)
+      - |
+        echo "Hostname: {{.HOSTNAME}}"
+
+      # OS info
+      - |
+        echo "OS: {{.OS_TYPE}} ({{.OS}}/{{.ARCH}})"
+
+      ## IP address
+      - platforms: [linux, darwin]
+        cmd: |
+          echo "IP: $(hostname -I 2>/dev/null | awk '{print $1}' || ifconfig | awk '/inet /{print $2; exit}')"
+
+      - platforms: [windows]
+        cmd: |
+          powershell -NoProfile -Command "(Get-NetIPAddress -AddressFamily IPv4 | Where-Object {$_.InterfaceOperationalStatus -eq 'Up'} | Select-Object -First 1 -ExpandProperty IPAddress)"
+
+      ## CPU info
+      - platforms: [linux]
+        cmd: |
+          echo "CPU cores: $(nproc)"
+
+      - platforms: [darwin]
+        cmd: |
+          echo "CPU cores: $(sysctl -n hw.ncpu)"
+
+      - platforms: [windows]
+        cmd: |
+          powershell -NoProfile -Command "(Get-CimInstance Win32_Processor).NumberOfLogicalProcessors"
+
+      ## Kernel / OS release
+      - platforms: [linux, darwin]
+        cmd: |
+          echo "Release: $(uname -r)"
+
+      - platforms: [windows]
+        cmd: |
+          ver
