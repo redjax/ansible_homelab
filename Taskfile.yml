@@ -1,0 +1,9 @@
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+---
+version: "3"
+
+tasks:
+  ansible-requirements:
+    desc: Install Ansible requirements with ansible-galaxy
+    cmds:
+      - cmd: ansible-galaxy collection install -r requirements.yml
