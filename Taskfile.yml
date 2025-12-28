@@ -9,6 +9,7 @@ includes:
 vars:
   ANSIBLE_REQUIREMENTS: requirements.yml
   ANSIBLE_PING_HOST: "all"
+  ANSIBLE_INVENTORY: 'inventories/homelab/inventory.yml'
 
 tasks:
   debug-host:
@@ -26,3 +27,8 @@ tasks:
     desc: "Ping Ansible hosts (default: all)"
     cmds:
       - task: ansible:ping
+
+  update:
+    desc: "Update & reboot systems (default: autoReboot). Usage: task update -- <host|group>"
+    cmds:
+      - task: ansible:update
