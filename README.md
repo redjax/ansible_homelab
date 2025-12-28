@@ -17,6 +17,9 @@
   <img alt="GitHub code size in bytes" src="https://img.shields.io/github/languages/code-size/redjax/ansible_homelab">
 </p>
 
+> [!WARNING]
+> This project is undergoing a fairly significant refactor. The documentation will probably lag behind a bit. Until this message is removed, some of the commands and setup instructions may no longer work.
+
 This repository contains my Ansible code (collections, roles, playbooks, inventories, etc) for setting up/maintaining my homelab. The project is driven by [`nox`](https://nox.thea.codes/)-based session automation.
 
 ## Table of Contents <!-- omit in toc -->
