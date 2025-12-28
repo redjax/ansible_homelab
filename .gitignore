@@ -18,6 +18,9 @@ venv/
 
 .envrc.local
 
+## MkDocs
+site/
+
 ## Allow Environment patterns
 !*example*
 !*example*.*
