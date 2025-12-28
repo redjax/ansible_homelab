@@ -1,4 +1,5 @@
 site_name: Ansible Homelab
+docs_dir: src
 site_description: Documentation for my homelab's Ansible management.
 site_url: https://ansible-homelab.readthedocs.io/en/latest/
 
@@ -75,7 +76,7 @@ plugins:
 markdown_extensions:
   - admonition
   - markdown_include.include:
-      base_path: .
+      base_path: src
   - pymdownx.inlinehilite
   - pymdownx.snippets
   - pymdownx.superfences

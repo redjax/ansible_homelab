@@ -1,0 +1,67 @@
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+---
+version: "3"
+
+vars:
+  MKDOCS_DIR: "docs"
+  VENV_DIR: "{{.MKDOCS_DIR}}/.venv"
+  REQUIREMENTS_FILE: "requirements.txt"
+
+tasks:
+  doctor:
+    desc: "Ensure the MkDocs virtual environment exists and sync dependencies"
+    dir: "{{.MKDOCS_DIR}}"
+    cmds:
+      - cmd: |
+          if [[ ! -d "{{.VENV_DIR}}" ]]; then
+            echo "Virtual environment not found. Creating"
+            uv sync --all-extras
+          fi
+      - cmd: |
+          echo "Synching dependencies"
+          uv sync --all-extras
+          
+  export-requirements:
+    desc: "Export Python requirements from uv-managed pyproject.toml"
+    dir: "{{.MKDOCS_DIR}}"
+    cmds:
+      - cmd: |
+          uv export --format requirements.txt --output-file requirements.txt --no-dev --no-hashes
+      - cmd: |
+          echo "Requirements exported to {{.REQUIREMENTS_FILE}}"
+
+  setup:
+    desc: "Create virtual environment and install MkDocs dependencies"
+    dir: "{{.MKDOCS_DIR}}"
+    deps: ["doctor"]
+    cmds:
+      - cmd: |
+          python3 -m venv {{.VENV_DIR}}
+      - cmd: |
+          {{.VENV_DIR}}/bin/pip install --upgrade pip
+      - cmd: |
+          {{.VENV_DIR}}/bin/pip install -r {{.REQUIREMENTS_FILE}}
+
+  build:
+    desc: "Build the MkDocs static site"
+    dir: "{{.MKDOCS_DIR}}"
+    deps: ["doctor"]
+    cmds:
+      - cmd: |
+          {{.VENV_DIR}}/bin/mkdocs build -f mkdocs.yml
+
+  serve:
+    desc: "Serve the MkDocs site locally for development"
+    dir: "{{.MKDOCS_DIR}}"
+    deps: ["doctor"]
+    cmds:
+      - cmd: |
+          {{.VENV_DIR}}/bin/mkdocs serve -f mkdocs.yml -a "{{.HOST}}:{{.PORT}}"
+
+  publish:
+    desc: "Publish the site (push the built site to remote / deploy)"
+    dir: "{{.MKDOCS_DIR}}"
+    deps: ["doctor"]
+    cmds:
+      - cmd: |
+          {{.VENV_DIR}}/bin/mkdocs gh-deploy -f mkdocs.yml
