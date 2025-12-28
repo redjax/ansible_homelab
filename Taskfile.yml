@@ -2,7 +2,15 @@
 ---
 version: "3"
 
+includes:
+  debug: .tasks/debug.yml
+
 tasks:
+  debug-host:
+    desc: Debug host parameters
+    cmds:
+      - task: debug:info
+
   ansible-requirements:
     desc: Install Ansible requirements with ansible-galaxy
     cmds:
