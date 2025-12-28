@@ -7,6 +7,8 @@ vars:
   ANSIBLE_REQUIREMENTS_PRIVATE: '.config/ansible/requirements.private.yml'
   ANSIBLE_PING_HOST: '{{default "all" .CLI_ARGS}}'
   ANSIBLE_UPDATE_HOST: '{{default "autoReboot" .CLI_ARGS}}'
+  ANSIBLE_ONBOARD_INVENTORY: 'inventories/onboard/inventory.yml'
+  ANSIBLE_ONBOARD_HOST: '{{default "" .CLI_ARGS}}'
   ANSIBLE_INVENTORY: 'inventories/homelab/inventory.yml'
 
 tasks:
@@ -28,3 +30,8 @@ tasks:
     desc: "Run update/reboot playbook (default limit: autoReboot)"
     cmds:
       - cmd: ansible-playbook -i {{.ANSIBLE_INVENTORY}} --limit {{.ANSIBLE_UPDATE_HOST}} plays/maint/update-reboot-system.yml
+
+  onboard:
+    desc: "Run onboarding playbook (requires a --limit value, i.e. 'hostname' or 'groupname' or 'hostname1 hostsname2 hostname3')"
+    cmds:
+      - cmd: ansible-playbook -i {{.ANSIBLE_INVENTORY}} {{if .ANSIBLE_ONBOARD_HOST}}--limit {{.ANSIBLE_ONBOARD_HOST}}{{end}} plays/onboard/run-onboarding.yml
