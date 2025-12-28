@@ -5,9 +5,10 @@ version: "3"
 includes:
   debug: .tasks/debug.yml
   ansible: .tasks/ansible.yml
-
+  
 vars:
   ANSIBLE_REQUIREMENTS: requirements.yml
+  ANSIBLE_PING_HOST: "all"
 
 tasks:
   debug-host:
@@ -20,3 +21,8 @@ tasks:
     cmds:
       - cmd: |
           task ansible:galaxy-requirements ANSIBLE_REQUIREMENTS="{{.ANSIBLE_REQUIREMENTS}}"
+
+  ping:
+    desc: "Ping Ansible hosts (default: all)"
+    cmds:
+      - task: ansible:ping

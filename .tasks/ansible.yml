@@ -4,9 +4,15 @@ version: "3"
 
 vars:
   ANSIBLE_REQUIREMENTS: requirements.yml
+  ANSIBLE_PING_HOST: '{{default "all" .CLI_ARGS}}'
 
 tasks:
   galaxy-requirements:
     desc: Install Ansible requirements with ansible-galaxy
     cmds:
       - cmd: ansible-galaxy collection install -r {{.ANSIBLE_REQUIREMENTS}}
+
+  ping:
+    desc: "Ping Ansible hosts (default: all). Usage: task ping -- <host|group>"
+    cmds:
+      - cmd: ansible {{.ANSIBLE_PING_HOST}} -m ansible.builtin.ping
