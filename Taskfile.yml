@@ -5,6 +5,7 @@ version: "3"
 includes:
   debug: .tasks/debug.yml
   ansible: .tasks/ansible.yml
+  mkdocs: .tasks/mkdocs.yml
   
 vars:
   ANSIBLE_REQUIREMENTS: '.config/ansible/requirements.yml'
@@ -37,3 +38,28 @@ tasks:
     desc: "Run onboarding playbook (optional --limit)"
     cmds:
       - task: ansible:onboard
+
+  mkdocs-export:
+    desc: "Export requirements.txt for mkdocs environment"
+    cmds:
+      - task: mkdocs:export-requirements
+
+  mkdocs-setup:
+    desc: "Install MkDocs environment and dependencies"
+    cmds:
+      - task: mkdocs:setup
+
+  mkdocs-build:
+    desc: "Build the MkDocs site"
+    cmds:
+      - task: mkdocs:build
+
+  mkdocs-serve:
+    desc: "Serve MkDocs site locally"
+    cmds:
+      - task: mkdocs:serve
+
+  mkdocs-publish:
+    desc: "Publish MkDocs site"
+    cmds:
+      - task: mkdocs:publish
