@@ -32,3 +32,8 @@ tasks:
     desc: "Update & reboot systems (default: autoReboot). Usage: task update -- <host|group>"
     cmds:
       - task: ansible:update
+  
+  onboard:
+    desc: "Run onboarding playbook (optional --limit)"
+    cmds:
+      - task: ansible:onboard
