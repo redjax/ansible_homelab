@@ -17,6 +17,9 @@ venv/
 
 .envrc.local
 
+## IDEs
+.vscode/settings.json
+
 ## Allow Environment patterns
 !*example*
 !*example*.*
