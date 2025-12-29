@@ -146,6 +146,9 @@ To create a new inventory, create a new directory and add inventory and vars fil
 - `touch inventories/new_inventory/group_vars/all.yml`
   - Create the group variables file, where you can define variables that apply to the whole inventory.
 
+> [!TIP]
+> If you use an existing directory in [`inventories/`](./inventories/), you should be able to just copy the `example.inventory.yml` to `inventory.yml` and edit it.
+
 Example inventory.yml
 
 ```yaml
@@ -153,33 +156,54 @@ Example inventory.yml
 ## Define a cluster group, with 2 agents and 2 servers
 all:
   hosts:
-    cl-ag1:
-      ansible_host: "192.168.1.61"
-    cl-ag2:
-      ansible_host: "192.168.1.62"
-    cl-srv1:
+    ## Add localhost to allow running plays against this machine
+    localhost:
+      ansible_connection: local
+      ansible_python_interpreter: "{{ ansible_playbook_python }}"
+    host1:
+      ansible_host: "192.168.1.15"
+    host2:
+      ansible_host: "192.168.1.16"
+      ## Remote has SSH on a different port than 22
+      ansible_ssh_port: 222
+    host3:
       ansible_host: "192.168.1.60"
-    cl-srv2:
+      ## Login as the root user on this machine
+      ansible_user: root
+    host4:
       ansible_host: "192.168.1.64"
+      ## One of the roles can enable passwordless sudo
+      setup_user_passwordless_sudo: true
+      ## This host defines ports to allow through a UFW firewall
+      ufw_tcp_allowed_ports: ["80", "443", "29281"]
+    host5:
+      ## This machine was configured before and can use an SSH key for connection.
+      #  Tell Ansible where to find that key.
+      ansible_ssh_private_key_file: "/home/username/.ssh/id_rsa"
   ## Variables set here apply to the hosts above across all inventory groups
   vars:
-    ## Set remote user for all hosts
-    ansible_user: "ubuntu"
+    ## Assumes the SSH user for setup is 'root', and that the playbook
+    #  will disable SSH login as root
+    ansible_user: "root"
 
 ## Create a group specifically for onboarding into Ansible management.
 onboard:
   hosts:
     ## Re-declare hosts from above. Variables like ansible_host and ansible_user are inherited from the "all" group.
-    rpi-cl-ag1:
-    rpi-cl-ag2:
-    rpi-cl-srv1:
-    rpi-cl-srv2:
+    host1:
+    host2:
+    host3:
+    host4:
+
   ## Vars set here will only apply when ansible-playbook -i ... --limit onboard is used
   vars:
+
+    ## NOTE: Both of these are set with direnv. They are only here as an example.
+
     ## Set private key to use for connections.
-    ansible_ssh_private_key_file: "~/.ssh/ansible_id_rsa"
+    ansible_ssh_private_key_file: ".ssh/ansible_svc"
     ## Set public key variable, which is used in the onboard play
-    ansible_ssh_public_key_file: "~/.ssh/ansible_id_rsa.pub"
+    ansible_ssh_public_key_file: ".ssh/ansible_svc.pub"
 
 ```
 
