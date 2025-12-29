@@ -20,7 +20,7 @@
 > [!WARNING]
 > This project is undergoing a fairly significant refactor. The documentation will probably lag behind a bit. Until this message is removed, some of the commands and setup instructions may no longer work.
 
-This repository contains my Ansible code (collections, roles, playbooks, inventories, etc) for setting up/maintaining my homelab. The project is driven by [`nox`](https://nox.thea.codes/)-based session automation.
+My Ansible monorepo, with collections, roles, and playbooks, [`mise`](https://mise.jdx.dev) for tools installation, [`go-task/task`](https://taskfile.dev/) for automations, and [`direnv`](https://direnv.net) for environment variables.
 
 ## Table of Contents <!-- omit in toc -->
 
@@ -32,38 +32,53 @@ This repository contains my Ansible code (collections, roles, playbooks, invento
   - [Inventories](#inventories)
   - [Plays](#plays)
   - [Collections](#collections)
-- [Nox automation](#nox-automation)
-  - [Add new collections to build automation](#add-new-collections-to-build-automation)
-  - [Sessions](#sessions)
 - [Using Ansible Vault](#using-ansible-vault)
   - [Vault Setup](#vault-setup)
     - [Password file](#password-file)
 - [Devpod/Devcontainer](#devpoddevcontainer)
-- [Mise](#mise)
-  - [Fix Failed to install pipx:ansible](#fix-failed-to-install-pipxansible)
 - [Links](#links)
 
 ## Requirements
 
-- Python
-  - `nox` and Ansible both depend on Python.
-  - (Optional) Use [pyenv](https://github.com/pyenv/pyenv) to install Python.
-    - 📚 [My documentation on pyenv](https://redkb.readthedocs.io/en/latest/programming/python/pyenv.html)
-- `virtualenv` Python package
-  - Install with pip: `pip install --user virtualenv`
-  - Install with [`pipx`](https://github.com/pypa/pipx): `pipx install virtualenv`
+[`mise`](https://mise.jdx.dev) is really the only requirement for this repository. The included [`.mise.toml`](./.mise.toml) handles installing all the other tools.
+
+If you are not using `mise`, the requirements are:
+
+- [`Python`](https://python.org)
+- [`uv`](https://docs.astral.sh/uv) - `uv` is used to manage the [MkDocs site](./docs/)'s dependencies.
+- [`ansible`]([https://](https://docs.ansible.com/projects/ansible/latest/index.html))
+- [`direnv`](https://direnv.net)
+- [`go-task/task`](https://taskfile.dev)
 
 ## Setup
 
-- Create virtual environment with `virtualenv .venv`
-- Activate environment
-  - Linux: `. .venv/bin/activate`
-  - Windows: `. .venv\Scripts\activate`
-- Install requirements
-  - `pip install -r requirements.yml`
-- Install Ansible requirements
-  - (with [`nox`](https://nox.thea.codes/)): Simply run [`nox`](https://nox.thea.codes/) from the command line with no arguments to run the build/install commands.
-  - (with `ansible-galaxy`): `ansible-galaxy collection install -r requirements.yml`
+If you are using `mise`, just run:
+
+```shell
+mise trust
+mise install
+
+direnv allow
+
+task ansible-requirements
+```
+
+If you are not using `mise`, make sure you install all of the [requirements](#requirements). You can use a Python virtualenv to install Ansible, if you want:
+
+```shell
+direnv allow
+
+python -m pip install -U virtualenv
+python -m virtualenv .venv
+./.venv/bin/activate
+pip install -U ansible
+
+task ansible-requirements
+```
+
+> [!NOTE]
+> You can install Ansible's requirements manually with `ansible-galaxy install -r .config/ansible/requirements.yml`.
+
 
 ### SSH setup
 
@@ -100,7 +115,7 @@ To create a new inventory, create a new directory and add inventory and vars fil
 - `touch inventories/new_inventory/group_vars/all.yml`
   - Create the group variables file, where you can define variables that apply to the whole inventory.
 
-**Example inventory.yml**
+Example inventory.yml
 
 ```yaml
 ---
@@ -151,80 +166,6 @@ For example, the [`plays/maint/update-system.yml`](./plays/maint/update-system.y
 
 Collections in [`./collections/my/`](./collections/my/) are built & installed using the [`requirements.yml](./requirements.yml) file. Any time a collection changes, it must be rebuilt.
 
-The [`noxfile.py`](./noxfile.py) included in this repository has some pre-defined sessions for automating repetitive tasks like building collections. The `CUSTOM_COLLECTIONS` list in `noxfile.py` must be updated if/when new collections are added to the `my` namespace.
-
-When [`nox`](https://nox.thea.codes/) is called with no parameters, the following sessions are executed:
-
-- `lint`: The `noxfile` is linted with `ruff`.
-- `build-my-collections`: The script loops over all collections in [`./collections/my/](./collections/my/) and builds each one with `ansible-galaxy collection build`.
-  - The built distribution file is outputted to `./build/`, a directory which is ignored in [`.gitignore`](./.gitignore) and will be created if it does not already exist.
-- `install-ansible-requirements`: Installs collections and roles defined in [`./requirements.yml`](./requirements.yml).
-
-## Nox automation
-
-The [`noxfile.py`](./noxfile.py) file defines [`nox`](https://nox.thea.codes/) sessions to automate tasks like building & installing collections, and executing some playbooks. Note that for the playbook sessions, your host must already be configured with an SSH connection to the remote host (see [SSH setup](#ssh-setup) for instructions).
-
-### Add new collections to build automation
-
-When adding a new Ansible collection, if you want [`nox`](https://nox.thea.codes/) to handle building & installing the collection when you make changes, you must create an instance of `CustomAnsibleCollection()` and add it to the `CUSTOM_COLLECTIONS` list. In the example below, we will add a new collection named "my.base_setup" to the automated build list:
-
-```python
-## noxfile.py
-
-# other nox code
-...
-
-
-## Note: do not make changes to this class, just take note of the parameters
-#  for when you create an instance of this object in CUSTOM_COLLECTIONS
-@dataclass
-class CustomAnsibleCollection:
-    """Define a custom Ansible collection for Nox sessions.
-    
-    Params:
-        name (str): The simple name of the role, mainly used for logging messages.
-        fqcn (str): The fully-qualified collection name, i.e. `my.collection`
-        path (Path): The local file path to the Ansible collection.
-    
-    """
-
-    name: str = field(default=None)
-    fqcn: str = field(default=None)
-    path: Path | None = field(default=None)
-    
-    @property
-    def path_exists(self) -> bool:
-        if self.path:
-            return self.path.exists()
-        else:
-            return False
-    
-    def __post_init__(self):
-        if self.path:
-            _path: Path = Path(f"{self.path}")
-            
-            self.path = _path
-            
-        _log = logging.getLogger("nox.CustomAnsibleCollection")
-        self.logger = _log
-
-CUSTOM_COLLECTIONS: t.List[CustomAnsibleCollection] = [
-    ## Existing collection named "my.homelab"
-    CustomAnsibleCollection(name="homelab", fqcn="my.homelab", path=Path(f"{MY_COLLECTIONS_PATH}/homelab")),
-    ## New collection, we will initialize it on the fly. You could also create a variable for the class and use
-    #  CUSTOM_COLLECTIONS.append(custom_collection)
-    CustomAnsibleCollection(name="base_setup", fqcn="my.base_setup", path=Path(f"{MY_COLLECTIONS_PATH}/base_setup"))
-]
-
-```
-
-### Sessions
-
-**TODO**:
-
-- [ ] Document existing sessions & usage
-- [ ] Document adding new sessions
-
 ## Using Ansible Vault
 
 - [Ansible Vault documentation](https://docs.ansible.com/ansible/latest/vault_guide/index.html)
@@ -271,38 +212,6 @@ If you're using Devpod, you can setup the environment with the following steps:
   - To build the workspace & open in VSCode: `devpod up . --id devpod-ansible --ide vscode`
 
 You can also open the repository in the Devpod GUI, if you've installed that.
-
-## Mise
-
-> [!WARNING]
-> This section is incomplete.
-
-### Fix Failed to install pipx:ansible
-
-On some machines you might see the following error when you attempt to run `mise install` after cloning:
-
-```text
-Failed to install pipx:ansible[uvx=false,pipx_args=--include-deps]@13.1.0: pipx exited with non-zero status: exit code 1
-```
-
-You can resolve this by temporarily setting the `MISE_PYTHON_COMPILE=1` env var:
-
-```shell
-## Linux/macOS
-export MISE_PYTHON_COMPILE=1 mise install
-
-## Windows
-$env:MISE_PYTHON_COMPILE=1 mise install
-```
-
-Unfortunately, on machines where this is required, you will need to have that environment variable set at all times. Add it to a `.envrc.local`, then run `direnv allow`:
-
-```env
-## Set if you get 'Failed to install pipx:ansible' error when running mise install
-export MISE_PYTHON_COMPILE=1
-```
-
-Then you can just run `mise install` as normal.
 
 ## Links
 
