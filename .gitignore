@@ -18,6 +18,9 @@ venv/
 
 .envrc.local
 
+## VSCode
+.vscode/settings.json
+
 ## MkDocs
 site/
 
