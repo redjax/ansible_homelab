@@ -3,8 +3,8 @@
 <!-- Repo image -->
 <p align="center">
   <picture>
-    <source media="(prefer-color-scheme: dark)" srcset="./docs/img/github-header-img.png">
-    <img src="./docs/img/github-header-image.png" height="200">
+    <source media="(prefer-color-scheme: dark)" srcset="./docs/src/img/github-header-img.png">
+    <img src="./docs/src/img/github-header-image.png" height="200">
   </picture>
 </p>
 
@@ -17,21 +17,22 @@
   <img alt="GitHub code size in bytes" src="https://img.shields.io/github/languages/code-size/redjax/ansible_homelab">
 </p>
 
-This repository contains my Ansible code (collections, roles, playbooks, inventories, etc) for setting up/maintaining my homelab. The project is driven by [`nox`](https://nox.thea.codes/)-based session automation.
+> [!WARNING]
+> This project is undergoing a fairly significant refactor. The documentation will probably lag behind a bit. Until this message is removed, some of the commands and setup instructions may no longer work.
+
+My Ansible monorepo, with collections, roles, and playbooks, [`mise`](https://mise.jdx.dev) for tools installation, [`go-task/task`](https://taskfile.dev/) for automations, and [`direnv`](https://direnv.net) for environment variables.
 
 ## Table of Contents <!-- omit in toc -->
 
 - [Requirements](#requirements)
 - [Setup](#setup)
   - [SSH setup](#ssh-setup)
+  - [Direnv setup](#direnv-setup)
 - [Usage](#usage)
 - [Project directories](#project-directories)
   - [Inventories](#inventories)
   - [Plays](#plays)
   - [Collections](#collections)
-- [Nox automation](#nox-automation)
-  - [Add new collections to build automation](#add-new-collections-to-build-automation)
-  - [Sessions](#sessions)
 - [Using Ansible Vault](#using-ansible-vault)
   - [Vault Setup](#vault-setup)
     - [Password file](#password-file)
@@ -40,44 +41,94 @@ This repository contains my Ansible code (collections, roles, playbooks, invento
 
 ## Requirements
 
-- Python
-  - `nox` and Ansible both depend on Python.
-  - (Optional) Use [pyenv](https://github.com/pyenv/pyenv) to install Python.
-    - 📚 [My documentation on pyenv](https://redkb.readthedocs.io/en/latest/programming/python/pyenv.html)
-- `virtualenv` Python package
-  - Install with pip: `pip install --user virtualenv`
-  - Install with [`pipx`](https://github.com/pypa/pipx): `pipx install virtualenv`
+[`mise`](https://mise.jdx.dev) is really the only requirement for this repository. The included [`.mise.toml`](./.mise.toml) handles installing all the other tools.
+
+If you are not using `mise`, the requirements are:
+
+- [`Python`](https://python.org)
+- [`uv`](https://docs.astral.sh/uv) - `uv` is used to manage the [MkDocs site](./docs/)'s dependencies.
+- [`ansible`]([https://](https://docs.ansible.com/projects/ansible/latest/index.html))
+- [`direnv`](https://direnv.net)
+- [`go-task/task`](https://taskfile.dev)
 
 ## Setup
 
-- Create virtual environment with `virtualenv .venv`
-- Activate environment
-  - Linux: `. .venv/bin/activate`
-  - Windows: `. .venv\Scripts\activate`
-- Install requirements
-  - `pip install -r requirements.yml`
-- Install Ansible requirements
-  - (with [`nox`](https://nox.thea.codes/)): Simply run [`nox`](https://nox.thea.codes/) from the command line with no arguments to run the build/install commands.
-  - (with `ansible-galaxy`): `ansible-galaxy collection install -r requirements.yml`
+If you are using `mise`, just run:
+
+```shell
+mise trust
+mise install
+
+direnv allow
+
+task ansible-requirements
+```
+
+If you are not using `mise`, make sure you install all of the [requirements](#requirements). You can use a Python virtualenv to install Ansible, if you want:
+
+```shell
+direnv allow
+
+python -m pip install -U virtualenv
+python -m virtualenv .venv
+./.venv/bin/activate
+pip install -U ansible
+
+task ansible-requirements
+```
+
+> [!NOTE]
+> You can install Ansible's requirements manually with `ansible-galaxy install -r .config/ansible/requirements.yml`.
+
+Now you're ready to [create an inventory](#inventories) and run some [playbooks](#plays).
 
 ### SSH setup
 
-**TODO**:
+> [!NOTE]
+> If you are using `direnv`, the [`.envrc` file](./.envrc) sets the `ANSIBLE_SSH_DIR` variable for you.
 
-- [ ] Document generating SSH keypairs
-- [ ] Document the `~/.ssh/config` file
-- [ ] Document the `ansible_svc` SSH account
-- [ ] Document the [`create-ansible-svc-user.yml`](./plays/maint/create-ansible-svc-user.yml) playbook
+This repository uses a [`.ssh/` directory](./.ssh/) to define SSH sessions. This keeps Ansible-specific SSH sessions isolated from your `~/.ssh/config`, and your Ansible keys contained in this repository. You can tell Ansible to look in another directory for SSH configuration using the `ANSIBLE_SSH_DIR` environment variable.
+
+On a new machine, if you are setting up fresh managed infrastructure and do not already have an SSH keypair, start by generating an `ansible_svc` key (you can use whatever name you want for the keys, I just use `ansible_svc`/`ansible_svc.pub`):
+
+```shell
+ssh-keygen -t ed25519 -b 4096 -f .ssh/ansible_svc -N ""
+```
+
+Copy this key to the host(s) you want to manage with Ansible. Then, copy `.ssh/example_config` to `.ssh/config` and edit with your host(s) you want to manage with Ansible.
+
+> [!TIP]
+> You can use the [`run-onboarding.yml` playbook](./plays/onboard/run-onboarding.yml) to automatically copy your `ansible_svc` SSH key to the remote during onboarding. This assumes the remote host has password connections enabled so Ansible can prompt you for the remote connection's password.
+>
+> The onboarding playbook requires a user with root or sudo privileges. If you provision a machine with just a `root` account, use the `root` user in your `.ssh/config` file and pass `-k` to your commands.
+>
+> Example (asssumes you have created an [onboarding inventory](./inventories/onboard/example.inventory.yml)):
+> ```shell
+> ansible-playbook -i inventories/onboard/inventory.yml [--limit <limit-name>] plays/onboard/run-onboarding.yml -k
+> ```
+>
+> You can also tell Ansible to prompt you for sudo password when required by passing an uppercase `-K` along with `-k` (prompt for SSH connection password).
+
+The onboarding playbook will create an `ansible_svc` user on the remote. You cannot use a password to authenticate as this user, you must use the `ansible_svc` SSH key. After running the onboarding playbook, you can run `ssh -i .ssh/ansible_svc ansible_svc@<your-hostname-or-ip>` to ensure connectivity.
+
+To validate Ansible's SSH connection, run `ansible <hostname-or-inventory-group> -m ansible.builtin.ping`, or run the [`ping` playbook](./plays/ping.yml).
+
+### Direnv setup
+
+The [`.envrc` file](./.envrc) sets default environment variables to configure the repository. You can create a `.envrc.local` (copy the contents at the bottom of the `.envrc` file into the `.envrc.local` file) and override individual settings.
+
+Whenever you make a change to either `.envrc` or `.envrc.local`, you will need to re-run `direnv allow`.
+
+Whenever you `cd` into this repository after allowing the `.envrc` file, `direnv` will automatically source the file and set your environment variables, and when you leave the repository path it will unset them.
 
 ## Usage
 
-**TODO**:
-
-- [ ] Document using `ansible-playbook` to run plays in `./plays/`
-- [ ] Document using `ansible-galaxy {collection,role} init` to create new collections/roles.
-- [ ] Document using `ansible-galaxy build` to build collections.
-- [ ] Document running [`nox`](https://nox.thea.codes/) sessions defined in `noxfile.py`
-  - [ ] Document adding new sesions
+- Run `task -l` to see predefined Ansible tasks.
+- Run individual playbooks with `ansible-playbook [--limit <hostname-in-inventory>] plays/path/to/playbook-name.yml`
+  - By default, the [`homelab` inventory](./inventories/homelab/example.inventory.yml) is used.
+  - You can target a different inventory with `ansible-playbook -i inventories/inventoryName/inventory.yml`.
+  - Instead of passing `-i path/to/inventory.yml`, you can also set the `ANSIBLE_INVENTORY` environment variable.
+  - You can also set the value of `ANSIBLE_INVENTORY` in a [`.envrc.local` file](#direnv-setup) to override the default inventory.
 
 ## Project directories
 
@@ -95,40 +146,64 @@ To create a new inventory, create a new directory and add inventory and vars fil
 - `touch inventories/new_inventory/group_vars/all.yml`
   - Create the group variables file, where you can define variables that apply to the whole inventory.
 
-**Example inventory.yml**
+> [!TIP]
+> If you use an existing directory in [`inventories/`](./inventories/), you should be able to just copy the `example.inventory.yml` to `inventory.yml` and edit it.
+
+Example inventory.yml
 
 ```yaml
 ---
 ## Define a cluster group, with 2 agents and 2 servers
 all:
   hosts:
-    cl-ag1:
-      ansible_host: "192.168.1.61"
-    cl-ag2:
-      ansible_host: "192.168.1.62"
-    cl-srv1:
+    ## Add localhost to allow running plays against this machine
+    localhost:
+      ansible_connection: local
+      ansible_python_interpreter: "{{ ansible_playbook_python }}"
+    host1:
+      ansible_host: "192.168.1.15"
+    host2:
+      ansible_host: "192.168.1.16"
+      ## Remote has SSH on a different port than 22
+      ansible_ssh_port: 222
+    host3:
       ansible_host: "192.168.1.60"
-    cl-srv2:
+      ## Login as the root user on this machine
+      ansible_user: root
+    host4:
       ansible_host: "192.168.1.64"
+      ## One of the roles can enable passwordless sudo
+      setup_user_passwordless_sudo: true
+      ## This host defines ports to allow through a UFW firewall
+      ufw_tcp_allowed_ports: ["80", "443", "29281"]
+    host5:
+      ## This machine was configured before and can use an SSH key for connection.
+      #  Tell Ansible where to find that key.
+      ansible_ssh_private_key_file: "/home/username/.ssh/id_rsa"
   ## Variables set here apply to the hosts above across all inventory groups
   vars:
-    ## Set remote user for all hosts
-    ansible_user: "ubuntu"
+    ## Assumes the SSH user for setup is 'root', and that the playbook
+    #  will disable SSH login as root
+    ansible_user: "root"
 
 ## Create a group specifically for onboarding into Ansible management.
 onboard:
   hosts:
     ## Re-declare hosts from above. Variables like ansible_host and ansible_user are inherited from the "all" group.
-    rpi-cl-ag1:
-    rpi-cl-ag2:
-    rpi-cl-srv1:
-    rpi-cl-srv2:
+    host1:
+    host2:
+    host3:
+    host4:
+
   ## Vars set here will only apply when ansible-playbook -i ... --limit onboard is used
   vars:
+
+    ## NOTE: Both of these are set with direnv. They are only here as an example.
+
     ## Set private key to use for connections.
-    ansible_ssh_private_key_file: "~/.ssh/ansible_id_rsa"
+    ansible_ssh_private_key_file: ".ssh/ansible_svc"
     ## Set public key variable, which is used in the onboard play
-    ansible_ssh_public_key_file: "~/.ssh/ansible_id_rsa.pub"
+    ansible_ssh_public_key_file: ".ssh/ansible_svc.pub"
 
 ```
 
@@ -136,7 +211,7 @@ onboard:
 
 Playbooks join collections and roles into repeatable steps/tasks that can be applied to an inventory.
 
-For example, the [`plays/maint/update-system.yml`](./plays/maint/update-system.yml) playbook will run `apt` or `dnf` updates/upgrades, and reboot the remote host if required after an update. The playbook uses variables from the inventory's [`group_vars/all.yml`](./inventories/homelab/group_vars/all.example.yml) file, and pulls in the [`update_system`](./collections/my/homelab/roles/update_system/) role from the [`my.homelab` collection](./collections/my/homelab/).
+For example, the [`plays/maint/update-system.yml`](./plays/maint/update-system.yml) playbook will run `apt` or `dnf` updates/upgrades, and reboot the remote host if required after an update. The playbook uses variables from the inventory's [`group_vars/all.yml`](./inventories/homelab/group_vars/example.all.yml) file, and pulls in the [`update_system`](./collections/my/homelab/roles/update_system/) role from the [`my.homelab` collection](./collections/my/homelab/).
 
 ### Collections
 
@@ -145,80 +220,6 @@ For example, the [`plays/maint/update-system.yml`](./plays/maint/update-system.y
 > [*Ansible docs: Using Ansible collections*](https://docs.ansible.com/ansible/latest/collections_guide/index.html)
 
 Collections in [`./collections/my/`](./collections/my/) are built & installed using the [`requirements.yml](./requirements.yml) file. Any time a collection changes, it must be rebuilt.
-
-The [`noxfile.py`](./noxfile.py) included in this repository has some pre-defined sessions for automating repetitive tasks like building collections. The `CUSTOM_COLLECTIONS` list in `noxfile.py` must be updated if/when new collections are added to the `my` namespace.
-
-When [`nox`](https://nox.thea.codes/) is called with no parameters, the following sessions are executed:
-
-- `lint`: The `noxfile` is linted with `ruff`.
-- `build-my-collections`: The script loops over all collections in [`./collections/my/](./collections/my/) and builds each one with `ansible-galaxy collection build`.
-  - The built distribution file is outputted to `./build/`, a directory which is ignored in [`.gitignore`](./.gitignore) and will be created if it does not already exist.
-- `install-ansible-requirements`: Installs collections and roles defined in [`./requirements.yml`](./requirements.yml).
-
-## Nox automation
-
-The [`noxfile.py`](./noxfile.py) file defines [`nox`](https://nox.thea.codes/) sessions to automate tasks like building & installing collections, and executing some playbooks. Note that for the playbook sessions, your host must already be configured with an SSH connection to the remote host (see [SSH setup](#ssh-setup) for instructions).
-
-### Add new collections to build automation
-
-When adding a new Ansible collection, if you want [`nox`](https://nox.thea.codes/) to handle building & installing the collection when you make changes, you must create an instance of `CustomAnsibleCollection()` and add it to the `CUSTOM_COLLECTIONS` list. In the example below, we will add a new collection named "my.base_setup" to the automated build list:
-
-```python
-## noxfile.py
-
-# other nox code
-...
-
-
-## Note: do not make changes to this class, just take note of the parameters
-#  for when you create an instance of this object in CUSTOM_COLLECTIONS
-@dataclass
-class CustomAnsibleCollection:
-    """Define a custom Ansible collection for Nox sessions.
-    
-    Params:
-        name (str): The simple name of the role, mainly used for logging messages.
-        fqcn (str): The fully-qualified collection name, i.e. `my.collection`
-        path (Path): The local file path to the Ansible collection.
-    
-    """
-
-    name: str = field(default=None)
-    fqcn: str = field(default=None)
-    path: Path | None = field(default=None)
-    
-    @property
-    def path_exists(self) -> bool:
-        if self.path:
-            return self.path.exists()
-        else:
-            return False
-    
-    def __post_init__(self):
-        if self.path:
-            _path: Path = Path(f"{self.path}")
-            
-            self.path = _path
-            
-        _log = logging.getLogger("nox.CustomAnsibleCollection")
-        self.logger = _log
-
-CUSTOM_COLLECTIONS: t.List[CustomAnsibleCollection] = [
-    ## Existing collection named "my.homelab"
-    CustomAnsibleCollection(name="homelab", fqcn="my.homelab", path=Path(f"{MY_COLLECTIONS_PATH}/homelab")),
-    ## New collection, we will initialize it on the fly. You could also create a variable for the class and use
-    #  CUSTOM_COLLECTIONS.append(custom_collection)
-    CustomAnsibleCollection(name="base_setup", fqcn="my.base_setup", path=Path(f"{MY_COLLECTIONS_PATH}/base_setup"))
-]
-
-```
-
-### Sessions
-
-**TODO**:
-
-- [ ] Document existing sessions & usage
-- [ ] Document adding new sessions
 
 ## Using Ansible Vault
 

@@ -1,0 +1,73 @@
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+---
+version: "3"
+
+includes:
+  debug: .tasks/debug.yml
+  ansible: .tasks/ansible.yml
+  mkdocs: .tasks/mkdocs.yml
+  
+vars:
+  ANSIBLE_REQUIREMENTS: '.config/ansible/requirements.yml'
+  ANSIBLE_PING_HOST: 'all'
+  ANSIBLE_INVENTORY: 'inventories/homelab/inventory.yml'
+
+tasks:
+  debug-host:
+    desc: Debug host parameters
+    cmds:
+      - task: debug:info
+
+  ansible-requirements:
+    desc: Install Ansible requirements with ansible-galaxy
+    cmds:
+      - cmd: |
+          task ansible:galaxy-requirements ANSIBLE_REQUIREMENTS="{{.ANSIBLE_REQUIREMENTS}}"
+
+  ping:
+    desc: "Ping Ansible hosts (default: all)"
+    cmds:
+      - task: ansible:ping
+
+  update:
+    desc: "Update & reboot systems (default: autoReboot). Usage: task update -- <host|group>"
+    cmds:
+      - task: ansible:update
+  
+  onboard:
+    desc: "Run onboarding playbook (optional --limit)"
+    cmds:
+      - task: ansible:onboard
+
+  mkdocs-export:
+    desc: "Export requirements.txt for mkdocs environment"
+    cmds:
+      - task: mkdocs:export-requirements
+
+  mkdocs-setup:
+    desc: "Install MkDocs environment and dependencies"
+    cmds:
+      - task: mkdocs:setup
+
+  mkdocs-build:
+    desc: "Build the MkDocs site"
+    cmds:
+      - task: mkdocs:build
+
+  mkdocs-serve:
+    desc: "Serve MkDocs site locally"
+    vars:
+      ## You can set/override these in .envrc.local, or pass as CLI args, i.e.
+      #    MKDOCS_HOST=x.x.x.x MKDOCS_PORT=8080 task mkdocs-serve
+      MKDOCS_HOST: "{{ env `MKDOCS_HOST` | default `0.0.0.0` }}"
+      MKDOCS_PORT: "{{ env `MKDOCS_PORT` | default `8000` }}"
+    cmds:
+      - task: mkdocs:serve
+        vars:
+          HOST: "{{.MKDOCS_HOST}}"
+          PORT: "{{.MKDOCS_PORT}}"
+
+  mkdocs-publish:
+    desc: "Publish MkDocs site"
+    cmds:
+      - task: mkdocs:publish

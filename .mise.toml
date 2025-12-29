@@ -1,0 +1,19 @@
+[tools]
+## https://mise-tools.jdx.dev/tools/python
+python = "3.12"
+## https://mise-tools.jdx.dev/tools/pipx
+"aqua:pypa/pipx" = "latest"
+## https://mise-tools.jdx.dev/tools/uv
+uv = "latest"
+
+## https://mise-tools.jdx.dev/tools/ansible
+ansible = "13.1.0"
+
+## https://mise-tools.jdx.dev/tools/direnv
+direnv = "latest"
+
+## https://github.com/aquaproj/aqua-registry/blob/main/pkgs/go-task/task/pkg.yaml
+"aqua:go-task/task" = "latest"
+
+## https://mise-tools.jdx.dev/tools/yamllint
+yamllint = "latest"
