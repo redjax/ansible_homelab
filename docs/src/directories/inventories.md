@@ -1,6 +1,6 @@
 # Inventories
 
-The [`inventories/`](https://github.com/redjax/ansible_homelab/tree/main/inventories) path is where server infrastructure can be configured. Use an inventory's `group_vars/all.yml` to set variables for the inventory group, then use `ansible-playbook -i inventories/<inventory_name>/inventory.yml ...`.
+The [`inventories/`](https://github.com/redjax/Ansible/tree/main/inventories) path is where server infrastructure can be configured. Use an inventory's `group_vars/all.yml` to set variables for the inventory group, then use `ansible-playbook -i inventories/<inventory_name>/inventory.yml ...`.
 
 To create a new inventory, create a new directory and add inventory and vars files:
 

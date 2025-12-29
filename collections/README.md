@@ -44,7 +44,7 @@ You can provide a git URL in your Ansible's `requirements.yml` to install collec
 
 ```yaml
 collections:
-  - name: git+https://github.com/redjax/ansible_homelab.git#/collections/my/homelab,main
+  - name: git+https://github.com/redjax/Ansible.git#/collections/my/homelab,main
 
 ```
 
