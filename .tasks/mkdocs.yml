@@ -4,7 +4,7 @@ version: "3"
 
 vars:
   MKDOCS_DIR: "docs"
-  VENV_DIR: "{{.MKDOCS_DIR}}/.venv"
+  VENV_DIR: ".venv"
   REQUIREMENTS_FILE: "requirements.txt"
 
 tasks:
