@@ -20,7 +20,7 @@
 > [!WARNING]
 > This project is undergoing a fairly significant refactor. The documentation will probably lag behind a bit. Until this message is removed, some of the commands and setup instructions may no longer work.
 
-My Ansible monorepo, with collections, roles, and playbooks, [`mise`](https://mise.jdx.dev) for tools installation, [`go-task/task`](https://taskfile.dev/) for automations, and [`direnv`](https://direnv.net) for environment variables.
+My Ansible monorepo, with roles grouped into importable collections, playbooks, [`mise`](https://mise.jdx.dev) for tools installation, [`go-task/task`](https://taskfile.dev/) for automations, and [`direnv`](https://direnv.net) for environment variables.
 
 ## Table of Contents <!-- omit in toc -->
 
@@ -233,7 +233,7 @@ onboard:
 
 Playbooks join collections and roles into repeatable steps/tasks that can be applied to an inventory.
 
-For example, the [`plays/maint/update-system.yml`](./plays/maint/update-system.yml) playbook will run `apt` or `dnf` updates/upgrades, and reboot the remote host if required after an update. The playbook uses variables from the inventory's [`group_vars/all.yml`](./inventories/homelab/group_vars/example.all.yml) file, and pulls in the [`update_system`](./collections/my/homelab/roles/update_system/) role from the [`my.homelab` collection](./collections/my/homelab/).
+For example, the [`plays/maint/update-system.yml`](./plays/maint/update-system.yml) playbook will run `apt` or `dnf` updates/upgrades, and reboot the remote host if required after an update. The playbook uses variables from the inventory's [`group_vars/all.yml`](./inventories/homelab/group_vars/example.all.yml) file, and pulls in the [`update_system`](./ansible_collections/my/homelab/roles/update_system/) role from the [`my.homelab` collection](./ansible_collections/my/homelab/).
 
 ### Collections
 
@@ -241,7 +241,7 @@ For example, the [`plays/maint/update-system.yml`](./plays/maint/update-system.y
 >
 > [*Ansible docs: Using Ansible collections*](https://docs.ansible.com/ansible/latest/collections_guide/index.html)
 
-Collections in [`./collections/my/`](./collections/my/) are built & installed using the [`requirements.yml](./requirements.yml) file. Any time a collection changes, it must be rebuilt.
+Collections in [`./ansible_collections/my/`](./ansible_collections/my/) are built & installed using the [`requirements.yml](./requirements.yml) file. Any time a collection changes, it must be rebuilt.
 
 ## Using Ansible Vault
 

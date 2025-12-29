@@ -1,6 +1,6 @@
 # Ansible Playbooks
 
-Playbooks bring together roles defined in [collections/](../collections/) or [roles/](../roles/) to build a set of instructions for Ansible. Running `ansible-playbook -i <path/to/inventory.yml> --limit <inventory-group-or-hostname <path/to/playbook.yml>` to call a playbook applies variables defined at the inventory and playbook level (in the `vars:` section), then runs tasks defined in the role(s) called by the playbook.
+Playbooks bring together roles defined in [ansible_collections/](../ansible_collections/) or [roles/](../roles/) to build a set of instructions for Ansible. Running `ansible-playbook -i <path/to/inventory.yml> --limit <inventory-group-or-hostname <path/to/playbook.yml>` to call a playbook applies variables defined at the inventory and playbook level (in the `vars:` section), then runs tasks defined in the role(s) called by the playbook.
 
 ## Calling a role defined in a collection
 
