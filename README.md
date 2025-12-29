@@ -20,7 +20,7 @@
 > [!WARNING]
 > This project is undergoing a fairly significant refactor. The documentation will probably lag behind a bit. Until this message is removed, some of the commands and setup instructions may no longer work.
 
-My Ansible monorepo, with collections, roles, and playbooks, [`mise`](https://mise.jdx.dev) for tools installation, [`go-task/task`](https://taskfile.dev/) for automations, and [`direnv`](https://direnv.net) for environment variables.
+My Ansible monorepo, with roles grouped into importable collections, playbooks, [`mise`](https://mise.jdx.dev) for tools installation, [`go-task/task`](https://taskfile.dev/) for automations, and [`direnv`](https://direnv.net) for environment variables.
 
 ## Table of Contents <!-- omit in toc -->
 
