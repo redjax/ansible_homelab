@@ -1,0 +1,12 @@
+## Allow fenced code blocks with titles and line numbers
+"MD046": false
+## Disable line length warnings for long commands or code snippets
+"MD013": false
+## Allow inline HTML, which MkDocs Material sometimes uses in admonitions or custom spans
+"MD033": false
+## Allow documents to start with headings other than H1
+"MD041": false
+## Ignore trailing spaces in lists or tables (helps with Material formatting)
+"MD029": false
+## Allow headings with inconsistent styles in MkDocs Material pages
+"MD024": false
