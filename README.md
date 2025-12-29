@@ -102,7 +102,7 @@ Copy this key to the host(s) you want to manage with Ansible. Then, copy `.ssh/e
 >
 > The onboarding playbook requires a user with root or sudo privileges. If you provision a machine with just a `root` account, use the `root` user in your `.ssh/config` file and pass `-k` to your commands.
 >
-> Example (asssumes you have created an [onboarding inventory](./inventories/onboard/inventory.example.yml)):
+> Example (asssumes you have created an [onboarding inventory](./inventories/onboard/example.inventory.yml)):
 > ```shell
 > ansible-playbook -i inventories/onboard/inventory.yml [--limit <limit-name>] plays/onboard/run-onboarding.yml -k
 > ```
@@ -125,7 +125,7 @@ Whenever you `cd` into this repository after allowing the `.envrc` file, `direnv
 
 - Run `task -l` to see predefined Ansible tasks.
 - Run individual playbooks with `ansible-playbook [--limit <hostname-in-inventory>] plays/path/to/playbook-name.yml`
-  - By default, the [`homelab` inventory](./inventories/homelab/inventory.example.yml) is used.
+  - By default, the [`homelab` inventory](./inventories/homelab/example.inventory.yml) is used.
   - You can target a different inventory with `ansible-playbook -i inventories/inventoryName/inventory.yml`.
   - Instead of passing `-i path/to/inventory.yml`, you can also set the `ANSIBLE_INVENTORY` environment variable.
   - You can also set the value of `ANSIBLE_INVENTORY` in a [`.envrc.local` file](#direnv-setup) to override the default inventory.
