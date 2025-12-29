@@ -211,7 +211,7 @@ onboard:
 
 Playbooks join collections and roles into repeatable steps/tasks that can be applied to an inventory.
 
-For example, the [`plays/maint/update-system.yml`](./plays/maint/update-system.yml) playbook will run `apt` or `dnf` updates/upgrades, and reboot the remote host if required after an update. The playbook uses variables from the inventory's [`group_vars/all.yml`](./inventories/homelab/group_vars/all.example.yml) file, and pulls in the [`update_system`](./collections/my/homelab/roles/update_system/) role from the [`my.homelab` collection](./collections/my/homelab/).
+For example, the [`plays/maint/update-system.yml`](./plays/maint/update-system.yml) playbook will run `apt` or `dnf` updates/upgrades, and reboot the remote host if required after an update. The playbook uses variables from the inventory's [`group_vars/all.yml`](./inventories/homelab/group_vars/example.all.yml) file, and pulls in the [`update_system`](./collections/my/homelab/roles/update_system/) role from the [`my.homelab` collection](./collections/my/homelab/).
 
 ### Collections
 

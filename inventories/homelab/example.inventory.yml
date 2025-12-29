@@ -1,0 +1,61 @@
+---
+all:
+  hosts:
+    ## Add localhost to allow running plays against self
+    localhost:
+      ansible_connection: local
+      kopia_password: "<your-Super-s3cure-password>"
+    host1:
+      ansible_ssh_host: "192.168.1.54"
+      vars:
+        ## This host will have Kopia installed, set the password
+        #  for the webUI
+        kopia_password: "<your-Super-s3cure-password>"
+    host2:
+      ansible_host: "192.168.1.34"
+      ## Set path to SSH private key
+      ansible_ssh_private_key_file: "{{ ansible_ssh_key_dir }}/ansible_id_rsa"
+    host3:
+      ansible_host: "192.168.1.61"
+      ## If SSH is running on another port
+      ansible_ssh_port: 222
+      ## Set the username for the remote Linux user
+      remote_host_user: "ubuntu"
+  vars:
+    ## These vars will be applied to all hosts in this list.
+    #  Values can be overwritten in other groups below
+    ansible_svc_user: "{{ ansible_svc_user | default('ansible_svc')}}"
+    ## Example: "22", "80", "443"
+    ufw_tcp_allowed_ports: ["22", "80", "443"]
+    ufw_udp_allowed_ports: []
+    ## Example: "22/tcp", "80/tcp", "443/tcp"
+    firewalld_allowed_ports: ["22/tcp", "80/tcp", "443/tcp"]
+
+    ## Example: "22", "80", "443"
+    ufw_tcp_disallowed_ports: ["9999"]
+    ufw_udp_disallowed_ports: []
+    ## Example: "22/tcp", "80/tcp", "443/tcp"
+    firewalld_disallowed_ports: ["9999/tcp"]
+
+testing:
+  hosts:
+    host1:
+
+autoReboot:
+  hosts:
+    host1:
+    host2:
+    host3:
+
+debian:
+  hosts:
+    host1:
+    host3:
+
+ubuntu:
+  hosts:
+    host2:
+
+raspberryPi:
+  hosts:
+    host3:
