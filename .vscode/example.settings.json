@@ -1,10 +1,10 @@
 {
     // ---- Python (used by language server, linting, etc.) ----
-    "python.defaultInterpreterPath": "/home/YOU-USERNAME/.local/share/mise/shims/python",
+    "python.defaultInterpreterPath": "/home/YOUR-USERNAME/.local/share/mise/shims/python",
     // ---- Ansible extension (actual executables) ----
-    "ansible.ansible.path": "/home/YOU-USERNAME/.local/share/mise/shims/ansible",
-    "ansible.ansibleConfig.path": "/home/YOU-USERNAME/.local/share/mise/shims/ansible-config",
-    "ansible.python.interpreterPath": "/home/YOU-USERNAME/.local/share/mise/shims/python",
+    "ansible.ansible.path": "/home/YOUR-USERNAME/.local/share/mise/shims/ansible",
+    "ansible.ansibleConfig.path": "/home/YOUR-USERNAME/.local/share/mise/shims/ansible-config",
+    "ansible.python.interpreterPath": "/home/YOUR-USERNAME/.local/share/mise/shims/python",
     // ---- Project defaults ----
     "ansible.inventory": "inventories/homelab/inventory.yml",
     "ansible.playbookDir": "plays",
