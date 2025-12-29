@@ -3,8 +3,8 @@
 <!-- Repo image -->
 <p align="center">
   <picture>
-    <source media="(prefer-color-scheme: dark)" srcset="./docs/img/github-header-img.png">
-    <img src="./docs/img/github-header-image.png" height="200">
+    <source media="(prefer-color-scheme: dark)" srcset="./docs/src/img/github-header-img.png">
+    <img src="./docs/src/img/github-header-image.png" height="200">
   </picture>
 </p>
 
@@ -79,15 +79,38 @@ task ansible-requirements
 > [!NOTE]
 > You can install Ansible's requirements manually with `ansible-galaxy install -r .config/ansible/requirements.yml`.
 
+Now you're ready to [create an inventory](#inventories) and run some [playbooks](#plays).
 
 ### SSH setup
 
-**TODO**:
+> [!NOTE]
+> If you are using `direnv`, the [`.envrc` file](./.envrc) sets the `ANSIBLE_SSH_DIR` variable for you.
 
-- [ ] Document generating SSH keypairs
-- [ ] Document the `~/.ssh/config` file
-- [ ] Document the `ansible_svc` SSH account
-- [ ] Document the [`create-ansible-svc-user.yml`](./plays/maint/create-ansible-svc-user.yml) playbook
+This repository uses a [`.ssh/` directory](./.ssh/) to define SSH sessions. This keeps Ansible-specific SSH sessions isolated from your `~/.ssh/config`, and your Ansible keys contained in this repository. You can tell Ansible to look in another directory for SSH configuration using the `ANSIBLE_SSH_DIR` environment variable.
+
+On a new machine, if you are setting up fresh managed infrastructure and do not already have an SSH keypair, start by generating an `ansible_svc` key (you can use whatever name you want for the keys, I just use `ansible_svc`/`ansible_svc.pub`):
+
+```shell
+ssh-keygen -t ed25519 -b 4096 -f .ssh/ansible_svc -N ""
+```
+
+Copy this key to the host(s) you want to manage with Ansible. Then, copy `.ssh/example_config` to `.ssh/config` and edit with your host(s) you want to manage with Ansible.
+
+> [!TIP]
+> You can use the [`run-onboarding.yml` playbook](./plays/onboard/run-onboarding.yml) to automatically copy your `ansible_svc` SSH key to the remote during onboarding. This assumes the remote host has password connections enabled so Ansible can prompt you for the remote connection's password.
+>
+> The onboarding playbook requires a user with root or sudo privileges. If you provision a machine with just a `root` account, use the `root` user in your `.ssh/config` file and pass `-k` to your commands.
+>
+> Example (asssumes you have created an [onboarding inventory](./inventories/onboard/inventory.example.yml)):
+> ```shell
+> ansible-playbook -i inventories/onboard/inventory.yml [--limit <limit-name>] plays/onboard/run-onboarding.yml -k
+> ```
+>
+> You can also tell Ansible to prompt you for sudo password when required by passing an uppercase `-K` along with `-k` (prompt for SSH connection password).
+
+The onboarding playbook will create an `ansible_svc` user on the remote. You cannot use a password to authenticate as this user, you must use the `ansible_svc` SSH key. After running the onboarding playbook, you can run `ssh -i .ssh/ansible_svc ansible_svc@<your-hostname-or-ip>` to ensure connectivity.
+
+To validate Ansible's SSH connection, run `ansible <hostname-or-inventory-group> -m ansible.builtin.ping`, or run the [`ping` playbook](./plays/ping.yml).
 
 ## Usage
 
