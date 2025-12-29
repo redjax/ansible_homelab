@@ -27,6 +27,7 @@ My Ansible monorepo, with collections, roles, and playbooks, [`mise`](https://mi
 - [Requirements](#requirements)
 - [Setup](#setup)
   - [SSH setup](#ssh-setup)
+  - [Direnv setup](#direnv-setup)
 - [Usage](#usage)
 - [Project directories](#project-directories)
   - [Inventories](#inventories)
@@ -112,15 +113,22 @@ The onboarding playbook will create an `ansible_svc` user on the remote. You can
 
 To validate Ansible's SSH connection, run `ansible <hostname-or-inventory-group> -m ansible.builtin.ping`, or run the [`ping` playbook](./plays/ping.yml).
 
+### Direnv setup
+
+The [`.envrc` file](./.envrc) sets default environment variables to configure the repository. You can create a `.envrc.local` (copy the contents at the bottom of the `.envrc` file into the `.envrc.local` file) and override individual settings.
+
+Whenever you make a change to either `.envrc` or `.envrc.local`, you will need to re-run `direnv allow`.
+
+Whenever you `cd` into this repository after allowing the `.envrc` file, `direnv` will automatically source the file and set your environment variables, and when you leave the repository path it will unset them.
+
 ## Usage
 
-**TODO**:
-
-- [ ] Document using `ansible-playbook` to run plays in `./plays/`
-- [ ] Document using `ansible-galaxy {collection,role} init` to create new collections/roles.
-- [ ] Document using `ansible-galaxy build` to build collections.
-- [ ] Document running [`nox`](https://nox.thea.codes/) sessions defined in `noxfile.py`
-  - [ ] Document adding new sesions
+- Run `task -l` to see predefined Ansible tasks.
+- Run individual playbooks with `ansible-playbook [--limit <hostname-in-inventory>] plays/path/to/playbook-name.yml`
+  - By default, the [`homelab` inventory](./inventories/homelab/inventory.example.yml) is used.
+  - You can target a different inventory with `ansible-playbook -i inventories/inventoryName/inventory.yml`.
+  - Instead of passing `-i path/to/inventory.yml`, you can also set the `ANSIBLE_INVENTORY` environment variable.
+  - You can also set the value of `ANSIBLE_INVENTORY` in a [`.envrc.local` file](#direnv-setup) to override the default inventory.
 
 ## Project directories
 
