@@ -28,6 +28,7 @@ My Ansible monorepo, with collections, roles, and playbooks, [`mise`](https://mi
 - [Setup](#setup)
   - [SSH setup](#ssh-setup)
   - [Direnv setup](#direnv-setup)
+  - [VSCode Setup](#vscode-setup)
 - [Usage](#usage)
 - [Project directories](#project-directories)
   - [Inventories](#inventories)
@@ -120,6 +121,27 @@ The [`.envrc` file](./.envrc) sets default environment variables to configure th
 Whenever you make a change to either `.envrc` or `.envrc.local`, you will need to re-run `direnv allow`.
 
 Whenever you `cd` into this repository after allowing the `.envrc` file, `direnv` will automatically source the file and set your environment variables, and when you leave the repository path it will unset them.
+
+### VSCode Setup
+
+If you're editing in VSCode, you need to tell Code where to find your `python`, `ansible`, and `ansible-config` executables. If you are using `mise`, you can copy the [`.vscode/example.settings.json` file](.vscode/example.settings.json) to `.vscode/settings.json` and use `mise`'s shim paths for the executables.
+
+Links to the binaries for `mise`-managed tools are in `~/.local/share/mise/shims`, but VSCode doesn't expand `~`, `$HOME`, or `${env:HOME}`/`${userHome}` vars in `settings.json`. That's why you need to create your own `settings.json`, to paste the path to your `mise/shims/` directory:
+
+```json
+{
+    // ---- Python (used by language server, linting, etc.) ----
+    "python.defaultInterpreterPath": "/home/YOUR-USERNAME/.local/share/mise/shims/python",
+    // ---- Ansible extension (actual executables) ----
+    "ansible.ansible.path": "/home/YOUR-USERNAME/.local/share/mise/shims/ansible",
+    "ansible.ansibleConfig.path": "/home/YOUR-USERNAME/.local/share/mise/shims/ansible-config",
+    "ansible.python.interpreterPath": "/home/YOUR-USERNAME/.local/share/mise/shims/python",
+    // ---- Project defaults ----
+    "ansible.inventory": "inventories/homelab/inventory.yml",
+    "ansible.playbookDir": "plays",
+    "ansible.useFullyQualifiedCollectionNames": true
+}
+```
 
 ## Usage
 
