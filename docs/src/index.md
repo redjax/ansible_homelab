@@ -6,3 +6,5 @@
     Until this message is removed, some of the commands and setup instructions may no longer work.
 
 I manage my homelab with Ansible. I've put together [a Github repository](https://github.com/redjax/Ansible) with the collections, roles, and playbooks I use to maintain configurations across my whole homelab.
+
+Check the [quick setup guide](./setup/quick_setup) for step-by-step instructions to get started, or read the more in-depth [setup docs](./setup) for explanations on the steps detailed in the quick setup docs.

@@ -1,6 +1,6 @@
 # Ansible Control Host Setup
 
-This page documents the process for setting this repository up on a new Ansible control host.
+This page documents the process for setting this repository up on a new Ansible control host. Check the [quick setup docs](./quick_setup) for a step-by-step guide.
 
 ## Requirements
 
@@ -18,7 +18,7 @@ If you are not using `mise`, the requirements are:
 
 If you are using `mise`, just run:
 
-```shell
+```shell linenums="1" title="Tools install & Ansible setup"
 mise trust
 mise install
 
@@ -29,7 +29,7 @@ task ansible-requirements
 
 If you are not using `mise`, make sure you install all of the [requirements](#requirements). You can use a Python virtualenv to install Ansible, if you want:
 
-```shell
+```shell linenums="1" title="Setup without mise"
 direnv allow
 
 python -m pip install -U virtualenv
@@ -46,9 +46,9 @@ task ansible-requirements
 ## SSH setup
 
 !!! note
-    If you are using `direnv`, the [`.envrc` file](./.envrc) sets the `ANSIBLE_SSH_DIR` variable for you.
+    If you are using `direnv`, the [`.envrc` file](https://github.com/redjax/Ansible/tree/main/.envrc) sets the `ANSIBLE_SSH_DIR` variable for you.
 
-This repository uses a [`.ssh/` directory](./.ssh/) to define SSH sessions. This keeps Ansible-specific SSH sessions isolated from your `~/.ssh/config`, and your Ansible keys contained in this repository. You can tell Ansible to look in another directory for SSH configuration using the `ANSIBLE_SSH_DIR` environment variable.
+This repository uses a [`.ssh/` directory](https://github.com/redjax/Ansible/tree/main/.ssh/) to define SSH sessions. This keeps Ansible-specific SSH sessions isolated from your `~/.ssh/config`, and your Ansible keys contained in this repository. You can tell Ansible to look in another directory for SSH configuration using the `ANSIBLE_SSH_DIR` environment variable.
 
 On a new machine, if you are setting up fresh managed infrastructure and do not already have an SSH keypair, start by generating an `ansible_svc` key (you can use whatever name you want for the keys, I just use `ansible_svc`/`ansible_svc.pub`):
 
@@ -59,13 +59,13 @@ ssh-keygen -t ed25519 -b 4096 -f .ssh/ansible_svc -N ""
 Copy this key to the host(s) you want to manage with Ansible. Then, copy `.ssh/example_config` to `.ssh/config` and edit with your host(s) you want to manage with Ansible.
 
 !!! tip
-    You can use the [`run-onboarding.yml` playbook](./plays/onboard/run-onboarding.yml) to automatically copy your `ansible_svc` SSH key to the remote during onboarding. This assumes the remote host has password connections enabled so Ansible can prompt you for the remote connection's password.
+    You can use the [`run-onboarding.yml` playbook](https://github.com/redjax/Ansible/tree/main/plays/onboard/run-onboarding.yml) to automatically copy your `ansible_svc` SSH key to the remote during onboarding. This assumes the remote host has password connections enabled so Ansible can prompt you for the remote connection's password.
 
     The onboarding playbook requires a user with root or sudo privileges. If you provision a machine with just a `root` account, use the `root` user in your `.ssh/config` file and pass `-k` to your commands.
     
-    Example (assumes you have created an [onboarding inventory](./inventories/onboard/example.inventory.yml)):
+    Example (assumes you have created an [onboarding inventory](https://github.com/redjax/Ansible/tree/main/inventories/onboard/example.inventory.yml)):
 
-    ```shell
+    ```shell linenums="1" title="Run Ansible onboarding playbook"
     ansible-playbook \
         -i inventories/onboard/inventory.yml \
         [--limit <limit-name>] \
@@ -77,11 +77,11 @@ Copy this key to the host(s) you want to manage with Ansible. Then, copy `.ssh/e
 
 The onboarding playbook will create an `ansible_svc` user on the remote. You cannot use a password to authenticate as this user, you must use the `ansible_svc` SSH key. After running the onboarding playbook, you can run `ssh -i .ssh/ansible_svc ansible_svc@<your-hostname-or-ip>` to ensure connectivity.
 
-To validate Ansible's SSH connection, run `ansible <hostname-or-inventory-group> -m ansible.builtin.ping`, or run the [`ping` playbook](./plays/ping.yml).
+To validate Ansible's SSH connection, run `ansible <hostname-or-inventory-group> -m ansible.builtin.ping`, or run the [`ping` playbook](https://github.com/redjax/Ansible/tree/main/plays/ping.yml).
 
 ## Direnv setup
 
-The [`.envrc` file](./.envrc) sets default environment variables to configure the repository. You can create a `.envrc.local` (copy the contents at the bottom of the `.envrc` file into the `.envrc.local` file) and override individual settings.
+The [`.envrc` file](https://github.com/redjax/Ansible/tree/main/.envrc) sets default environment variables to configure the repository. You can create a `.envrc.local` (copy the contents at the bottom of the `.envrc` file into the `.envrc.local` file) and override individual settings.
 
 Whenever you make a change to either `.envrc` or `.envrc.local`, you will need to re-run `direnv allow`.
 
@@ -89,11 +89,11 @@ Whenever you `cd` into this repository after allowing the `.envrc` file, `direnv
 
 ## VSCode Setup
 
-If you're editing in VSCode, you need to tell Code where to find your `python`, `ansible`, and `ansible-config` executables. If you are using `mise`, you can copy the [`.vscode/example.settings.json` file](.vscode/example.settings.json) to `.vscode/settings.json` and use `mise`'s shim paths for the executables.
+If you're editing in VSCode, you need to tell Code where to find your `python`, `ansible`, and `ansible-config` executables. If you are using `mise`, you can copy the [`.vscode/example.settings.json` file](https://github.com/redjax/Ansible/tree/main/.vscode/example.settings.json) to `.vscode/settings.json` and use `mise`'s shim paths for the executables.
 
 Links to the binaries for `mise`-managed tools are in `~/.local/share/mise/shims`, but VSCode doesn't expand `~`, `$HOME`, or `${env:HOME}`/`${userHome}` vars in `settings.json`. That's why you need to create your own `settings.json`, to paste the path to your `mise/shims/` directory:
 
-```json
+```json linenums="1" title="VSCode settings.json"
 {
     // ---- Python (used by language server, linting, etc.) ----
     "python.defaultInterpreterPath": "/home/YOUR-USERNAME/.local/share/mise/shims/python",
@@ -112,7 +112,7 @@ Links to the binaries for `mise`-managed tools are in `~/.local/share/mise/shims
 
 If using `mise` and `go-task/task`, run the following `task` command:
 
-```shell
+```shell title="MkDocs setup task"
 task mkdocs-setup
 ```
 
@@ -120,7 +120,7 @@ This will build the `docs/.venv` virtual environment and install the MkDocs requ
 
 If not using `mise`, change directories into `docs/` and run:
 
-```shell
+```shell linenums="1" title="Setup MkDocs environment"
 python -m virtualenv .venv
 
 # Linux
