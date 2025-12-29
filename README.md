@@ -103,7 +103,7 @@ Copy this key to the host(s) you want to manage with Ansible. Then, copy `.ssh/e
 >
 > The onboarding playbook requires a user with root or sudo privileges. If you provision a machine with just a `root` account, use the `root` user in your `.ssh/config` file and pass `-k` to your commands.
 >
-> Example (asssumes you have created an [onboarding inventory](./inventories/onboard/example.inventory.yml)):
+> Example (assumes you have created an [onboarding inventory](./inventories/onboard/example.inventory.yml)):
 > ```shell
 > ansible-playbook -i inventories/onboard/inventory.yml [--limit <limit-name>] plays/onboard/run-onboarding.yml -k
 > ```
