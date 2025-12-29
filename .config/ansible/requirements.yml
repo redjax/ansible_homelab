@@ -22,7 +22,7 @@ collections:
 
   - name: my.homelab
     type: dir
-    source: collections/my/homelab
+    source: ansible_collections/my/homelab
 
 roles:
   ## https://galaxy.ansible.com/ui/standalone/roles/staticdev/pyenv/

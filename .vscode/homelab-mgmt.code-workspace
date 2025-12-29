@@ -1,43 +1,43 @@
 {
-	"folders": [
-		{
-			"path": "..",
-			"name": "Git Root"
-		},
-		{
-			"path": "../docs/",
-			"name": "Repo Docs"
-		},
-		{
-          "path": "../scripts/deployments/",
-		  "name": "Deployment Scripts"
-		},
-		{
-			"path": "../collections",
-			"name": "Ansible Collections"
-		},
-		{
-			"path": "../inventories/",
-			"name": "Ansible Inventories"
-		},
-		{
-			"path": "../plays",
-			"name": "Ansible Plays"
-		},
-		{
-			"path": "../collections/my/homelab/roles",
-			"name": "my.homelab Collection Roles"
-		},
-		{
-			"path": "../collections/my/weather_monorepo/roles",
-			"name": "my.weather_monorepo Collection Roles"
-		}
-	],
-	"settings": {
-		"ansible.python.interpreterPath": "/home/jack/homelab-mgmt/.venv/bin/python",
-		"terminal.integrated.tabs.enabled": true
-	},
-	"tasks": {
+  "folders": [
+    {
+      "path": "..",
+      "name": "Git Root"
+    },
+    {
+      "path": "../docs/",
+      "name": "Repo Docs"
+    },
+    {
+      "path": "../scripts/deployments/",
+      "name": "Deployment Scripts"
+    },
+    {
+      "path": "../collections",
+      "name": "Ansible Collections"
+    },
+    {
+      "path": "../inventories/",
+      "name": "Ansible Inventories"
+    },
+    {
+      "path": "../plays",
+      "name": "Ansible Plays"
+    },
+    {
+      "path": "../ansible_collections/my/homelab/roles",
+      "name": "my.homelab Collection Roles"
+    },
+    {
+      "path": "../ansible_collections/my/weather_monorepo/roles",
+      "name": "my.weather_monorepo Collection Roles"
+    }
+  ],
+  "settings": {
+    "ansible.python.interpreterPath": "/home/jack/homelab-mgmt/.venv/bin/python",
+    "terminal.integrated.tabs.enabled": true
+  },
+  "tasks": {
     "version": "2.0.0",
     "tasks": [
       {
@@ -71,7 +71,9 @@
       },
       {
         "label": "Open",
-        "dependsOn": ["repo_root"],
+        "dependsOn": [
+          "repo_root"
+        ],
         "runOptions": {
           "runOn": "folderOpen"
         }
