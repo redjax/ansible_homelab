@@ -4,7 +4,7 @@ site_description: Documentation for my homelab's Ansible management.
 site_url: https://ansible-homelab.readthedocs.io/en/latest/
 
 repo_name: redjax/ansible_homelab
-repo_url: https://github.com/redjax/ansible_homelab
+repo_url: https://github.com/redjax/Ansible
 
 exclude_docs: |
   drafts/
