@@ -61,9 +61,11 @@ tasks:
       #    MKDOCS_HOST=x.x.x.x MKDOCS_PORT=8080 task mkdocs-serve
       MKDOCS_HOST: "{{ env `MKDOCS_HOST` | default `0.0.0.0` }}"
       MKDOCS_PORT: "{{ env `MKDOCS_PORT` | default `8000` }}"
+      MKDOCS_RELOAD: "{{ env `MKDOCS_RELOAD` | default `false` }}"
     cmds:
       - task: mkdocs:serve
         vars:
+          RELOAD: "{{.MKDOCS_RELOAD}}"
           HOST: "{{.MKDOCS_HOST}}"
           PORT: "{{.MKDOCS_PORT}}"
 
