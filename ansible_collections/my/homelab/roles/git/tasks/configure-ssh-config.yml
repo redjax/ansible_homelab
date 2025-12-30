@@ -1,0 +1,37 @@
+---
+- name: Ensure .ssh directory exists
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.ssh"
+    state: directory
+    mode: "0700"
+
+- name: Check if ~/.ssh/config exists
+  ansible.builtin.stat:
+    path: "{{ ansible_env.HOME }}/.ssh/config"
+  register: ssh_config_stat
+
+- name: Create base ~/.ssh/config if it doesn't exist
+  ansible.builtin.copy:
+    content: ""
+    dest: "{{ ansible_env.HOME }}/.ssh/config"
+    mode: "0600"
+  when: not ssh_config_stat.stat.exists
+
+- name: Check for existing gitlab.com Host entry
+  ansible.builtin.lineinfile:
+    path: "{{ ansible_env.HOME }}/.ssh/config"
+    regexp: '^Host gitlab\.com'
+    state: absent
+  check_mode: true
+  register: gitlab_host_check
+
+- name: Append gitlab.com SSH config
+  ansible.builtin.blockinfile:
+    path: "{{ ansible_env.HOME }}/.ssh/config"
+    block: |
+      Host gitlab.com
+        User git
+        IdentityFile {{ git_ssh_key }}
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - gitlab.com"
+    insertafter: EOF
+  when: not gitlab_host_check.found
