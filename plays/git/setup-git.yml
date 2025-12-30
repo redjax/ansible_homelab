@@ -1,0 +1,24 @@
+---
+- name: "Install & configure Git, set git user & email"
+  hosts: all
+  gather_facts: true
+
+  vars:
+    git_default_branch: "{{ git_default_branch_name | default('main') }}"
+    git_user: "{{ git_user_name }}"
+    git_email: "{{ git_user_email }}"
+
+  tasks:
+    - name: "Gather the package facts"
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: "Install git"
+      ansible.builtin.import_role:
+        name: my.homelab.git
+        tasks_from: install-git.yml
+
+    - name: "Configure git username & email"
+      ansible.builtin.import_role:
+        name: my.homelab.git
+        tasks_from: configure-git.yml

@@ -1,0 +1,21 @@
+# git_repo_checkout_branch
+---
+- name: "Checkout git branch"
+  hosts: all
+  gather_facts: true
+
+  vars:
+    repo_url: "{{ git_repo_url }}"
+    repo_dest: "{{ git_repo_dest }}"
+    gh_ssh_key: "{{ git_ssh_key }}"
+    git_repo_checkout_branch: "{{ repo_checkout_branch | default('main') }}"
+
+  tasks:
+    - name: "Gather the package facts"
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: "Checkout main branch"
+      ansible.builtin.import_role:
+        name: my.homelab.git
+        tasks_from: checkout-branch.yml
