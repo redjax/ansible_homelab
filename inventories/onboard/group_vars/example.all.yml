@@ -37,6 +37,7 @@ common_debian_packages:
     "unzip",
     "wget",
     "zip",
+    "rsync",
   ]
 
 common_redhat_packages: []

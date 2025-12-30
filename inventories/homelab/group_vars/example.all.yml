@@ -70,6 +70,7 @@ common_debian_packages:
     "wget",
     "zip",
     "gnupg2",
+    "rsync",
   ]
 
 common_redhat_packages: []
