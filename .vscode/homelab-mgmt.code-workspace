@@ -9,11 +9,11 @@
       "name": "Repo Docs"
     },
     {
-      "path": "../scripts/deployments/",
-      "name": "Deployment Scripts"
+      "path": "../scripts",
+      "name": "Scripts"
     },
     {
-      "path": "../collections",
+      "path": "../ansible_collections",
       "name": "Ansible Collections"
     },
     {
@@ -27,10 +27,6 @@
     {
       "path": "../ansible_collections/my/homelab/roles",
       "name": "my.homelab Collection Roles"
-    },
-    {
-      "path": "../ansible_collections/my/weather_monorepo/roles",
-      "name": "my.weather_monorepo Collection Roles"
     }
   ],
   "settings": {
