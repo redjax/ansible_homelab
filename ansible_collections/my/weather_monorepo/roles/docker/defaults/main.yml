@@ -1,6 +1,0 @@
----
-# defaults file for docker
-compose_file: "docker-compose.yml"
-compose_env_file: ".env"
-docker_installed: "'docker' in ansible_facts.packages"
-docker_compose_installed: "'docker-compose' in ansible_facts.packages or 'docker-compose-plugin' in ansible_facts.packages"

@@ -1,7 +1,0 @@
----
-- name: "Install git package"
-  ansible.builtin.apt:
-    state: present
-    name: "git"
-  become: true
-  when: (ansible_facts.os_family == "Debian") and ("git" not in ansible_facts.packages)

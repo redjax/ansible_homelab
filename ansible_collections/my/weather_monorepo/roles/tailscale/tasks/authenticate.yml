@@ -1,4 +1,0 @@
-- name: Authenticate Tailscale with preauth key
-  shell: |
-    tailscale up --authkey {{ tailscale_preauth_key }}
-  become: true

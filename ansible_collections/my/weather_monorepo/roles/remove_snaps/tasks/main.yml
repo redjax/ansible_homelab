@@ -1,4 +1,0 @@
----
-- name: "Remove snaps"
-  ansible.builtin.include_tasks: remove_snaps.yml
-  when: ansible_facts['distribution'] == "Ubuntu"

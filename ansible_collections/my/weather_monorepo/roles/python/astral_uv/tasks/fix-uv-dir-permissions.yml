@@ -1,7 +1,0 @@
----
-- name: "Set owner of /home/{{ remote_host_user }}/.local"
-  ansible.builtin.file:
-    path: "/home/{{ remote_host_user }}/.local"
-    owner: "{{ remote_host_user }}"
-    group: "{{ remote_host_user }}"
-  become: true

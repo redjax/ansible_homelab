@@ -1,5 +1,0 @@
----
-- hosts: localhost
-  remote_host_user: root
-  roles:
-    - roles/remove-snaps

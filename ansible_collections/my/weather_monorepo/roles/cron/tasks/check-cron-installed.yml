@@ -1,5 +1,0 @@
----
-- name: "[Cron] Check if Cron is installed"
-  ansible.builtin.stat:
-    path: /usr/bin/crontab
-  register: cron_bin

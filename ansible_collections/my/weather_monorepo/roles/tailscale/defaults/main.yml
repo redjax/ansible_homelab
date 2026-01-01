@@ -1,4 +1,0 @@
----
-# defaults file for tailscale
-tailscale_dependencies: ["curl", "apt-transport-https", "gnupg2"]
-tailscale_preauth_key: ""
