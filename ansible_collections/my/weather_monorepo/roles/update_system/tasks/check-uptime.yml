@@ -1,6 +1,0 @@
----
-- name: Check uptime
-  ansible.builtin.shell: "uptime"
-  register: Uptime
-
-- ansible.builtin.debug: var=Uptime.stdout

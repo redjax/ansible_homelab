@@ -1,8 +1,0 @@
-## [ MANAGED BY ANSIBLE ]
-#  Modifications here will overwrite all other [dropbear] jails
-
-[dropbear]
-
-port     = {{ jail_dropbear_port | default('ssh') }}
-logpath  = {{ jail_dropbear_logpath | default('%(dropbear_log)s') }}
-backend  = {{ jail_dropbear_backend | default('%(dropbear_backend)s') }}

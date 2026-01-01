@@ -1,4 +1,0 @@
----
-# tasks file for facts
-- name: "Gather package facts"
-  ansible.builtin.include_tasks: "gather-package-facts.yml"
