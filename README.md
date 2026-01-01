@@ -48,9 +48,10 @@ If you are not using `mise`, the requirements are:
 
 - [`Python`](https://python.org)
 - [`uv`](https://docs.astral.sh/uv) - `uv` is used to manage the [MkDocs site](./docs/)'s dependencies.
-- [`ansible`]([https://](https://docs.ansible.com/projects/ansible/latest/index.html))
-- [`direnv`](https://direnv.net)
-- [`go-task/task`](https://taskfile.dev)
+- [`ansible`](https://docs.ansible.com/projects/ansible/latest/index.html)
+- [`direnv`](https://direnv.net) - For setting environment variables any time you `cd` into this repository.
+  - This is optional, but makes using the repository locally much easier.
+- [`go-task/task`](https://taskfile.dev) - For repository automations
 
 ## Setup
 
